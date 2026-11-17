@@ -23,8 +23,8 @@ export const MESSAGES = {
     TOO_MANY_REQUESTS: 'Too many codes requested. Wait a few minutes and try again.',
     EMAIL_FAILED: 'We could not send the code. Try again shortly.',
     SIGNED_OUT: 'Signed out.',
-    LOGIN_CODE_SUBJECT: 'Your Code Acme Finance sign-in code',
-    INVITE_SUBJECT: 'You have been invited to Code Acme Finance',
+    LOGIN_CODE_SUBJECT: 'Your CodeAcme Finance sign-in code',
+    INVITE_SUBJECT: 'You have been invited to CodeAcme Finance',
   },
   USER: {
     INVITED: 'Invitation sent.',

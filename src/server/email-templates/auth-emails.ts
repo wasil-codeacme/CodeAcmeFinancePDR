@@ -1,5 +1,6 @@
 import { LOGIN_CODE_TTL_MINUTES } from '@/lib/constants';
 import { MESSAGES } from '@/lib/messages';
+import { SITE } from '@/lib/site';
 import type { EmailMessage } from '@/server/ports/email-service.port';
 
 function escapeHtml(value: string): string {
@@ -21,11 +22,11 @@ export function loginCodeEmail(to: string, code: string): EmailMessage {
 }
 
 export function inviteEmail(to: string, inviterName: string, loginUrl: string): EmailMessage {
-  const text = `${inviterName} invited you to Code Acme Finance. Sign in with this email address at ${loginUrl} — we will email you a one-time code.`;
+  const text = `${inviterName} invited you to ${SITE.NAME}. Sign in with this email address at ${loginUrl} — we will email you a one-time code.`;
   return {
     to,
     subject: MESSAGES.AUTH.INVITE_SUBJECT,
     text,
-    html: `<p>${escapeHtml(inviterName)} invited you to Code Acme Finance.</p><p><a href="${escapeHtml(loginUrl)}">Sign in</a> with this email address and we will email you a one-time code.</p>`,
+    html: `<p>${escapeHtml(inviterName)} invited you to ${SITE.NAME}.</p><p><a href="${escapeHtml(loginUrl)}">Sign in</a> with this email address and we will email you a one-time code.</p>`,
   };
 }
