@@ -12,6 +12,7 @@ import {
 import { EmptyState } from '@/components/shared/empty-state';
 import { FormDialog } from '@/components/shared/form-dialog';
 import { Badge } from '@/components/ui/badge';
+import { IconButton } from '@/components/shared/icon-button';
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatPercentValue } from '@/lib/format';
@@ -80,9 +81,9 @@ export function ClientsList({
               <FormDialog
                 title="Edit client"
                 trigger={
-                  <Button size="icon-sm" variant="ghost" aria-label={`Edit ${client.name}`}>
+                  <IconButton size="icon-sm" variant="ghost" label={`Edit ${client.name}`}>
                     <Pencil />
-                  </Button>
+                  </IconButton>
                 }
               >
                 {(close) => <EditClientForm client={client} platforms={platforms} onDone={close} />}
@@ -119,9 +120,9 @@ export function ClientsList({
                     <FormDialog
                       title="Edit project"
                       trigger={
-                        <Button size="icon-sm" variant="ghost" aria-label={`Edit ${project.name}`}>
+                        <IconButton size="icon-sm" variant="ghost" label={`Edit ${project.name}`}>
                           <Pencil />
-                        </Button>
+                        </IconButton>
                       }
                     >
                       {(close) => (

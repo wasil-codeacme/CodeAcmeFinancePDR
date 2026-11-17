@@ -41,7 +41,7 @@ function Line({ label, value, indent, strong, muted, note }: LineProps) {
 export function PnlStatement({ pnl, currency }: { pnl: MonthlyPnl; currency: string }) {
   const externalLines = pnl.expenseLines.filter((line) => !line.external.isZero());
   return (
-    <div className="bg-card overflow-x-auto rounded-xl border">
+    <div className="bg-card overflow-x-auto rounded-xl border shadow-xs">
       <Table>
         <TableBody>
           <Line label={`Gross revenue (${currency})`} value={pnl.grossRevenue} />

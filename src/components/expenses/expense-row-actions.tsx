@@ -5,7 +5,7 @@ import { Check, Pencil, Trash2 } from 'lucide-react';
 import { EditExpenseForm, type ExpenseFormOptions } from '@/components/expenses/expense-form';
 import { ConfirmActionButton } from '@/components/shared/confirm-action-button';
 import { FormDialog } from '@/components/shared/form-dialog';
-import { Button } from '@/components/ui/button';
+import { IconButton } from '@/components/shared/icon-button';
 import { EntryStatus } from '@/generated/prisma/enums';
 import { useActionRunner } from '@/hooks/use-action-runner';
 import { MESSAGES } from '@/lib/messages';
@@ -28,22 +28,22 @@ export function ExpenseRowActions({
   return (
     <div className="flex justify-end gap-1">
       {isDraft ? (
-        <Button
+        <IconButton
           size="icon-sm"
           variant="outline"
-          aria-label="Confirm expense"
+          label="Confirm expense"
           disabled={isPending}
           onClick={() => run(() => confirmExpense({ id: expense.id }), MESSAGES.EXPENSE.CONFIRMED)}
         >
           <Check />
-        </Button>
+        </IconButton>
       ) : null}
       <FormDialog
         title="Edit expense"
         trigger={
-          <Button size="icon-sm" variant="ghost" aria-label="Edit expense">
+          <IconButton size="icon-sm" variant="ghost" label="Edit expense">
             <Pencil />
-          </Button>
+          </IconButton>
         }
       >
         {(close) => <EditExpenseForm expense={expense} options={options} onDone={close} />}
@@ -59,9 +59,9 @@ export function ExpenseRowActions({
           confirmLabel={MESSAGES.COMMON.DELETE}
           onConfirm={() => run(() => deleteExpense({ id: expense.id }), MESSAGES.COMMON.DELETED)}
           trigger={
-            <Button size="icon-sm" variant="ghost" aria-label="Delete expense" disabled={isPending}>
+            <IconButton size="icon-sm" variant="ghost" label="Delete expense" disabled={isPending}>
               <Trash2 />
-            </Button>
+            </IconButton>
           }
         />
       ) : null}

@@ -6,7 +6,7 @@ import { InlineSelectCell, InlineTextCell } from '@/components/revenue/inline-ce
 import { ConfirmActionButton } from '@/components/shared/confirm-action-button';
 import { Money } from '@/components/shared/money';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { IconButton } from '@/components/shared/icon-button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { EntryStatus, type InvoiceStatus, type ProjectStatus } from '@/generated/prisma/enums';
 import type { RevenueLineFigures } from '@/server/domain/revenue-math';
@@ -119,15 +119,15 @@ export function RevenueRow({
       <TableCell>
         <div className="flex justify-end gap-1">
           {isDraft ? (
-            <Button
+            <IconButton
               size="icon-sm"
               variant="outline"
-              aria-label="Confirm entry"
+              label="Confirm entry"
               disabled={disabled}
               onClick={onConfirm}
             >
               <Check />
-            </Button>
+            </IconButton>
           ) : null}
           {canDelete ? (
             <ConfirmActionButton
@@ -136,14 +136,9 @@ export function RevenueRow({
               confirmLabel={MESSAGES.COMMON.DELETE}
               onConfirm={onDelete}
               trigger={
-                <Button
-                  size="icon-sm"
-                  variant="ghost"
-                  aria-label="Delete entry"
-                  disabled={disabled}
-                >
+                <IconButton size="icon-sm" variant="ghost" label="Delete entry" disabled={disabled}>
                   <Trash2 />
-                </Button>
+                </IconButton>
               }
             />
           ) : null}

@@ -2,7 +2,7 @@
 
 import { FormProvider } from 'react-hook-form';
 
-import { CheckboxField, NumberTextField, TextField } from '@/components/shared/form-fields';
+import { CheckboxField, MonthField, NumberTextField } from '@/components/shared/form-fields';
 import { SectionCard } from '@/components/shared/section-card';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { useActionForm } from '@/hooks/use-action-form';
@@ -46,12 +46,7 @@ export function ReserveRuleForm({ rules, defaultMonth }: ReserveRuleFormProps) {
             label="Also apply in a loss month"
             hint="When on, a loss month records a negative reserve, as the workbook does."
           />
-          <TextField
-            name="effectiveFrom"
-            label="Applies from month"
-            type="month"
-            className="max-w-48"
-          />
+          <MonthField name="effectiveFrom" label="Applies from month" className="max-w-48" />
           <div>
             <SubmitButton isPending={isPending}>Save reserve rule</SubmitButton>
           </div>

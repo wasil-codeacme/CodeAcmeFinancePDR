@@ -8,6 +8,7 @@ import { FormDialog } from '@/components/shared/form-dialog';
 import { SectionCard } from '@/components/shared/section-card';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { Badge } from '@/components/ui/badge';
+import { IconButton } from '@/components/shared/icon-button';
 import { Button } from '@/components/ui/button';
 import { PnlLine } from '@/generated/prisma/enums';
 import { useActionForm } from '@/hooks/use-action-form';
@@ -127,30 +128,30 @@ export function CategoriesSection({ categories }: { categories: ExpenseCategoryR
                 </span>
               </div>
               <div className="flex gap-1">
-                <Button
+                <IconButton
                   size="icon-sm"
                   variant="ghost"
-                  aria-label="Move up"
+                  label="Move up"
                   disabled={isPending || index === 0}
                   onClick={() => move(category.id, 'UP')}
                 >
                   <ArrowUp />
-                </Button>
-                <Button
+                </IconButton>
+                <IconButton
                   size="icon-sm"
                   variant="ghost"
-                  aria-label="Move down"
+                  label="Move down"
                   disabled={isPending || index === categories.length - 1}
                   onClick={() => move(category.id, 'DOWN')}
                 >
                   <ArrowDown />
-                </Button>
+                </IconButton>
                 <FormDialog
                   title="Edit category"
                   trigger={
-                    <Button size="icon-sm" variant="ghost" aria-label={`Edit ${category.name}`}>
+                    <IconButton size="icon-sm" variant="ghost" label={`Edit ${category.name}`}>
                       <Pencil />
-                    </Button>
+                    </IconButton>
                   }
                 >
                   {(close) => <EditCategoryForm category={category} onDone={close} />}

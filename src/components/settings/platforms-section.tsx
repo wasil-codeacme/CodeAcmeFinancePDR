@@ -3,11 +3,17 @@
 import { Pencil, Percent, Plus } from 'lucide-react';
 import { FormProvider } from 'react-hook-form';
 
-import { CheckboxField, NumberTextField, TextField } from '@/components/shared/form-fields';
+import {
+  CheckboxField,
+  MonthField,
+  NumberTextField,
+  TextField,
+} from '@/components/shared/form-fields';
 import { FormDialog } from '@/components/shared/form-dialog';
 import { SectionCard } from '@/components/shared/section-card';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { Badge } from '@/components/ui/badge';
+import { IconButton } from '@/components/shared/icon-button';
 import { Button } from '@/components/ui/button';
 import { useActionForm } from '@/hooks/use-action-form';
 import { formatPercentValue } from '@/lib/format';
@@ -41,7 +47,7 @@ function CreatePlatformForm({
         <TextField name="name" label="Platform name" hint="e.g. Upwork, Direct" autoFocus />
         <div className="grid gap-3 sm:grid-cols-2">
           <NumberTextField name="feePercent" label="Default fee (%)" />
-          <TextField name="effectiveFrom" label="Applies from month" type="month" />
+          <MonthField name="effectiveFrom" label="Applies from month" />
         </div>
         <SubmitButton isPending={isPending}>{MESSAGES.COMMON.ADD}</SubmitButton>
       </form>
@@ -92,7 +98,7 @@ function ChangeFeeForm({
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
           <NumberTextField name="feePercent" label="New default fee (%)" autoFocus />
-          <TextField name="effectiveFrom" label="Applies from month" type="month" />
+          <MonthField name="effectiveFrom" label="Applies from month" />
         </div>
         <SubmitButton isPending={isPending}>{MESSAGES.COMMON.SAVE}</SubmitButton>
       </form>
@@ -167,9 +173,9 @@ export function PlatformsSection({
                 <FormDialog
                   title="Edit platform"
                   trigger={
-                    <Button size="icon-sm" variant="ghost" aria-label={`Edit ${platform.name}`}>
+                    <IconButton size="icon-sm" variant="ghost" label={`Edit ${platform.name}`}>
                       <Pencil />
-                    </Button>
+                    </IconButton>
                   }
                 >
                   {(close) => <EditPlatformForm platform={platform} onDone={close} />}

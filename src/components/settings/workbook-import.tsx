@@ -140,7 +140,7 @@ export function WorkbookImport({ accounts }: { accounts: AccountOption[] }) {
         {preview ? (
           <>
             <PreviewNotes preview={preview} />
-            <div className="overflow-x-auto rounded-lg border">
+            <div className="bg-card overflow-x-auto rounded-xl border shadow-xs">
               <Table>
                 <TableHeader>
                   <TableRow>

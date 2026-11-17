@@ -17,7 +17,8 @@ import { formatMonthLabel, monthFromSearchParam } from '@/lib/month';
 import { PERMISSION, hasPermission } from '@/lib/permissions';
 import { ROUTES } from '@/lib/routes';
 import { requireBooksUser } from '@/server/auth/current-user';
-import { PNL_RESULT, getMonthlyPnl } from '@/server/services/pnl.service';
+import { PNL_RESULT } from '@/server/read-models/monthly-pnl';
+import { getMonthlyPnl } from '@/server/services/pnl.service';
 
 export const metadata: Metadata = { title: 'P&L' };
 

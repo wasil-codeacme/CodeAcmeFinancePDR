@@ -3,6 +3,8 @@
 import type { ComponentProps, ReactNode } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 
+import { DatePicker } from '@/components/shared/date-picker';
+import { MonthSelect } from '@/components/shared/month-select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,7 +37,7 @@ type FieldShellProps = {
 function FieldShell({ name, label, hint, className, children }: FieldShellProps) {
   const { fieldState } = useController({ name });
   return (
-    <div className={cn('grid gap-1.5', className)}>
+    <div className={cn('grid content-start gap-1.5', className)}>
       <Label htmlFor={name}>{label}</Label>
       {children}
       {fieldState.error?.message ? (
@@ -170,5 +172,35 @@ export function CheckboxField({
         {hint ? <p className="text-muted-foreground text-xs">{hint}</p> : null}
       </div>
     </div>
+  );
+}
+
+type PickerFieldProps = { name: string; label: string; hint?: string; className?: string };
+
+export function DateField({ name, label, hint, className }: PickerFieldProps) {
+  const { field, fieldState } = useController({ name });
+  return (
+    <FieldShell name={name} label={label} hint={hint} className={className}>
+      <DatePicker
+        id={name}
+        value={typeof field.value === 'string' ? field.value : ''}
+        onChange={field.onChange}
+        invalid={Boolean(fieldState.error)}
+      />
+    </FieldShell>
+  );
+}
+
+export function MonthField({ name, label, hint, className }: PickerFieldProps) {
+  const { field, fieldState } = useController({ name });
+  return (
+    <FieldShell name={name} label={label} hint={hint} className={className}>
+      <MonthSelect
+        id={name}
+        value={typeof field.value === 'string' ? field.value : ''}
+        onChange={field.onChange}
+        invalid={Boolean(fieldState.error)}
+      />
+    </FieldShell>
   );
 }

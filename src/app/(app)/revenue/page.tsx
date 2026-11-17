@@ -61,7 +61,7 @@ async function RevenueContent({ searchParams }: Pick<PageProps<'/revenue'>, 'sea
         <CopyLastMonthButton month={month} />
       </div>
       {activeClients.length === 0 ? (
-        <div className="bg-card flex flex-wrap items-center gap-3 rounded-xl border border-dashed p-4 text-sm">
+        <div className="bg-card flex flex-wrap items-center gap-3 rounded-xl border p-4 text-sm shadow-xs">
           Add a client first, then book revenue against it.
           <Button asChild size="sm" variant="outline">
             <Link href={ROUTES.CLIENTS} prefetch>

@@ -2,7 +2,7 @@
 
 import { FormProvider } from 'react-hook-form';
 
-import { NumberTextField, SelectField, TextField } from '@/components/shared/form-fields';
+import { MonthField, NumberTextField, SelectField } from '@/components/shared/form-fields';
 import { SectionCard } from '@/components/shared/section-card';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { CommissionBase } from '@/generated/prisma/enums';
@@ -48,12 +48,7 @@ export function CommissionForm({ rules, earners, defaultMonth }: CommissionFormP
               options={optionsFrom(COMMISSION_BASE_LABEL)}
             />
           </div>
-          <TextField
-            name="effectiveFrom"
-            label="Applies from month"
-            type="month"
-            className="max-w-48"
-          />
+          <MonthField name="effectiveFrom" label="Applies from month" className="max-w-48" />
           <div>
             <SubmitButton isPending={isPending}>Save commission</SubmitButton>
           </div>

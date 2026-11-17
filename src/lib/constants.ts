@@ -1,3 +1,12 @@
+/** PRD §4: USD is the reporting currency; amounts without a stated currency are in it. */
+export const DEFAULT_REPORTING_CURRENCY = 'USD';
+export const CURRENCY_SYMBOL: Readonly<Record<string, string>> = {
+  USD: '$',
+  PKR: 'Rs ',
+  EUR: '€',
+  GBP: '£',
+};
+
 export const EMAIL_PROVIDER = { CONSOLE: 'console', RESEND: 'resend' } as const;
 
 export const LOGIN_CODE_LENGTH = 6;
@@ -53,6 +62,11 @@ export const AUDIT_ENTITY = {
   RECEIVABLE_ADJUSTMENT: 'ReceivableAdjustment',
   EXPENSE: 'Expense',
   RECURRING_TEMPLATE: 'RecurringTemplate',
+  PERIOD: 'Period',
+  ACCOUNT_BALANCE: 'AccountBalance',
+  TRANSFER: 'Transfer',
+  LEDGER_ENTRY: 'PartnerLedgerEntry',
+  NEXT_MONTH_RESERVE: 'NextMonthReserve',
 } as const;
 export type AuditEntity = (typeof AUDIT_ENTITY)[keyof typeof AUDIT_ENTITY];
 

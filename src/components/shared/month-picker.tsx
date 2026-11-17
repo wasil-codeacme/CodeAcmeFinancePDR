@@ -4,10 +4,10 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { usePendingNavigation } from '@/components/layout/pending-navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { IconButton } from '@/components/shared/icon-button';
 import { SEARCH_PARAM } from '@/lib/constants';
-import { type MonthKey, addMonths, formatLongMonthLabel, isMonthKey } from '@/lib/month';
+import { MonthSelect } from '@/components/shared/month-select';
+import { type MonthKey, addMonths } from '@/lib/month';
 
 /** Month filter kept in the URL (`?month=2026-01`) so views are linkable and shareable. */
 export function MonthPicker({ month }: { month: MonthKey }) {
@@ -25,31 +25,23 @@ export function MonthPicker({ month }: { month: MonthKey }) {
 
   return (
     <div className="flex items-center gap-1">
-      <Button
+      <IconButton
         variant="outline"
         size="icon"
-        aria-label="Previous month"
+        label="Previous month"
         onClick={() => goTo(addMonths(month, -1))}
       >
         <ChevronLeft />
-      </Button>
-      <Input
-        type="month"
-        aria-label={formatLongMonthLabel(month)}
-        value={month}
-        className="w-40"
-        onChange={(event) => {
-          if (isMonthKey(event.target.value)) goTo(event.target.value);
-        }}
-      />
-      <Button
+      </IconButton>
+      <MonthSelect value={month} onChange={goTo} className="w-40" />
+      <IconButton
         variant="outline"
         size="icon"
-        aria-label="Next month"
+        label="Next month"
         onClick={() => goTo(addMonths(month, 1))}
       >
         <ChevronRight />
-      </Button>
+      </IconButton>
     </div>
   );
 }

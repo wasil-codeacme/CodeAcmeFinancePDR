@@ -5,6 +5,7 @@ import { FormProvider } from 'react-hook-form';
 
 import {
   CheckboxField,
+  MonthField,
   NumberTextField,
   SelectField,
   TextField,
@@ -14,6 +15,7 @@ import { Money } from '@/components/shared/money';
 import { SectionCard } from '@/components/shared/section-card';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { Badge } from '@/components/ui/badge';
+import { IconButton } from '@/components/shared/icon-button';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -47,7 +49,7 @@ function AccountFields() {
       />
       <div className="grid gap-3 sm:grid-cols-2">
         <NumberTextField name="openingBalance" label="Opening balance" />
-        <TextField name="openingBalanceMonth" label="Balance as at start of" type="month" />
+        <MonthField name="openingBalanceMonth" label="Balance as at start of" />
       </div>
       <CheckboxField name="active" label="Active" />
     </>
@@ -173,9 +175,9 @@ export function AccountsSection({
                     <FormDialog
                       title="Edit account"
                       trigger={
-                        <Button size="icon-sm" variant="ghost" aria-label={`Edit ${account.name}`}>
+                        <IconButton size="icon-sm" variant="ghost" label={`Edit ${account.name}`}>
                           <Pencil />
-                        </Button>
+                        </IconButton>
                       }
                     >
                       {(close) => <EditAccountForm account={account} onDone={close} />}

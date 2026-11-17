@@ -7,6 +7,7 @@ import type { z } from 'zod';
 import type { ExpenseFormOptions } from '@/components/expenses/expense-form';
 import {
   CheckboxField,
+  MonthField,
   NumberTextField,
   SelectField,
   TextField,
@@ -17,6 +18,7 @@ import { FormDialog } from '@/components/shared/form-dialog';
 import { Money } from '@/components/shared/money';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { Badge } from '@/components/ui/badge';
+import { IconButton } from '@/components/shared/icon-button';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -93,8 +95,8 @@ function TemplateFields({ options }: { options: ExpenseFormOptions }) {
       </div>
       <div className="grid gap-3 sm:grid-cols-3">
         <SelectField name="frequency" label="Repeats" options={optionsFrom(FREQUENCY_LABEL)} />
-        <TextField name="startMonth" label="From" type="month" />
-        <TextField name="endMonth" label="Until (optional)" type="month" />
+        <MonthField name="startMonth" label="From" />
+        <MonthField name="endMonth" label="Until (optional)" />
       </div>
       <TextareaField name="notes" label="Notes" />
       <CheckboxField name="active" label="Active" />
@@ -195,7 +197,7 @@ export function RecurringTemplatesTable({
     );
   }
   return (
-    <div className="bg-card overflow-x-auto rounded-xl border">
+    <div className="bg-card overflow-x-auto rounded-xl border shadow-xs">
       <Table>
         <TableHeader>
           <TableRow>
@@ -227,9 +229,9 @@ export function RecurringTemplatesTable({
                 <FormDialog
                   title="Edit recurring expense"
                   trigger={
-                    <Button size="icon-sm" variant="ghost" aria-label={`Edit ${template.item}`}>
+                    <IconButton size="icon-sm" variant="ghost" label={`Edit ${template.item}`}>
                       <Pencil />
-                    </Button>
+                    </IconButton>
                   }
                 >
                   {(close) => (

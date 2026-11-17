@@ -43,7 +43,7 @@ async function ClientHistory({ params }: Pick<PageProps<'/clients/[clientId]'>, 
       {history.length === 0 ? (
         <EmptyState title="No revenue booked for this client yet" />
       ) : (
-        <div className="overflow-x-auto rounded-lg border">
+        <div className="bg-card overflow-x-auto rounded-xl border shadow-xs">
           <Table>
             <TableHeader>
               <TableRow>

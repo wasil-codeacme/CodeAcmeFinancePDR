@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatMoney, formatPercentValue, formatRatioAsPercent } from '@/lib/format';
+import {
+  formatCurrency,
+  formatMoney,
+  formatPercentValue,
+  formatRatioAsPercent,
+} from '@/lib/format';
 
 describe('formatMoney', () => {
   it('groups thousands and rounds half-up to cents only for display', () => {
@@ -29,5 +34,15 @@ describe('percent formatting', () => {
   it('prints stored percent values without trailing zeros', () => {
     expect(formatPercentValue('10.0000')).toBe('10%');
     expect(formatPercentValue('12.5')).toBe('12.5%');
+  });
+});
+
+describe('formatCurrency', () => {
+  it('prefixes the currency symbol and keeps the sign in front', () => {
+    expect(formatCurrency('1503', 'USD')).toBe('$1,503.00');
+    expect(formatCurrency('80544.6', 'PKR')).toBe('Rs 80,544.60');
+    expect(formatCurrency('-261.987', 'USD')).toBe('-$261.99');
+    expect(formatCurrency('10', 'CHF')).toBe('CHF 10.00');
+    expect(formatCurrency(null, 'USD')).toBe('—');
   });
 });

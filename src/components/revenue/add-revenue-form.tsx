@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import { FormProvider, useWatch } from 'react-hook-form';
 import type { z } from 'zod';
 
-import { NumberTextField, SelectField, TextField } from '@/components/shared/form-fields';
+import { MonthField, NumberTextField, SelectField } from '@/components/shared/form-fields';
 import { Button } from '@/components/ui/button';
 import { ProjectStatus } from '@/generated/prisma/enums';
 import { useActionForm } from '@/hooks/use-action-form';
@@ -56,7 +56,7 @@ export function AddRevenueForm({ clients, month }: { clients: ClientOption[]; mo
     <FormProvider {...form}>
       <form
         onSubmit={submit}
-        className="grid gap-3 rounded-lg border p-3 sm:grid-cols-2 lg:grid-cols-[1.4fr_1.4fr_1fr_1fr_1fr_auto] lg:items-end"
+        className="bg-card grid gap-3 rounded-xl border p-3 shadow-xs sm:grid-cols-2 lg:grid-cols-[1.4fr_1.4fr_1fr_1fr_1fr_auto] lg:items-end"
       >
         <SelectField
           name="clientId"
@@ -66,7 +66,7 @@ export function AddRevenueForm({ clients, month }: { clients: ClientOption[]; mo
         />
         <ProjectSelect clients={clients} />
         <NumberTextField name="gross" label="Gross amount" />
-        <TextField name="bookingMonth" label="Month" type="month" />
+        <MonthField name="bookingMonth" label="Month" />
         <SelectField
           name="projectStatus"
           label="Status"

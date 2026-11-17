@@ -59,7 +59,7 @@ async function OnboardingContent({ searchParams }: Pick<PageProps<'/onboarding'>
         </div>
       ) : null}
       <div className="grid gap-6 lg:grid-cols-[16rem_1fr]">
-        <aside className="lg:sticky lg:top-6 lg:self-start">
+        <aside className="bg-card rounded-xl border p-2 shadow-xs lg:sticky lg:top-6 lg:self-start">
           <OnboardingSteps current={current.section} status={status} />
         </aside>
         <section className="grid min-w-0 gap-4">

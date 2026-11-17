@@ -3,7 +3,7 @@
 import { FormProvider, useWatch } from 'react-hook-form';
 import type { z } from 'zod';
 
-import { NumberTextField, TextField } from '@/components/shared/form-fields';
+import { MonthField, NumberTextField } from '@/components/shared/form-fields';
 import { SectionCard } from '@/components/shared/section-card';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { useActionForm } from '@/hooks/use-action-form';
@@ -87,12 +87,7 @@ export function SplitForm({ partners, versions, defaultMonth }: SplitFormProps) 
             ))}
           </div>
           <SplitTotal />
-          <TextField
-            name="effectiveFrom"
-            label="Applies from month"
-            type="month"
-            className="max-w-48"
-          />
+          <MonthField name="effectiveFrom" label="Applies from month" className="max-w-48" />
           <div>
             <SubmitButton isPending={isPending}>Save split</SubmitButton>
           </div>

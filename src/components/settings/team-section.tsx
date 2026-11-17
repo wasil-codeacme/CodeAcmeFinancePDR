@@ -8,6 +8,7 @@ import { FormDialog } from '@/components/shared/form-dialog';
 import { SectionCard } from '@/components/shared/section-card';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { Badge } from '@/components/ui/badge';
+import { IconButton } from '@/components/shared/icon-button';
 import { Button } from '@/components/ui/button';
 import { TeamMemberType } from '@/generated/prisma/enums';
 import { useActionForm } from '@/hooks/use-action-form';
@@ -143,9 +144,9 @@ export function TeamSection({ members, categories }: TeamSectionProps) {
               <FormDialog
                 title="Edit team member"
                 trigger={
-                  <Button size="icon-sm" variant="ghost" aria-label={`Edit ${member.name}`}>
+                  <IconButton size="icon-sm" variant="ghost" label={`Edit ${member.name}`}>
                     <Pencil />
-                  </Button>
+                  </IconButton>
                 }
               >
                 {(close) => (

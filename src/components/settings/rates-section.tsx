@@ -2,7 +2,7 @@
 
 import { FormProvider } from 'react-hook-form';
 
-import { NumberTextField, TextField } from '@/components/shared/form-fields';
+import { MonthField, NumberTextField } from '@/components/shared/form-fields';
 import { SectionCard } from '@/components/shared/section-card';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { useActionForm } from '@/hooks/use-action-form';
@@ -36,7 +36,7 @@ export function RatesSection({ rates, defaultMonth, currencies }: RatesSectionPr
     >
       <FormProvider {...form}>
         <form onSubmit={submit} className="flex flex-wrap items-end gap-3">
-          <TextField name="month" label="Month" type="month" className="w-44" />
+          <MonthField name="month" label="Month" className="w-44" />
           <NumberTextField name="rate" label="Rate" className="w-36" />
           <SubmitButton isPending={isPending}>{MESSAGES.COMMON.SAVE}</SubmitButton>
         </form>

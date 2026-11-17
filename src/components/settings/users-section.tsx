@@ -9,6 +9,7 @@ import { FormDialog } from '@/components/shared/form-dialog';
 import { SectionCard } from '@/components/shared/section-card';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { Badge } from '@/components/ui/badge';
+import { IconButton } from '@/components/shared/icon-button';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -110,14 +111,14 @@ export function UsersSection({
                     run(() => removeUser({ userId: user.id }), MESSAGES.USER.REMOVED)
                   }
                   trigger={
-                    <Button
+                    <IconButton
                       size="icon-sm"
                       variant="ghost"
-                      aria-label={`Remove ${user.name}`}
+                      label={`Remove ${user.name}`}
                       disabled={isPending}
                     >
                       <Trash2 />
-                    </Button>
+                    </IconButton>
                   }
                 />
               ) : null}

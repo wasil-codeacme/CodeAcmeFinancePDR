@@ -1,30 +1,33 @@
+import { DEFAULT_REPORTING_CURRENCY } from '@/lib/constants';
 import type { Decimal } from '@/lib/decimal';
-import { formatMoney } from '@/lib/format';
+import { formatCurrency } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
 type MoneyProps = {
   value: Decimal.Value | null | undefined;
+  /** Defaults to the reporting currency; pass the display currency for PKR figures. */
   currency?: string;
   className?: string;
   emphasizeNegative?: boolean;
 };
 
-/** Right-aligned-friendly money: tabular digits, cents, negatives in red when asked. */
-export function Money({ value, currency, className, emphasizeNegative = false }: MoneyProps) {
-  const text = formatMoney(value);
-  const isNegative = text.startsWith('-');
+/** Money with its currency symbol and tabular digits; negatives in red when asked. */
+export function Money({
+  value,
+  currency = DEFAULT_REPORTING_CURRENCY,
+  className,
+  emphasizeNegative = false,
+}: MoneyProps) {
+  const text = formatCurrency(value, currency);
   return (
     <span
       className={cn(
-        'tabular-nums',
-        emphasizeNegative && isNegative && 'text-destructive',
+        'whitespace-nowrap tabular-nums',
+        emphasizeNegative && text.startsWith('-') && 'text-destructive',
         className,
       )}
     >
       {text}
-      {currency && value !== null && value !== undefined ? (
-        <span className="text-muted-foreground ml-1 text-xs">{currency}</span>
-      ) : null}
     </span>
   );
 }

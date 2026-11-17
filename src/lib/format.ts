@@ -1,5 +1,10 @@
 import { Decimal } from '@/lib/decimal';
-import { MONEY_DECIMALS, PERCENT_DECIMALS, PERCENT_DIVISOR } from '@/lib/constants';
+import {
+  CURRENCY_SYMBOL,
+  MONEY_DECIMALS,
+  PERCENT_DECIMALS,
+  PERCENT_DIVISOR,
+} from '@/lib/constants';
 
 const BLANK = '—';
 const THOUSANDS_GROUP = /\B(?=(\d{3})+(?!\d))/g;
@@ -19,6 +24,14 @@ export function formatMoneyWithCode(
 ): string {
   if (value === null || value === undefined) return BLANK;
   return `${formatMoney(value)} ${currency}`;
+}
+
+/** Money with its currency symbol, e.g. `$1,503.00`, `Rs 80,544.60`, `-$261.99`. */
+export function formatCurrency(value: Decimal.Value | null | undefined, currency: string): string {
+  if (value === null || value === undefined) return BLANK;
+  const text = formatMoney(value);
+  const symbol = CURRENCY_SYMBOL[currency] ?? `${currency} `;
+  return text.startsWith('-') ? `-${symbol}${text.slice(1)}` : `${symbol}${text}`;
 }
 
 /** Formats a ratio (0.6425) as a percentage (64.3%). */

@@ -43,7 +43,7 @@ export function ExpenseGroups({ groups, options, canDeleteConfirmed }: ExpenseGr
     );
   }
   return (
-    <div className="bg-card overflow-x-auto rounded-xl border">
+    <div className="bg-card overflow-x-auto rounded-xl border shadow-xs">
       <Table>
         <TableHeader>
           <TableRow>
@@ -95,7 +95,7 @@ function GroupRows({
           </TableCell>
           <TableCell className="whitespace-nowrap">{formatDateLabel(row.expenseDate)}</TableCell>
           <TableCell className="text-right">
-            <Money value={row.displayAmount} />
+            <Money value={row.displayAmount} currency={options.currencies.display} />
           </TableCell>
           <TableCell className="text-right">
             <Money value={row.reportingAmount} />
@@ -118,7 +118,7 @@ function GroupRows({
           {group.categoryName} total
         </TableCell>
         <TableCell className="text-right font-medium">
-          <Money value={group.displayTotal} />
+          <Money value={group.displayTotal} currency={options.currencies.display} />
         </TableCell>
         <TableCell className="text-right font-medium">
           <Money value={group.companyTotal} />

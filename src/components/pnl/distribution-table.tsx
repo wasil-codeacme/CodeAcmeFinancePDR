@@ -19,7 +19,7 @@ type DistributionTableProps = {
 /** Founders only: each partner's baseline share, reserve and take-home (PRD §6). */
 export function DistributionTable({ distribution, currencies }: DistributionTableProps) {
   return (
-    <div className="bg-card overflow-x-auto rounded-xl border">
+    <div className="bg-card overflow-x-auto rounded-xl border shadow-xs">
       <Table>
         <TableHeader>
           <TableRow>
@@ -48,7 +48,7 @@ export function DistributionTable({ distribution, currencies }: DistributionTabl
                 <Money value={partner.takeHome} emphasizeNegative />
               </TableCell>
               <TableCell className="text-right">
-                <Money value={partner.takeHomeDisplay} />
+                <Money value={partner.takeHomeDisplay} currency={currencies.display} />
               </TableCell>
             </TableRow>
           ))}

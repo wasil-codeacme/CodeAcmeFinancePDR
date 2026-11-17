@@ -8,6 +8,7 @@ import { FormDialog } from '@/components/shared/form-dialog';
 import { SectionCard } from '@/components/shared/section-card';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { Badge } from '@/components/ui/badge';
+import { IconButton } from '@/components/shared/icon-button';
 import { Button } from '@/components/ui/button';
 import { useActionForm } from '@/hooks/use-action-form';
 import { formatPercentValue } from '@/lib/format';
@@ -102,9 +103,9 @@ export function PartnersList({ partners, currentSplit }: PartnersListProps) {
                   <FormDialog
                     title="Edit partner"
                     trigger={
-                      <Button size="icon-sm" variant="ghost" aria-label={`Edit ${partner.name}`}>
+                      <IconButton size="icon-sm" variant="ghost" label={`Edit ${partner.name}`}>
                         <Pencil />
-                      </Button>
+                      </IconButton>
                     }
                   >
                     {(close) => <EditPartnerForm partner={partner} onDone={close} />}

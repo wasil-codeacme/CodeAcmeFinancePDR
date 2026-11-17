@@ -3,7 +3,13 @@
 import { Plus } from 'lucide-react';
 import { FormProvider } from 'react-hook-form';
 
-import { NumberTextField, SelectField, TextField } from '@/components/shared/form-fields';
+import {
+  DateField,
+  MonthField,
+  NumberTextField,
+  SelectField,
+  TextField,
+} from '@/components/shared/form-fields';
 import { FormDialog } from '@/components/shared/form-dialog';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { Button } from '@/components/ui/button';
@@ -43,8 +49,8 @@ function StandaloneReceivableForm({ clients, month, today, onDone }: StandaloneF
         <TextField name="description" label="What it is for" />
         <div className="grid gap-3 sm:grid-cols-3">
           <NumberTextField name="amount" label="Amount" />
-          <TextField name="bookingMonth" label="Recorded in" type="month" />
-          <TextField name="expectedDate" label="Expected on" type="date" />
+          <MonthField name="bookingMonth" label="Recorded in" />
+          <DateField name="expectedDate" label="Expected on" />
         </div>
         <SubmitButton isPending={isPending}>{MESSAGES.COMMON.ADD}</SubmitButton>
       </form>

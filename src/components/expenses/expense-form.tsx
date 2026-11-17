@@ -4,6 +4,7 @@ import { FormProvider, useWatch } from 'react-hook-form';
 import type { z } from 'zod';
 
 import {
+  DateField,
   NumberTextField,
   SelectField,
   TextField,
@@ -77,12 +78,7 @@ function ExpenseFields({ options }: { options: ExpenseFormOptions }) {
           placeholder="Pick a category"
           options={options.categories}
         />
-        <TextField
-          name="expenseDate"
-          label="Date"
-          type="date"
-          hint="Sets which month it counts in."
-        />
+        <DateField name="expenseDate" label="Date" hint="Sets which month it counts in." />
       </div>
       <TextField name="item" label="Item or vendor" />
       <div className="grid gap-3 sm:grid-cols-[1fr_8rem]">

@@ -13,6 +13,7 @@ import { EmptyState } from '@/components/shared/empty-state';
 import { FormDialog } from '@/components/shared/form-dialog';
 import { Money } from '@/components/shared/money';
 import { Badge } from '@/components/ui/badge';
+import { IconButton } from '@/components/shared/icon-button';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -83,9 +84,9 @@ function RowActions({
       <FormDialog
         title="Reduce or write off"
         trigger={
-          <Button size="icon-sm" variant="ghost" aria-label="Reduce or write off">
+          <IconButton size="icon-sm" variant="ghost" label="Reduce or write off">
             <MinusCircle />
-          </Button>
+          </IconButton>
         }
       >
         {(close) => <AdjustReceivableForm revenueEntryId={item.id} today={today} onDone={close} />}
@@ -93,9 +94,9 @@ function RowActions({
       <FormDialog
         title="Move expected date"
         trigger={
-          <Button size="icon-sm" variant="ghost" aria-label="Move expected date">
+          <IconButton size="icon-sm" variant="ghost" label="Move expected date">
             <CalendarClock />
-          </Button>
+          </IconButton>
         }
       >
         {(close) => (
@@ -121,7 +122,7 @@ export function ReceivablesTable({ items, accounts, today }: ReceivablesTablePro
     );
   }
   return (
-    <div className="bg-card overflow-x-auto rounded-xl border">
+    <div className="bg-card overflow-x-auto rounded-xl border shadow-xs">
       <Table>
         <TableHeader>
           <TableRow>

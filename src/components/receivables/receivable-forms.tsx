@@ -5,6 +5,7 @@ import type { z } from 'zod';
 
 import {
   CheckboxField,
+  DateField,
   NumberTextField,
   SelectField,
   TextField,
@@ -82,7 +83,7 @@ export function RecordReceiptForm({
       <form onSubmit={submit} className="grid gap-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <NumberTextField name="amount" label="Amount" hint="Lower it for a partial payment." />
-          <TextField name="receivedOn" label="Date" type="date" />
+          <DateField name="receivedOn" label="Date" />
         </div>
         <EscrowAwareAccountField accounts={accounts} />
         <CheckboxField
@@ -114,7 +115,7 @@ export function ReleaseEscrowForm({ receiptId, accounts, today, onDone }: Releas
   return (
     <FormProvider {...form}>
       <form onSubmit={submit} className="grid gap-4">
-        <TextField name="receivedOn" label="Released on" type="date" />
+        <DateField name="receivedOn" label="Released on" />
         <SelectField
           name="accountId"
           label="Received into"
@@ -165,7 +166,7 @@ export function AdjustReceivableForm({ revenueEntryId, today, onDone }: AdjustFo
       <form onSubmit={submit} className="grid gap-4">
         <SelectField name="kind" label="Type" options={optionsFrom(ADJUSTMENT_KIND_LABEL)} />
         <ReductionAmountField />
-        <TextField name="adjustedOn" label="Date" type="date" />
+        <DateField name="adjustedOn" label="Date" />
         <TextField name="reason" label="Reason" hint="Kept in the audit log." />
         <p className="text-muted-foreground text-xs">
           This lowers net revenue, and so profit, in the month the work was booked.
@@ -189,7 +190,7 @@ export function ExpectedDateForm({ revenueEntryId, expectedDate, onDone }: Expec
   return (
     <FormProvider {...form}>
       <form onSubmit={submit} className="grid gap-4">
-        <TextField name="expectedDate" label="Expected on" type="date" />
+        <DateField name="expectedDate" label="Expected on" />
         <SubmitButton isPending={isPending}>{MESSAGES.COMMON.SAVE}</SubmitButton>
       </form>
     </FormProvider>
