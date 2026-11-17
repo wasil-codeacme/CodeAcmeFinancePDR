@@ -40,9 +40,9 @@ type WriteActionConfig<TSchema extends z.ZodType, TResult> = {
 
 /**
  * Every mutating Server Action goes through here so none can skip authentication, the
- * permission check, validation, error mapping or cache invalidation. After a write,
- * `refresh()` re-renders the current page and clears the browser's page cache, so the
- * user sees their change; `updateTag` expires any cached reference data it touched.
+ * permission check, validation, error mapping or cache invalidation. After a write the
+ * current page re-renders with fresh data in the same response, so the user sees their
+ * change: through `updateTag` for cached reference data, otherwise through `refresh()`.
  */
 export function writeAction<TSchema extends z.ZodType, TResult>(
   config: WriteActionConfig<TSchema, TResult>,
@@ -60,8 +60,11 @@ export function writeAction<TSchema extends z.ZodType, TResult>(
     }
     try {
       const data = await config.handler(parsed.data, actor);
-      for (const tag of config.invalidates ?? []) updateTag(tag);
-      refresh();
+      const tags = config.invalidates ?? [];
+      for (const tag of tags) updateTag(tag);
+      // updateTag already re-renders the page with the fresh data (Next 16 docs), so only
+      // writes that touch uncached data need refresh(). Both clear the browser's page cache.
+      if (tags.length === 0) refresh();
       return { data };
     } catch (error) {
       return { error: mapError(error) };

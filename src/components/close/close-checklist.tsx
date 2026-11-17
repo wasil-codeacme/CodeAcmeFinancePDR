@@ -99,9 +99,7 @@ export function CloseChecklist({ month, checks, isClosed }: CloseChecklistProps)
           action={
             checks.drafts > 0 ? (
               <Button asChild size="sm" variant="ghost">
-                <Link href={monthLink(ROUTES.EXPENSES)} prefetch>
-                  Review drafts
-                </Link>
+                <Link href={monthLink(ROUTES.EXPENSES)}>Review drafts</Link>
               </Button>
             ) : null
           }
@@ -112,9 +110,7 @@ export function CloseChecklist({ month, checks, isClosed }: CloseChecklistProps)
           action={
             checks.rateSet ? null : (
               <Button asChild size="sm" variant="ghost">
-                <Link href={ROUTES.EXCHANGE_RATES} prefetch>
-                  Add rate
-                </Link>
+                <Link href={ROUTES.EXCHANGE_RATES}>Add rate</Link>
               </Button>
             )
           }
@@ -125,9 +121,7 @@ export function CloseChecklist({ month, checks, isClosed }: CloseChecklistProps)
           action={
             checks.splitSet ? null : (
               <Button asChild size="sm" variant="ghost">
-                <Link href={ROUTES.PARTNERS} prefetch>
-                  Set split
-                </Link>
+                <Link href={ROUTES.PARTNERS}>Set split</Link>
               </Button>
             )
           }
@@ -168,9 +162,7 @@ export function CloseChecklist({ month, checks, isClosed }: CloseChecklistProps)
           action={
             checks.balancesEntered < checks.activeAccounts ? (
               <Button asChild size="sm" variant="ghost">
-                <Link href={monthLink(ROUTES.ACCOUNTS)} prefetch>
-                  Enter balances
-                </Link>
+                <Link href={monthLink(ROUTES.ACCOUNTS)}>Enter balances</Link>
               </Button>
             ) : null
           }

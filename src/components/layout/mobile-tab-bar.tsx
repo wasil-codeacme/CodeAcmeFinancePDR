@@ -38,7 +38,7 @@ export function MobileTabBar({ role }: { role: Role }) {
               variant="ghost"
               className={cn(TAB_CLASS, active ? 'text-primary' : 'text-muted-foreground')}
             >
-              <Link href={item.href} prefetch aria-current={active ? 'page' : undefined}>
+              <Link href={item.href} aria-current={active ? 'page' : undefined}>
                 <span className={cn(ICON_PILL_CLASS, active && 'bg-accent')}>
                   <Icon />
                 </span>

@@ -71,9 +71,7 @@ export function ConfirmAllDraftsButton({ month }: { month: MonthKey }) {
 export function ManageRecurringLink() {
   return (
     <Button asChild variant="ghost">
-      <Link href={ROUTES.RECURRING_TEMPLATES} prefetch>
-        Manage recurring
-      </Link>
+      <Link href={ROUTES.RECURRING_TEMPLATES}>Manage recurring</Link>
     </Button>
   );
 }
@@ -82,9 +80,7 @@ export function ManageRecurringLink() {
 export function ManageCategoriesLink() {
   return (
     <Button asChild variant="ghost">
-      <Link href={ROUTES.EXPENSE_CATEGORIES} prefetch>
-        Categories
-      </Link>
+      <Link href={ROUTES.EXPENSE_CATEGORIES}>Categories</Link>
     </Button>
   );
 }

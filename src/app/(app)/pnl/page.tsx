@@ -74,9 +74,7 @@ async function PnlContent({ searchParams }: Pick<PageProps<'/pnl'>, 'searchParam
             <AlertDescription className="flex flex-wrap items-center gap-3">
               {MESSAGES.PNL.RATE_MISSING}
               <Button asChild size="sm" variant="outline">
-                <Link href={ROUTES.SETTINGS.RATES} prefetch>
-                  Exchange rates
-                </Link>
+                <Link href={ROUTES.SETTINGS.RATES}>Exchange rates</Link>
               </Button>
             </AlertDescription>
           </Alert>

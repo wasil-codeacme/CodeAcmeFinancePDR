@@ -119,7 +119,6 @@ export function AccountsMonthTable({ rows, readOnly, editableAccounts }: Account
               <TableCell className="w-full max-w-0">
                 <Link
                   href={ROUTES.ACCOUNT_DETAIL(row.accountId)}
-                  prefetch
                   className="block truncate font-medium hover:underline"
                 >
                   {row.name}

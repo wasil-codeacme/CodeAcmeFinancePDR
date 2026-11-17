@@ -29,17 +29,15 @@ import { getClient, getClientHistory } from '@/server/services/client.service';
 export const metadata: Metadata = { title: 'Client' };
 
 async function ClientHistory({ params }: Pick<PageProps<'/clients/[clientId]'>, 'params'>) {
-  await requireBooksUser(PERMISSION.ENTRIES_WRITE);
-  const { clientId } = await params;
+  const [, { clientId }] = await Promise.all([requireBooksUser(PERMISSION.ENTRIES_WRITE), params]);
   const [client, history] = await Promise.all([getClient(clientId), getClientHistory(clientId)]);
   if (!client) notFound();
   return (
-    <div className="grid gap-6">
-      <PageHeader
-        eyebrow="Client"
-        title={client.name}
-        description={`${history.length} entries across all months.`}
-      />
+    <div className="grid gap-4">
+      <div>
+        <h2 className="text-xl font-semibold tracking-tight">{client.name}</h2>
+        <p className="text-muted-foreground text-sm">{history.length} entries across all months.</p>
+      </div>
       {history.length === 0 ? (
         <EmptyState title="No revenue booked for this client yet" />
       ) : (
@@ -107,18 +105,25 @@ async function ClientHistory({ params }: Pick<PageProps<'/clients/[clientId]'>, 
   );
 }
 
-/** PRD §5.1: one client's history across months. The name comes from data, so the header skeletons too. */
+/** PRD §5.1: one client's history across months. The header shows at once; the name streams in. */
 export default function ClientDetailPage({ params }: PageProps<'/clients/[clientId]'>) {
   return (
-    <Suspense
-      fallback={
-        <div className="grid gap-6 pt-6">
-          <Skeleton className="h-9 w-64" />
-          <TableSkeleton />
-        </div>
-      }
-    >
-      <ClientHistory params={params} />
-    </Suspense>
+    <>
+      <PageHeader
+        eyebrow="Clients"
+        title="Client history"
+        description="Every entry for this client, across all months."
+      />
+      <Suspense
+        fallback={
+          <div className="grid gap-4">
+            <Skeleton className="h-7 w-56" />
+            <TableSkeleton />
+          </div>
+        }
+      >
+        <ClientHistory params={params} />
+      </Suspense>
+    </>
   );
 }

@@ -23,19 +23,23 @@ export const metadata: Metadata = { title: 'Account history' };
 
 /** PRD step 2 "done when": every account shows its opening and closing balance for every month. */
 async function AccountHistory({ params }: Pick<PageProps<'/accounts/[accountId]'>, 'params'>) {
-  await Promise.all([requireBooksUser(PERMISSION.BALANCES_WRITE), connection()]);
-  const { accountId } = await params;
+  const [, { accountId }] = await Promise.all([
+    requireBooksUser(PERMISSION.BALANCES_WRITE),
+    params,
+    connection(),
+  ]);
   const months = await getAccountHistory(accountId, currentMonthKey(new Date()));
   const first = months[0];
   return (
-    <div className="grid gap-6">
-      <PageHeader
-        eyebrow="Account"
-        title={first?.name ?? 'Account'}
-        description={
-          first ? [first.ownerLabel, first.currency].filter(Boolean).join(' · ') : undefined
-        }
-      />
+    <div className="grid gap-4">
+      <div>
+        <h2 className="text-xl font-semibold tracking-tight">{first?.name ?? 'Account'}</h2>
+        {first ? (
+          <p className="text-muted-foreground text-sm">
+            {[first.ownerLabel, first.currency].filter(Boolean).join(' · ')}
+          </p>
+        ) : null}
+      </div>
       <div className="bg-card overflow-hidden rounded-xl border shadow-xs">
         <Table>
           <TableHeader>
@@ -77,17 +81,25 @@ async function AccountHistory({ params }: Pick<PageProps<'/accounts/[accountId]'
   );
 }
 
+/** The header shows at once; the account's name and months stream in. */
 export default function AccountHistoryPage({ params }: PageProps<'/accounts/[accountId]'>) {
   return (
-    <Suspense
-      fallback={
-        <div className="grid gap-6 pt-6">
-          <Skeleton className="h-9 w-64" />
-          <TableSkeleton />
-        </div>
-      }
-    >
-      <AccountHistory params={params} />
-    </Suspense>
+    <>
+      <PageHeader
+        eyebrow="Accounts"
+        title="Account history"
+        description="Opening, expected and closing balance for every month since the account opened."
+      />
+      <Suspense
+        fallback={
+          <div className="grid gap-4">
+            <Skeleton className="h-7 w-56" />
+            <TableSkeleton />
+          </div>
+        }
+      >
+        <AccountHistory params={params} />
+      </Suspense>
+    </>
   );
 }

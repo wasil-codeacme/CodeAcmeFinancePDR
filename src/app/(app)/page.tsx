@@ -52,7 +52,7 @@ function Stat({
   href: string;
 }) {
   return (
-    <Link href={href} prefetch className="group">
+    <Link href={href} className="group">
       <Card className="ca-glow group-hover:border-foreground/20 h-full transition-colors">
         <CardHeader>
           <CardDescription>{label}</CardDescription>
@@ -151,7 +151,7 @@ async function DashboardContent() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {QUICK_LINKS.map((link) => (
           <Button key={link.href} asChild variant="outline" className="justify-between">
-            <Link href={link.href} prefetch>
+            <Link href={link.href}>
               {link.label}
               <ArrowRight />
             </Link>

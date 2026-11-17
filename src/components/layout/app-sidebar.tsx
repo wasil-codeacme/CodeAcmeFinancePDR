@@ -35,7 +35,7 @@ function SidebarBrand() {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton size="lg" asChild>
-            <Link href={ROUTES.HOME} prefetch>
+            <Link href={ROUTES.HOME}>
               <span className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                 <Landmark className="size-4" />
               </span>
@@ -82,7 +82,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
                           isActive={item.href === activeHref}
                           tooltip={item.label}
                         >
-                          <Link href={item.href} prefetch onClick={closeOnPhone}>
+                          <Link href={item.href} onClick={closeOnPhone}>
                             <Icon />
                             <span>{item.label}</span>
                           </Link>

@@ -52,9 +52,7 @@ async function OnboardingContent({ searchParams }: Pick<PageProps<'/onboarding'>
       {status.completedAt ? (
         <div>
           <Button asChild variant="outline">
-            <Link href={ROUTES.HOME} prefetch>
-              Setup is complete — go to dashboard
-            </Link>
+            <Link href={ROUTES.HOME}>Setup is complete — go to dashboard</Link>
           </Button>
         </div>
       ) : null}

@@ -66,9 +66,7 @@ async function RevenueContent({ searchParams }: Pick<PageProps<'/revenue'>, 'sea
         <div className="bg-card flex flex-wrap items-center gap-3 rounded-xl border p-4 text-sm shadow-xs">
           Add a client first, then book revenue against it.
           <Button asChild size="sm" variant="outline">
-            <Link href={ROUTES.CLIENTS} prefetch>
-              Add a client
-            </Link>
+            <Link href={ROUTES.CLIENTS}>Add a client</Link>
           </Button>
         </div>
       ) : (
