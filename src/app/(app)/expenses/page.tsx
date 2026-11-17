@@ -8,6 +8,7 @@ import { ExpenseGroups } from '@/components/expenses/expense-groups';
 import {
   AddExpenseButton,
   GenerateDraftsButton,
+  ManageCategoriesLink,
   ManageRecurringLink,
 } from '@/components/expenses/expense-toolbar';
 import { Money } from '@/components/shared/money';
@@ -73,6 +74,7 @@ async function ExpensesContent({ searchParams }: Pick<PageProps<'/expenses'>, 's
       <div className="flex flex-wrap items-center justify-between gap-2">
         <MonthPicker month={month} />
         <div className="flex flex-wrap gap-2">
+          {hasPermission(user.role, PERMISSION.SETTINGS_MANAGE) ? <ManageCategoriesLink /> : null}
           <ManageRecurringLink />
           <GenerateDraftsButton month={month} />
           <AddExpenseButton defaultDate={dateInMonth(month, FIRST_DAY)} options={options} />

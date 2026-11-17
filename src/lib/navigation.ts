@@ -13,6 +13,8 @@ export const NAV_ICON = {
   ACCOUNTS: 'accounts',
   PARTNERS: 'partners',
   CLOSE: 'close',
+  TEAM: 'team',
+  RATES: 'rates',
 } as const;
 export type NavIcon = (typeof NAV_ICON)[keyof typeof NAV_ICON];
 
@@ -94,6 +96,14 @@ export const NAV_GROUPS: readonly NavGroup[] = [
         permission: PERMISSION.ENTRIES_WRITE,
         inTabBar: false,
       },
+      {
+        label: 'Team',
+        shortLabel: 'Team',
+        href: ROUTES.TEAM,
+        icon: NAV_ICON.TEAM,
+        permission: PERMISSION.SETTINGS_MANAGE,
+        inTabBar: false,
+      },
     ],
   },
   {
@@ -113,6 +123,14 @@ export const NAV_GROUPS: readonly NavGroup[] = [
         href: ROUTES.PARTNERS,
         icon: NAV_ICON.PARTNERS,
         permission: PERMISSION.DISTRIBUTION_VIEW,
+        inTabBar: false,
+      },
+      {
+        label: 'Exchange rates',
+        shortLabel: 'Rates',
+        href: ROUTES.EXCHANGE_RATES,
+        icon: NAV_ICON.RATES,
+        permission: PERMISSION.SETTINGS_MANAGE,
         inTabBar: false,
       },
       {

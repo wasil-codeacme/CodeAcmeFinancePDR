@@ -1,5 +1,7 @@
 import {
   ArrowDownToLine,
+  Coins,
+  Contact,
   Landmark,
   Lock,
   UsersRound,
@@ -27,4 +29,6 @@ export const NAV_ICONS: Record<NavIcon, LucideIcon> = {
   [NAV_ICON.ACCOUNTS]: Landmark,
   [NAV_ICON.PARTNERS]: UsersRound,
   [NAV_ICON.CLOSE]: Lock,
+  [NAV_ICON.TEAM]: Contact,
+  [NAV_ICON.RATES]: Coins,
 };

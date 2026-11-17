@@ -109,10 +109,28 @@ export function CloseChecklist({ month, checks, isClosed }: CloseChecklistProps)
         <Check
           ok={checks.rateSet}
           label={checks.rateSet ? 'Exchange rate set' : 'No exchange rate for this month'}
+          action={
+            checks.rateSet ? null : (
+              <Button asChild size="sm" variant="ghost">
+                <Link href={ROUTES.EXCHANGE_RATES} prefetch>
+                  Add rate
+                </Link>
+              </Button>
+            )
+          }
         />
         <Check
           ok={checks.splitSet}
           label={checks.splitSet ? 'Profit split in force' : 'No profit split for this month'}
+          action={
+            checks.splitSet ? null : (
+              <Button asChild size="sm" variant="ghost">
+                <Link href={ROUTES.PARTNERS} prefetch>
+                  Set split
+                </Link>
+              </Button>
+            )
+          }
         />
         <Check
           ok={!commissionDue || checks.commissionPosted}

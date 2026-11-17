@@ -56,7 +56,7 @@ function AccountFields() {
   );
 }
 
-function CreateAccountForm({
+export function CreateAccountForm({
   defaultMonth,
   currency,
   onDone,
@@ -90,7 +90,13 @@ function CreateAccountForm({
   );
 }
 
-function EditAccountForm({ account, onDone }: { account: AccountRecord; onDone: () => void }) {
+export function EditAccountForm({
+  account,
+  onDone,
+}: {
+  account: AccountRecord;
+  onDone: () => void;
+}) {
   const { form, submit, isPending } = useActionForm({
     schema: updateAccountSchema,
     defaultValues: { ...account, ownerLabel: account.ownerLabel ?? '' },

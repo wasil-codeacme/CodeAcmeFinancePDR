@@ -1,8 +1,12 @@
 'use client';
 
+import { Pencil } from 'lucide-react';
 import Link from 'next/link';
 
 import { InlineTextCell } from '@/components/revenue/inline-cells';
+import { EditAccountForm } from '@/components/settings/accounts-section';
+import { FormDialog } from '@/components/shared/form-dialog';
+import { IconButton } from '@/components/shared/icon-button';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Money } from '@/components/shared/money';
 import {
@@ -19,6 +23,7 @@ import { MESSAGES } from '@/lib/messages';
 import { ROUTES } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import { saveClosingBalance } from '@/server/actions/account.actions';
+import type { AccountRecord } from '@/server/repositories/settings.repository';
 import type { AccountMonthRow } from '@/types/account';
 
 // A closing balance can be negative (an overdrawn account).
@@ -46,13 +51,35 @@ function Difference({ row }: { row: AccountMonthRow }) {
   );
 }
 
-type AccountsMonthTableProps = { rows: AccountMonthRow[]; readOnly: boolean };
+function EditAccountButton({ account }: { account: AccountRecord | undefined }) {
+  if (!account) return null;
+  return (
+    <FormDialog
+      title={`Edit ${account.name}`}
+      description="Name, type, owner, currency, opening balance, or deactivate it."
+      trigger={
+        <IconButton size="icon-sm" variant="ghost" label={`Edit ${account.name}`}>
+          <Pencil />
+        </IconButton>
+      }
+    >
+      {(close) => <EditAccountForm account={account} onDone={close} />}
+    </FormDialog>
+  );
+}
+
+type AccountsMonthTableProps = {
+  rows: AccountMonthRow[];
+  readOnly: boolean;
+  /** Present when the user may manage accounts (founders): enables editing each one. */
+  editableAccounts?: AccountRecord[];
+};
 
 /**
  * PRD §5.4: type only the closing figure; the opening is last month's closing. Expected =
  * opening + money in − money out, and the difference flags anything unexplained.
  */
-export function AccountsMonthTable({ rows, readOnly }: AccountsMonthTableProps) {
+export function AccountsMonthTable({ rows, readOnly, editableAccounts }: AccountsMonthTableProps) {
   const { run, isPending } = useActionRunner();
   if (rows.length === 0) {
     return (
@@ -79,6 +106,7 @@ export function AccountsMonthTable({ rows, readOnly }: AccountsMonthTableProps) 
             <TableHead className="hidden text-right sm:table-cell">Expected</TableHead>
             <TableHead className="text-right">Closing</TableHead>
             <TableHead className="text-right">Difference</TableHead>
+            {editableAccounts ? <TableHead className="sr-only">Edit</TableHead> : null}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -122,10 +150,32 @@ export function AccountsMonthTable({ rows, readOnly }: AccountsMonthTableProps) 
               <TableCell className="text-right">
                 <Difference row={row} />
               </TableCell>
+              {editableAccounts ? (
+                <TableCell className="w-10">
+                  <EditAccountButton
+                    account={editableAccounts.find((account) => account.id === row.accountId)}
+                  />
+                </TableCell>
+              ) : null}
             </TableRow>
           ))}
         </TableBody>
       </Table>
+    </div>
+  );
+}
+
+/** Inactive accounts are left out of the month; list them so they can be edited or reactivated. */
+export function InactiveAccounts({ accounts }: { accounts: AccountRecord[] }) {
+  return (
+    <div className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+      <span>Inactive:</span>
+      {accounts.map((account) => (
+        <span key={account.id} className="inline-flex items-center">
+          {account.name}
+          <EditAccountButton account={account} />
+        </span>
+      ))}
     </div>
   );
 }

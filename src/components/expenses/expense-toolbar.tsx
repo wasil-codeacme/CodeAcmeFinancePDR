@@ -77,3 +77,14 @@ export function ManageRecurringLink() {
     </Button>
   );
 }
+
+/** Founders manage expense categories on a page of their own, next to Expenses. */
+export function ManageCategoriesLink() {
+  return (
+    <Button asChild variant="ghost">
+      <Link href={ROUTES.EXPENSE_CATEGORIES} prefetch>
+        Categories
+      </Link>
+    </Button>
+  );
+}

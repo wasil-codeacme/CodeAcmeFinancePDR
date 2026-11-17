@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
 
-import { AccountsMonthTable } from '@/components/accounts/accounts-month-table';
+import { AccountsMonthTable, InactiveAccounts } from '@/components/accounts/accounts-month-table';
+import { AddAccountButton } from '@/components/accounts/add-account-button';
 import { TransfersPanel } from '@/components/accounts/transfer-form';
 import { PendingSection } from '@/components/layout/pending-navigation';
 import { Money } from '@/components/shared/money';
@@ -17,7 +18,7 @@ import { dateInMonth, formatMonthLabel, monthFromSearchParam } from '@/lib/month
 import { PERMISSION, hasPermission } from '@/lib/permissions';
 import { requireBooksUser } from '@/server/auth/current-user';
 import { getAccountsMonth } from '@/server/services/account-balance.service';
-import { listExpenseCategories } from '@/server/services/settings.service';
+import { listAccounts, listExpenseCategories } from '@/server/services/settings.service';
 
 export const metadata: Metadata = { title: 'Accounts' };
 
@@ -30,13 +31,24 @@ async function AccountsContent({ searchParams }: Pick<PageProps<'/accounts'>, 's
     connection(),
   ]);
   const month = monthFromSearchParam(params[SEARCH_PARAM.MONTH], new Date());
-  const [view, categories] = await Promise.all([getAccountsMonth(month), listExpenseCategories()]);
+  const canManage = hasPermission(user.role, PERMISSION.SETTINGS_MANAGE);
+  const [view, categories, accounts] = await Promise.all([
+    getAccountsMonth(month),
+    listExpenseCategories(),
+    canManage ? listAccounts() : Promise.resolve([]),
+  ]);
+  const inactive = accounts.filter((account) => !account.active);
   const accountOptions = view.rows.map((row) => ({ value: row.accountId, label: row.name }));
   return (
     <div className="grid gap-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <MonthPicker month={month} />
-        {view.isClosed ? <Badge variant="secondary">Closed — read-only</Badge> : null}
+        <div className="flex flex-wrap items-center gap-2">
+          {view.isClosed ? <Badge variant="secondary">Closed — read-only</Badge> : null}
+          {canManage ? (
+            <AddAccountButton month={month} currency={view.currencies.reporting} />
+          ) : null}
+        </div>
       </div>
       {view.missingRateMonths.length > 0 ? (
         <Alert>
@@ -71,7 +83,12 @@ async function AccountsContent({ searchParams }: Pick<PageProps<'/accounts'>, 's
         </div>
       </PendingSection>
       <PendingSection fallback={<TableSkeleton rows={3} />}>
-        <AccountsMonthTable rows={view.rows} readOnly={view.isClosed} />
+        <AccountsMonthTable
+          rows={view.rows}
+          readOnly={view.isClosed}
+          editableAccounts={canManage ? accounts : undefined}
+        />
+        {inactive.length > 0 ? <InactiveAccounts accounts={inactive} /> : null}
         <TransfersPanel
           transfers={view.transfers}
           readOnly={view.isClosed}
