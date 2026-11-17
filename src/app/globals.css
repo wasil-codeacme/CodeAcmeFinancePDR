@@ -166,6 +166,17 @@
   background-size: 46px 46px;
 }
 
+/* Tab bars: swipe sideways on phones, never scroll vertically (the active tab's -1px underline
+   would otherwise count as overflow), and no visible scrollbar. */
+@utility tab-row {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @utility font-figures {
   font-family: var(--font-mono-brand);
   font-variant-numeric: tabular-nums;

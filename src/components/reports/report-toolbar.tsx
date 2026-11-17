@@ -175,10 +175,7 @@ export function ReportToolbar({ tabs, canExport, canExportAll, today }: ReportTo
   const active = tabs.find((tab) => tab.href === pathname);
   return (
     <div className="grid gap-4">
-      <nav
-        className="-mx-4 flex gap-1 overflow-x-auto border-b px-4 md:mx-0 md:px-0"
-        aria-label="Reports"
-      >
+      <nav className="tab-row -mx-4 flex gap-1 border-b px-4 md:mx-0 md:px-0" aria-label="Reports">
         {tabs.map((tab) => (
           <Link
             key={tab.href}

@@ -10,7 +10,7 @@ export function SettingsTabs() {
   const pathname = usePathname();
   return (
     <nav
-      className="-mx-4 flex gap-1 overflow-x-auto border-b px-4 md:mx-0 md:px-0"
+      className="tab-row -mx-4 flex gap-1 border-b px-4 md:mx-0 md:px-0"
       aria-label="Settings sections"
     >
       {SETTINGS_SECTIONS.map((meta) => {
