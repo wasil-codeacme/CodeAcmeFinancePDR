@@ -2,9 +2,12 @@
 
 import { PERMISSION } from '@/lib/permissions';
 import { writeAction } from '@/server/actions/action';
+import * as expenseAttachmentService from '@/server/services/expense-attachment.service';
 import * as expenseService from '@/server/services/expense.service';
 import * as recurringTemplateService from '@/server/services/recurring-template.service';
 import {
+  addAttachmentSchema,
+  attachmentIdSchema,
   expenseIdSchema,
   expenseMonthSchema,
   expenseSchema,
@@ -67,4 +70,24 @@ export const updateRecurringTemplate = writeAction({
   permission: WRITE,
   handler: async (input, actor) =>
     (await recurringTemplateService.updateRecurringTemplate(actor, input.id, input.template)).id,
+});
+
+export const addExpenseAttachment = writeAction({
+  schema: addAttachmentSchema,
+  permission: WRITE,
+  handler: async (input, actor) =>
+    expenseAttachmentService.addExpenseAttachment(actor, {
+      expenseId: input.expenseId,
+      fileName: input.file.name,
+      data: new Uint8Array(await input.file.arrayBuffer()),
+    }),
+});
+
+export const removeExpenseAttachment = writeAction({
+  schema: attachmentIdSchema,
+  permission: WRITE,
+  handler: async (input, actor) => {
+    await expenseAttachmentService.removeExpenseAttachment(actor, input.id);
+    return DONE;
+  },
 });

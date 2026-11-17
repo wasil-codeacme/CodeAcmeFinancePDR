@@ -9,6 +9,7 @@ export const ROUTES = {
   EXPENSES: '/expenses',
   RECURRING_TEMPLATES: '/expenses/recurring',
   EXPENSE_CATEGORIES: '/expenses/categories',
+  EXPENSE_ATTACHMENT: (attachmentId: string) => `/expenses/attachments/${attachmentId}`,
   EXCHANGE_RATES: '/rates',
   TEAM: '/team',
   PNL: '/pnl',

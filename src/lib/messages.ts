@@ -77,6 +77,11 @@ export const MESSAGES = {
     NO_DRAFTS_DUE: 'No recurring expenses are due this month.',
     FUNDING_PARTNER_REQUIRED: 'Pick the partner who funded this expense.',
     RATE_MISSING: 'Set the exchange rate for this month first.',
+    ATTACHMENT_ADDED: 'File attached.',
+    ATTACHMENT_REMOVED: 'Attachment removed.',
+    ATTACHMENT_TYPE: 'Attach a PDF, PNG, JPEG or WebP file.',
+    ATTACHMENT_TOO_LARGE: 'That file is too large; the limit is 5 MB.',
+    ATTACHMENT_REQUIRED: 'Choose a file to attach.',
   },
   TEMPLATE: {
     CREATED: 'Recurring expense added.',

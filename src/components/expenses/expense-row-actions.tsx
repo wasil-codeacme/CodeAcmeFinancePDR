@@ -2,6 +2,7 @@
 
 import { Check, Pencil, Trash2 } from 'lucide-react';
 
+import { ExpenseAttachmentsButton } from '@/components/expenses/expense-attachments';
 import { EditExpenseForm, type ExpenseFormOptions } from '@/components/expenses/expense-form';
 import { ConfirmActionButton } from '@/components/shared/confirm-action-button';
 import { FormDialog } from '@/components/shared/form-dialog';
@@ -38,6 +39,7 @@ export function ExpenseRowActions({
           <Check />
         </IconButton>
       ) : null}
+      <ExpenseAttachmentsButton expense={expense} />
       <FormDialog
         title="Edit expense"
         trigger={

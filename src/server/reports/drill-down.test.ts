@@ -69,6 +69,7 @@ function expense(overrides: Partial<ExpenseRecord>): ExpenseRecord {
     recurringTemplateId: null,
     salesChannel: null,
     notes: null,
+    attachments: [],
     ...overrides,
   };
 }

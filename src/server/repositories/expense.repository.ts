@@ -37,6 +37,11 @@ const EXPENSE_INCLUDE = {
   payee: { select: { name: true } },
   fundingPartner: { select: { name: true } },
   paidFromAccount: { select: { name: true } },
+  attachments: {
+    where: { deletedAt: null },
+    select: { id: true, fileName: true, contentType: true, size: true },
+    orderBy: { createdAt: 'asc' },
+  },
 } as const satisfies Prisma.ExpenseInclude;
 
 type ExpenseRow = Prisma.ExpenseGetPayload<{ include: typeof EXPENSE_INCLUDE }>;
@@ -63,6 +68,7 @@ function toRecord(row: ExpenseRow): ExpenseRecord {
     recurringTemplateId: row.recurringTemplateId,
     salesChannel: row.salesChannel,
     notes: row.notes,
+    attachments: row.attachments,
   };
 }
 

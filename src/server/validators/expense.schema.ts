@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
 import { Frequency, FundingSource, SalesChannel } from '@/generated/prisma/enums';
-import { MAX_DAY_OF_MONTH } from '@/lib/constants';
+import { MAX_ATTACHMENT_BYTES, MAX_DAY_OF_MONTH } from '@/lib/constants';
+import { MESSAGES } from '@/lib/messages';
 import {
   currencyCodeSchema,
   idSchema,
@@ -77,3 +78,13 @@ export const updateRecurringTemplateSchema = z.object({
   id: idSchema,
   template: recurringTemplateSchema,
 });
+
+export const addAttachmentSchema = z.object({
+  expenseId: idSchema,
+  file: z
+    .instanceof(File, { message: MESSAGES.EXPENSE.ATTACHMENT_REQUIRED })
+    .refine((file) => file.size > 0, MESSAGES.EXPENSE.ATTACHMENT_REQUIRED)
+    .refine((file) => file.size <= MAX_ATTACHMENT_BYTES, MESSAGES.EXPENSE.ATTACHMENT_TOO_LARGE),
+});
+
+export const attachmentIdSchema = z.object({ id: idSchema });

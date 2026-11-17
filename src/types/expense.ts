@@ -8,6 +8,13 @@ import type {
 import type { DecimalString } from '@/lib/decimal';
 import type { MonthKey } from '@/lib/month';
 
+export type ExpenseAttachmentRecord = {
+  id: string;
+  fileName: string;
+  contentType: string;
+  size: number;
+};
+
 export type ExpenseRecord = {
   id: string;
   status: EntryStatus;
@@ -30,6 +37,7 @@ export type ExpenseRecord = {
   recurringTemplateId: string | null;
   salesChannel: SalesChannel | null;
   notes: string | null;
+  attachments: ExpenseAttachmentRecord[];
 };
 
 /** An expense with both currency columns filled in from the month's rate. */

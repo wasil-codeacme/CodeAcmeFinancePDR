@@ -33,6 +33,8 @@ export const MAX_MONEY_AMOUNT = 999_999_999_999;
 export const MAX_NAME_LENGTH = 255;
 export const MAX_NOTES_LENGTH = 2000;
 export const MAX_IMPORT_FILE_BYTES = 5 * 1024 * 1024;
+/** Receipts and invoices; matches the 5 MB in the attachment message and the action body limit. */
+export const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
 export const XLSX_EXTENSION = '.xlsx';
 
 export const MONTHS_PER_QUARTER = 3;
@@ -61,6 +63,7 @@ export const AUDIT_ENTITY = {
   RECEIPT: 'Receipt',
   RECEIVABLE_ADJUSTMENT: 'ReceivableAdjustment',
   EXPENSE: 'Expense',
+  EXPENSE_ATTACHMENT: 'ExpenseAttachment',
   RECURRING_TEMPLATE: 'RecurringTemplate',
   PERIOD: 'Period',
   ACCOUNT_BALANCE: 'AccountBalance',

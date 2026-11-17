@@ -46,3 +46,13 @@ export function formatPercentValue(percent: Decimal.Value | null | undefined): s
   if (percent === null || percent === undefined) return BLANK;
   return `${new Decimal(percent).toDecimalPlaces(PERCENT_DECIMALS + 1).toString()}%`;
 }
+
+const BYTES_PER_KB = 1024;
+
+/** File sizes as people read them: 820 B, 14 KB, 2.3 MB. */
+export function formatFileSize(bytes: number): string {
+  if (bytes < BYTES_PER_KB) return `${bytes} B`;
+  const kilobytes = bytes / BYTES_PER_KB;
+  if (kilobytes < BYTES_PER_KB) return `${Math.round(kilobytes)} KB`;
+  return `${(kilobytes / BYTES_PER_KB).toFixed(1)} MB`;
+}

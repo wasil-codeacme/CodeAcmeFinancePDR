@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   formatCurrency,
+  formatFileSize,
   formatMoney,
   formatPercentValue,
   formatRatioAsPercent,
@@ -44,5 +45,13 @@ describe('formatCurrency', () => {
     expect(formatCurrency('-261.987', 'USD')).toBe('-$261.99');
     expect(formatCurrency('10', 'CHF')).toBe('CHF 10.00');
     expect(formatCurrency(null, 'USD')).toBe('—');
+  });
+});
+
+describe('formatFileSize', () => {
+  it('reads sizes the way people say them', () => {
+    expect(formatFileSize(820)).toBe('820 B');
+    expect(formatFileSize(14 * 1024)).toBe('14 KB');
+    expect(formatFileSize(2.3 * 1024 * 1024)).toBe('2.3 MB');
   });
 });

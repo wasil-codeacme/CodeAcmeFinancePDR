@@ -454,12 +454,13 @@ model Expense {
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
 
-  category          ExpenseCategory    @relation(fields: [categoryId], references: [id])
-  payee             TeamMember?        @relation(fields: [payeeTeamMemberId], references: [id])
-  fundingPartner    Partner?           @relation(fields: [fundingPartnerId], references: [id])
-  paidFromAccount   Account?           @relation(fields: [paidFromAccountId], references: [id])
-  recurringTemplate RecurringTemplate? @relation(fields: [recurringTemplateId], references: [id])
-  transfer          Transfer?          @relation(fields: [transferId], references: [id])
+  category          ExpenseCategory     @relation(fields: [categoryId], references: [id])
+  payee             TeamMember?         @relation(fields: [payeeTeamMemberId], references: [id])
+  fundingPartner    Partner?            @relation(fields: [fundingPartnerId], references: [id])
+  paidFromAccount   Account?            @relation(fields: [paidFromAccountId], references: [id])
+  recurringTemplate RecurringTemplate?  @relation(fields: [recurringTemplateId], references: [id])
+  transfer          Transfer?           @relation(fields: [transferId], references: [id])
+  attachments       ExpenseAttachment[]
 
   @@unique([recurringTemplateId, month])
   @@index([month])
@@ -612,4 +613,31 @@ model SalesActivity {
   updatedAt           DateTime     @updatedAt
 
   @@unique([month, channel])
+}
+
+/// PRD §5.3: a receipt or invoice attached to an expense. The bytes live in file storage.
+model ExpenseAttachment {
+  id          String    @id @default(cuid())
+  expenseId   String
+  storageKey  String
+  fileName    String    @db.VarChar(255)
+  contentType String    @db.VarChar(100)
+  size        Int
+  createdById String
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
+  deletedById String?
+
+  expense Expense @relation(fields: [expenseId], references: [id])
+
+  @@index([expenseId])
+}
+
+/// Bytes behind the FileStorage port's Postgres adapter; swap the adapter for blob storage later.
+model StoredFile {
+  id          String   @id @default(cuid())
+  contentType String   @db.VarChar(100)
+  size        Int
+  data        Bytes
+  createdAt   DateTime @default(now())
 }
