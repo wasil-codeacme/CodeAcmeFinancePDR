@@ -24,8 +24,6 @@ const MONTH_NUMBER: Record<string, string> = {
   Dec: '12',
 };
 const RATE_CELL = 'C3';
-const PLATFORM_HEADER_CELL = 'C6';
-const PLATFORM_HEADER = 'platform';
 const FIRST_REVENUE_ROW = 7;
 const TOTALS_LABEL = 'totals';
 const ITEM_HEADER = 'item';
@@ -114,17 +112,18 @@ function parseRevenue(sheet: SheetGrid, warnings: string[]): ParsedRevenueLine[]
     warnings.push('No TOTALS row found under the revenue table; revenue skipped.');
     return [];
   }
-  const hasPlatformColumn =
-    text(sheet.value(PLATFORM_HEADER_CELL))?.toLowerCase() === PLATFORM_HEADER;
   const lines: ParsedRevenueLine[] = [];
   for (let row = FIRST_REVENUE_ROW; row < totalsRow; row += 1) {
     const gross = numeric(sheet.value(`E${row}`));
-    const clientLabel = text(sheet.value(hasPlatformColumn ? `D${row}` : `C${row}`));
+    // Headers drifted between months: trust the cells. Text in D means "platform | client";
+    // otherwise C holds "Client - Platform" and D is the project value.
+    const clientInD = typeof sheet.value(`D${row}`) === 'string';
+    const clientLabel = text(sheet.value(clientInD ? `D${row}` : `C${row}`));
     if (gross === null || gross === 0 || clientLabel === null) continue;
     lines.push({
       row,
       clientLabel,
-      platformLabel: hasPlatformColumn ? text(sheet.value(`C${row}`)) : null,
+      platformLabel: clientInD ? text(sheet.value(`C${row}`)) : null,
       gross,
       feePercent: Number(
         ((numeric(sheet.value(`F${row}`)) ?? 0) * FRACTION_TO_PERCENT).toFixed(PERCENT_DECIMALS),

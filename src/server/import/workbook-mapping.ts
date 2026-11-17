@@ -31,24 +31,32 @@ export function pnlLineForSection(section: string): PnlLine {
 export function splitClientAndPlatform(
   line: Pick<ParsedRevenueLine, 'clientLabel' | 'platformLabel'>,
   platformNames: readonly string[],
-): { clientName: string; platformName: string | null } {
+): { clientName: string; platformName: string | null; projectName: string | null } {
   const label = line.clientLabel.replace(RECEIVABLE_SUFFIX, '').trim();
-  if (line.platformLabel) return { clientName: label, platformName: line.platformLabel };
+  if (line.platformLabel) {
+    return { clientName: label, platformName: line.platformLabel, projectName: null };
+  }
+  const isPlatform = (name: string) =>
+    platformNames.some((platform) => normalizeName(platform) === normalizeName(name));
   const separatorIndex = label.lastIndexOf(CLIENT_PLATFORM_SEPARATOR);
   if (separatorIndex > 0) {
-    return {
-      clientName: label.slice(0, separatorIndex).trim(),
-      platformName: label.slice(separatorIndex + CLIENT_PLATFORM_SEPARATOR.length).trim(),
-    };
+    const clientName = label.slice(0, separatorIndex).trim();
+    const suffix = label.slice(separatorIndex + CLIENT_PLATFORM_SEPARATOR.length).trim();
+    // A known platform after the dash is a platform; anything else names a project.
+    return isPlatform(suffix)
+      ? { clientName, platformName: suffix, projectName: null }
+      : { clientName, platformName: null, projectName: suffix };
   }
   const lowered = label.toLowerCase();
   const platform = platformNames.find((name) => lowered.endsWith(` ${name.toLowerCase()}`));
-  if (platform)
+  if (platform) {
     return {
       clientName: label.slice(0, label.length - platform.length).trim(),
       platformName: platform,
+      projectName: null,
     };
-  return { clientName: label, platformName: null };
+  }
+  return { clientName: label, platformName: null, projectName: null };
 }
 
 function fromLabel<TValue extends string>(

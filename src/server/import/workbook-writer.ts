@@ -1,4 +1,10 @@
-import { AuditAction, EntryStatus, FundingSource, RevenueKind } from '@/generated/prisma/enums';
+import {
+  AuditAction,
+  EntryStatus,
+  FundingSource,
+  ProjectStatus,
+  RevenueKind,
+} from '@/generated/prisma/enums';
 import { AUDIT_ENTITY } from '@/lib/constants';
 import { Decimal } from '@/lib/decimal';
 import { dateInMonth } from '@/lib/month';
@@ -16,7 +22,11 @@ import type {
   ParsedRevenueLine,
 } from '@/server/import/workbook-parser';
 import { auditedChange, auditedCreate } from '@/server/repositories/audited-write';
-import { type ClientRecord, clientRepository } from '@/server/repositories/client.repository';
+import {
+  type ClientRecord,
+  clientRepository,
+  projectRepository,
+} from '@/server/repositories/client.repository';
 import { runInTransaction } from '@/server/repositories/db';
 import { expenseRepository } from '@/server/repositories/expense.repository';
 import type { PlatformRecord } from '@/server/repositories/platform.repository';
@@ -69,6 +79,28 @@ async function clientFor(
   return created;
 }
 
+async function projectFor(
+  actor: SessionUser,
+  client: ClientRecord,
+  name: string,
+  platformId: string | null,
+): Promise<string> {
+  const existing = byName(client.projects, name);
+  if (existing) return existing.id;
+  const created = await auditedCreate(actor.id, AUDIT_ENTITY.PROJECT, () =>
+    projectRepository.create({
+      clientId: client.id,
+      name,
+      platformId,
+      feePercentOverride: null,
+      status: ProjectStatus.IN_PROGRESS,
+      active: true,
+    }),
+  );
+  client.projects.push(created);
+  return created.id;
+}
+
 async function categoryFor(actor: SessionUser, section: string, lookups: ImportLookups) {
   const existing = byName(lookups.categories, section);
   if (existing) return existing;
@@ -97,13 +129,16 @@ async function writeRevenueLine(
   );
   const platform = names.platformName ? byName(lookups.platforms, names.platformName) : undefined;
   const client = await clientFor(actor, names.clientName, platform?.id ?? null, lookups);
+  const projectId = names.projectName
+    ? await projectFor(actor, client, names.projectName, platform?.id ?? null)
+    : null;
   const entry = await auditedCreate(actor.id, AUDIT_ENTITY.REVENUE_ENTRY, () =>
     revenueRepository.create(
       {
         kind: RevenueKind.BOOKED,
         status: EntryStatus.CONFIRMED,
         clientId: client.id,
-        projectId: null,
+        projectId,
         platformId: platform?.id ?? null,
         bookingMonth: month.month,
         description: null,

@@ -77,3 +77,18 @@ describe('parseWorkbook on the anonymised reference workbook', () => {
     expect(line).toMatchObject({ amount: 117, inReportingCurrency: true });
   });
 });
+
+describe('parseWorkbook layout drift', () => {
+  it('reads the client from column C when the header says Platform but D holds a number (Aug–Nov)', async () => {
+    const file = await readFile(SAMPLE_WORKBOOK);
+    const buffer = file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
+    const months = parseWorkbook(await exceljsSpreadsheetReader.read(buffer));
+    const labels = months.flatMap((month) => month.revenue.map((line) => line.clientLabel));
+    expect(labels.every((label) => /client/i.test(label))).toBe(true);
+    const october = months.find((month) => month.tab === 'Oct 2026');
+    expect(october?.revenue[0]).toMatchObject({
+      clientLabel: 'Client G - Project 1',
+      platformLabel: null,
+    });
+  });
+});

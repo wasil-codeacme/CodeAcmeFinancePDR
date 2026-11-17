@@ -16,6 +16,7 @@ describe('splitClientAndPlatform', () => {
     ).toEqual({
       clientName: 'Client C',
       platformName: 'Upwork',
+      projectName: null,
     });
   });
 
@@ -25,12 +26,14 @@ describe('splitClientAndPlatform', () => {
     ).toEqual({
       clientName: 'Client O',
       platformName: 'Upwork',
+      projectName: null,
     });
     expect(
       splitClientAndPlatform({ clientLabel: 'Client D Direct', platformLabel: null }, PLATFORMS),
     ).toEqual({
       clientName: 'Client D',
       platformName: 'Direct',
+      projectName: null,
     });
   });
 
@@ -40,7 +43,7 @@ describe('splitClientAndPlatform', () => {
         { clientLabel: 'Client I Upwork - Receiveables', platformLabel: null },
         PLATFORMS,
       ),
-    ).toEqual({ clientName: 'Client I', platformName: 'Upwork' });
+    ).toEqual({ clientName: 'Client I', platformName: 'Upwork', projectName: null });
   });
 
   it('keeps a bare client name', () => {
@@ -49,6 +52,7 @@ describe('splitClientAndPlatform', () => {
     ).toEqual({
       clientName: 'Client A',
       platformName: null,
+      projectName: null,
     });
   });
 });
@@ -59,5 +63,16 @@ describe('status mapping', () => {
     expect(projectStatusFrom(null)).toBe(ProjectStatus.IN_PROGRESS);
     expect(invoiceStatusFrom('Partially Paid')).toBe(InvoiceStatus.PARTIALLY_PAID);
     expect(invoiceStatusFrom('Something else')).toBe(InvoiceStatus.INITIATED);
+  });
+});
+
+describe('splitClientAndPlatform with project names', () => {
+  it('treats an unknown suffix as a project, not a platform', () => {
+    expect(
+      splitClientAndPlatform(
+        { clientLabel: 'Client G - Project 1', platformLabel: null },
+        PLATFORMS,
+      ),
+    ).toEqual({ clientName: 'Client G', platformName: null, projectName: 'Project 1' });
   });
 });
