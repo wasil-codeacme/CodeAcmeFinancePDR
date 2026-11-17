@@ -30,6 +30,18 @@ pnpm check                # typecheck + lint + tests + build
 pnpm reconcile:workbook   # app vs reference workbook, every month tab, as a Markdown table
 ```
 
+## Deploy (Vercel)
+
+1. Create a Postgres database (Vercel Marketplace: Neon, Supabase, Prisma Postgres…).
+2. In the Vercel project, set the variables from `.env.example`: `DATABASE_URL` (pooled is
+   fine), `DIRECT_DATABASE_URL` (unpooled, for migrations; skip if `DATABASE_URL` is direct),
+   `APP_URL`, `EMAIL_PROVIDER=resend`, `EMAIL_FROM`, `RESEND_API_KEY`.
+3. Deploy. The `vercel-build` script runs `prisma generate`, then `prisma migrate deploy`
+   (creates or updates the tables), then `next build` — every deploy provisions the schema,
+   and a failed migration stops the deploy before it goes live.
+4. Create the first founder once, against the production database:
+   `DATABASE_URL=… pnpm founder:create --email you@codeacme.com --name "Your Name"`.
+
 ## How it is built
 
 - Layering: Server Action (`writeAction`) → service → repository → Prisma. Every write is
