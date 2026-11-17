@@ -1,0 +1,2 @@
+# Local CI: nothing reaches GitHub unless typecheck, lint, format, tests and the build all pass.
+pnpm check
