@@ -1,0 +1,1882 @@
+{
+  "months": [
+    {
+      "tab": "Jan 2026",
+      "rate": 278,
+      "revenue": [
+        {
+          "label": "Upwork",
+          "gross": 1670,
+          "feePercent": 10.0,
+          "received": 1503
+        }
+      ],
+      "expenses": [
+        {
+          "category": "Operations Overhead",
+          "item": "Claude AI Subscription",
+          "currency": "PKR",
+          "amount": 55600,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Slack Monthly",
+          "currency": "PKR",
+          "amount": 6720,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Workspace Premium",
+          "currency": "PKR",
+          "amount": 6720,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Slack (Upwork BD)",
+          "currency": "PKR",
+          "amount": 3000,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner A",
+          "currency": "PKR",
+          "amount": 31086,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner B",
+          "currency": "PKR",
+          "amount": 40666,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 12 (Upwork BD)",
+          "currency": "PKR",
+          "amount": 21999,
+          "funding": "EXTERNAL"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 10",
+          "currency": "PKR",
+          "amount": 19232,
+          "funding": "EXTERNAL"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Connects",
+          "currency": "PKR",
+          "amount": 41700,
+          "funding": "EXTERNAL"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Pro Subscription",
+          "currency": "PKR",
+          "amount": 5560,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Connects (Additional)",
+          "currency": "PKR",
+          "amount": 85068,
+          "funding": "EXTERNAL"
+        }
+      ],
+      "workbook": {
+        "netRevenue": 1503,
+        "companyExpense": 537.237410071942,
+        "externalFunding": 604.312949640288,
+        "netProfitCompany": 965.762589928058,
+        "takeHome": {
+          "Partner A": 289.728776978417,
+          "Partner B": 289.728776978417,
+          "Partner C": 241.440647482014
+        }
+      }
+    },
+    {
+      "tab": "Feb 2026",
+      "rate": 278,
+      "revenue": [
+        {
+          "label": "Upwork",
+          "gross": 290,
+          "feePercent": 10.0,
+          "received": 261
+        },
+        {
+          "label": "Upwork",
+          "gross": 120,
+          "feePercent": 10.0,
+          "received": 108
+        },
+        {
+          "label": "Upwork",
+          "gross": 1210,
+          "feePercent": 10.0,
+          "received": 1089
+        },
+        {
+          "label": "Upwork",
+          "gross": 130,
+          "feePercent": 0,
+          "received": 130
+        }
+      ],
+      "expenses": [
+        {
+          "category": "Operations Overhead",
+          "item": "Claude AI Subscription",
+          "currency": "PKR",
+          "amount": 55600,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Slack Monthly",
+          "currency": "PKR",
+          "amount": 6720,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Workspace Premium",
+          "currency": "PKR",
+          "amount": 6720,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Upwork BD Commission",
+          "currency": "PKR",
+          "amount": 22325,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Slack (Upwork BD)",
+          "currency": "PKR",
+          "amount": 3000,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner A",
+          "currency": "PKR",
+          "amount": 31086,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner B",
+          "currency": "PKR",
+          "amount": 40666,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 12 (Upwork BD)",
+          "currency": "PKR",
+          "amount": 3667,
+          "funding": "EXTERNAL"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD)",
+          "currency": "PKR",
+          "amount": 1553,
+          "funding": "EXTERNAL"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Graphic Designer",
+          "currency": "PKR",
+          "amount": 11630,
+          "funding": "EXTERNAL"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 10",
+          "currency": "PKR",
+          "amount": 21980,
+          "funding": "EXTERNAL"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Connects",
+          "currency": "PKR",
+          "amount": 97300,
+          "funding": "EXTERNAL"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Pro Subscription",
+          "currency": "PKR",
+          "amount": 5560,
+          "funding": "COMPANY"
+        }
+      ],
+      "workbook": {
+        "netRevenue": 1588,
+        "companyExpense": 617.543165467626,
+        "externalFunding": 489.676258992806,
+        "netProfitCompany": 970.456834532374,
+        "takeHome": {
+          "Partner A": 291.137050359712,
+          "Partner B": 291.137050359712,
+          "Partner C": 242.614208633094
+        }
+      }
+    },
+    {
+      "tab": "Mar 2026",
+      "rate": 278,
+      "revenue": [
+        {
+          "label": "Client C - Upwork",
+          "gross": 40,
+          "feePercent": 10.0,
+          "received": 36
+        },
+        {
+          "label": "Client O - Upwork",
+          "gross": 240,
+          "feePercent": 10.0,
+          "received": 216
+        },
+        {
+          "label": "Client Q - Upwork",
+          "gross": 30,
+          "feePercent": 10.0,
+          "received": 27
+        },
+        {
+          "label": "Client D - Upwork",
+          "gross": 280,
+          "feePercent": 10.0,
+          "received": 252
+        },
+        {
+          "label": "Client B - Upwork",
+          "gross": 280,
+          "feePercent": 10.0,
+          "received": 252
+        },
+        {
+          "label": "Client H - Upwork",
+          "gross": 270,
+          "feePercent": 10.0,
+          "received": 243
+        },
+        {
+          "label": "Client N - Upwork",
+          "gross": 10,
+          "feePercent": 10.0,
+          "received": 9
+        }
+      ],
+      "expenses": [
+        {
+          "category": "Operations Overhead",
+          "item": "Claude AI Subscription",
+          "currency": "PKR",
+          "amount": 55600,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Slack Monthly",
+          "currency": "PKR",
+          "amount": 6720,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Workspace Premium",
+          "currency": "PKR",
+          "amount": 6720,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Business Transaction Cost",
+          "currency": "USD",
+          "amount": 117,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner A",
+          "currency": "PKR",
+          "amount": 31086,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner B",
+          "currency": "PKR",
+          "amount": 40666,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 9",
+          "currency": "PKR",
+          "amount": 15057,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 1",
+          "currency": "USD",
+          "amount": 277.36,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD)",
+          "currency": "PKR",
+          "amount": 12621,
+          "funding": "EXTERNAL"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD)",
+          "currency": "PKR",
+          "amount": 1553,
+          "funding": "EXTERNAL"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD) - Commission",
+          "currency": "USD",
+          "amount": 22.02,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Graphic Designer",
+          "currency": "PKR",
+          "amount": 13292,
+          "funding": "EXTERNAL"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 10",
+          "currency": "PKR",
+          "amount": 17858,
+          "funding": "EXTERNAL"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Connects",
+          "currency": "USD",
+          "amount": 300,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Pro Subscription",
+          "currency": "PKR",
+          "amount": 5560,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Linkedin Sales Navigator",
+          "currency": "USD",
+          "amount": 120,
+          "funding": "EXTERNAL"
+        }
+      ],
+      "workbook": {
+        "netRevenue": 1035,
+        "companyExpense": 1296.98791366906,
+        "externalFunding": 283.035971223022,
+        "netProfitCompany": -261.987913669065,
+        "takeHome": {
+          "Partner A": -87.110981294964,
+          "Partner B": -87.110981294964,
+          "Partner C": -74.6665553956835
+        }
+      }
+    },
+    {
+      "tab": "Apr 2026",
+      "rate": 278,
+      "revenue": [
+        {
+          "label": "Client Q - Upwork",
+          "gross": 350,
+          "feePercent": 10.0,
+          "received": 315
+        },
+        {
+          "label": "Client O - Upwork",
+          "gross": 360,
+          "feePercent": 10.0,
+          "received": 324
+        },
+        {
+          "label": "Client N - Upwork",
+          "gross": 380,
+          "feePercent": 10.0,
+          "received": 342
+        },
+        {
+          "label": "Client I Upwork",
+          "gross": 30,
+          "feePercent": 10.0,
+          "received": 27
+        },
+        {
+          "label": "Client J Upwork",
+          "gross": 210,
+          "feePercent": 10.0,
+          "received": 189
+        }
+      ],
+      "expenses": [
+        {
+          "category": "Operations Overhead",
+          "item": "Claude AI Subscription",
+          "currency": "PKR",
+          "amount": 55600,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Proxy Cost",
+          "currency": "USD",
+          "amount": 20,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Slack Monthly",
+          "currency": "PKR",
+          "amount": 11830,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Workspace Premium",
+          "currency": "PKR",
+          "amount": 6720,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Business Transaction Cost",
+          "currency": "USD",
+          "amount": 130,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "GoLogin",
+          "currency": "USD",
+          "amount": 5,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner A",
+          "currency": "PKR",
+          "amount": 31086,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner B",
+          "currency": "PKR",
+          "amount": 40666,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 9",
+          "currency": "PKR",
+          "amount": 15057,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD)",
+          "currency": "PKR",
+          "amount": 12621,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD) - Commission",
+          "currency": "USD",
+          "amount": 21.94,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Linkedin Agency",
+          "currency": "PKR",
+          "amount": 26257,
+          "funding": "EXTERNAL"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Connects",
+          "currency": "USD",
+          "amount": 150,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Pro Subscription",
+          "currency": "PKR",
+          "amount": 5560,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Agency Subscription",
+          "currency": "PKR",
+          "amount": 5560,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Linkedin Sales Navigator",
+          "currency": "USD",
+          "amount": 120,
+          "funding": "EXTERNAL"
+        }
+      ],
+      "workbook": {
+        "netRevenue": 1197,
+        "companyExpense": 991.328489208633,
+        "externalFunding": 214.44964028777,
+        "netProfitCompany": 205.671510791367,
+        "takeHome": {
+          "Partner A": 61.7014532374101,
+          "Partner B": 61.7014532374101,
+          "Partner C": 51.4178776978417
+        }
+      }
+    },
+    {
+      "tab": "May 2026",
+      "rate": 278,
+      "revenue": [
+        {
+          "label": "Client Q - Upwork",
+          "gross": 130,
+          "feePercent": 10.0,
+          "received": 117
+        },
+        {
+          "label": "Client N - Upwork",
+          "gross": 230,
+          "feePercent": 10.0,
+          "received": 207
+        },
+        {
+          "label": "Client I Upwork",
+          "gross": 230,
+          "feePercent": 10.0,
+          "received": 207
+        },
+        {
+          "label": "Client B Upwork",
+          "gross": 70,
+          "feePercent": 10.0,
+          "received": 63
+        },
+        {
+          "label": "Client E",
+          "gross": 310,
+          "feePercent": 0,
+          "received": 310
+        },
+        {
+          "label": "Client J Upwork",
+          "gross": 60,
+          "feePercent": 10.0,
+          "received": 54
+        }
+      ],
+      "expenses": [
+        {
+          "category": "Operations Overhead",
+          "item": "Claude AI Subscription",
+          "currency": "PKR",
+          "amount": 55600,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "OpenAI",
+          "currency": "USD",
+          "amount": 20,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Proxy Cost",
+          "currency": "USD",
+          "amount": 20,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Slack Monthly",
+          "currency": "USD",
+          "amount": 54,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Workspace Premium",
+          "currency": "PKR",
+          "amount": 6720,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Vyke",
+          "currency": "USD",
+          "amount": 15,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Business Transaction Cost",
+          "currency": "USD",
+          "amount": 0,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "GoLogin",
+          "currency": "USD",
+          "amount": 5,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner A",
+          "currency": "PKR",
+          "amount": 31086,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner B",
+          "currency": "PKR",
+          "amount": 40666,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 9",
+          "currency": "PKR",
+          "amount": 18370,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 11 ",
+          "currency": "PKR",
+          "amount": 21127,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 4",
+          "currency": "USD",
+          "amount": 56.9,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD)",
+          "currency": "PKR",
+          "amount": 12621,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD) - Commission",
+          "currency": "PKR",
+          "amount": 3296,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Linkedin Agency",
+          "currency": "PKR",
+          "amount": 26257,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Connects",
+          "currency": "USD",
+          "amount": 250,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Pro Subscription",
+          "currency": "PKR",
+          "amount": 5560,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Linkedin Sales Navigator",
+          "currency": "USD",
+          "amount": 30,
+          "funding": "COMPANY"
+        }
+      ],
+      "workbook": {
+        "netRevenue": 958,
+        "companyExpense": 1246.95395683453,
+        "externalFunding": 0,
+        "netProfitCompany": -288.953956834532,
+        "takeHome": {
+          "Partner A": -86.6861870503597,
+          "Partner B": -86.6861870503597,
+          "Partner C": -72.2384892086331
+        }
+      }
+    },
+    {
+      "tab": "Jun 2026",
+      "rate": 278,
+      "revenue": [
+        {
+          "label": "Client Q - Upwork",
+          "gross": 90,
+          "feePercent": 0,
+          "received": 90
+        },
+        {
+          "label": "Client P - Upwork",
+          "gross": 330,
+          "feePercent": 10.0,
+          "received": 297
+        },
+        {
+          "label": "Client N - Upwork",
+          "gross": 50,
+          "feePercent": 10.0,
+          "received": 45
+        },
+        {
+          "label": "Client I Upwork",
+          "gross": 0,
+          "feePercent": 10.0,
+          "received": 0
+        },
+        {
+          "label": "Client R - Upwork",
+          "gross": 120,
+          "feePercent": 10.0,
+          "received": 108
+        },
+        {
+          "label": "Client G - Upwork",
+          "gross": 170,
+          "feePercent": 10.0,
+          "received": 153
+        },
+        {
+          "label": "Client A",
+          "gross": 150,
+          "feePercent": 10.0,
+          "received": 135
+        }
+      ],
+      "expenses": [
+        {
+          "category": "Operations Overhead",
+          "item": "Claude AI Subscription",
+          "currency": "PKR",
+          "amount": 55600,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "OpenAI",
+          "currency": "USD",
+          "amount": 20,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Proxy Cost",
+          "currency": "USD",
+          "amount": 60,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Slack Monthly",
+          "currency": "USD",
+          "amount": 54,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Workspace Premium",
+          "currency": "PKR",
+          "amount": 8909.59,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Vyke",
+          "currency": "USD",
+          "amount": 15,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Business Transaction Cost",
+          "currency": "USD",
+          "amount": 45,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "LLC Re-new",
+          "currency": "USD",
+          "amount": 120,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "MultiLogin",
+          "currency": "USD",
+          "amount": 7,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner A",
+          "currency": "PKR",
+          "amount": 31086,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner B",
+          "currency": "PKR",
+          "amount": 40666,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 9",
+          "currency": "PKR",
+          "amount": 15057,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 11 ",
+          "currency": "PKR",
+          "amount": 21127,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 8 - Design",
+          "currency": "USD",
+          "amount": 8.97,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD)",
+          "currency": "PKR",
+          "amount": 12621,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD) - Commission",
+          "currency": "USD",
+          "amount": 42.91,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Linkedin Agency",
+          "currency": "PKR",
+          "amount": 26257,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Connects",
+          "currency": "USD",
+          "amount": 225,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Pro Subscription",
+          "currency": "PKR",
+          "amount": 5560,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Linkedin Sales Navigator",
+          "currency": "USD",
+          "amount": 30,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Domains - Cold Email",
+          "currency": "USD",
+          "amount": 21,
+          "funding": "COMPANY"
+        }
+      ],
+      "workbook": {
+        "netRevenue": 828,
+        "companyExpense": 1302.03679856115,
+        "externalFunding": 0,
+        "netProfitCompany": -474.036798561151,
+        "takeHome": {
+          "Partner A": -142.211039568345,
+          "Partner B": -142.211039568345,
+          "Partner C": -118.509199640288
+        }
+      }
+    },
+    {
+      "tab": "Jul 2026",
+      "rate": 278,
+      "revenue": [
+        {
+          "label": "Client Q - Upwork",
+          "gross": 0,
+          "feePercent": 0,
+          "received": 0
+        },
+        {
+          "label": "Client P - Upwork",
+          "gross": 80,
+          "feePercent": 10.0,
+          "received": 72
+        },
+        {
+          "label": "Client N - Upwork",
+          "gross": 60,
+          "feePercent": 10.0,
+          "received": 54
+        },
+        {
+          "label": "Client I Upwork",
+          "gross": 80,
+          "feePercent": 10.0,
+          "received": 72
+        },
+        {
+          "label": "Client R Upwork",
+          "gross": 100,
+          "feePercent": 10.0,
+          "received": 90
+        },
+        {
+          "label": "Client D Direct",
+          "gross": 580,
+          "feePercent": 0,
+          "received": 580
+        },
+        {
+          "label": "Client A",
+          "gross": 200,
+          "feePercent": 10.0,
+          "received": 180
+        },
+        {
+          "label": "Client J",
+          "gross": 50,
+          "feePercent": 10.0,
+          "received": 45
+        }
+      ],
+      "expenses": [
+        {
+          "category": "Operations Overhead",
+          "item": "Claude AI Subscription",
+          "currency": "PKR",
+          "amount": 55600,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "OpenAI",
+          "currency": "USD",
+          "amount": 20,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Slack Monthly",
+          "currency": "USD",
+          "amount": 54,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Workspace Premium",
+          "currency": "USD",
+          "amount": 41,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Zoom",
+          "currency": "USD",
+          "amount": 34,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Loom",
+          "currency": "USD",
+          "amount": 20,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Business Transaction Cost",
+          "currency": "USD",
+          "amount": 45,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Retell AI",
+          "currency": "USD",
+          "amount": 5,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Video Genration",
+          "currency": "USD",
+          "amount": 5,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "WhisperFlow",
+          "currency": "USD",
+          "amount": 15,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Open Router",
+          "currency": "USD",
+          "amount": 12,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Twillio",
+          "currency": "USD",
+          "amount": 20,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "GoLogin",
+          "currency": "USD",
+          "amount": 11,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Railway",
+          "currency": "USD",
+          "amount": 5,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner A",
+          "currency": "PKR",
+          "amount": 31086,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner B",
+          "currency": "PKR",
+          "amount": 40666,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 9",
+          "currency": "PKR",
+          "amount": 24092,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 11 ",
+          "currency": "PKR",
+          "amount": 21127,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 7",
+          "currency": "USD",
+          "amount": 34.16,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Management Salaries & Overhead",
+          "item": "CodeAcme Team Dinner",
+          "currency": "PKR",
+          "amount": 3154,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD)",
+          "currency": "PKR",
+          "amount": 12621,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD) - Commission",
+          "currency": "USD",
+          "amount": 52.82,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Linkedin Agency",
+          "currency": "PKR",
+          "amount": 26257,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Connects",
+          "currency": "USD",
+          "amount": 300,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Pro Subscription",
+          "currency": "PKR",
+          "amount": 5560,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Linkedin Sales Navigator",
+          "currency": "USD",
+          "amount": 30,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Mailboxes",
+          "currency": "USD",
+          "amount": 34,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Proxy Cost",
+          "currency": "USD",
+          "amount": 40,
+          "funding": "COMPANY"
+        }
+      ],
+      "workbook": {
+        "netRevenue": 1093,
+        "companyExpense": 1569.93323741007,
+        "externalFunding": 0,
+        "netProfitCompany": -476.933237410072,
+        "takeHome": {
+          "Partner A": -143.079971223022,
+          "Partner B": -143.079971223022,
+          "Partner C": -119.233309352518
+        }
+      }
+    },
+    {
+      "tab": "Aug 2026",
+      "rate": 278,
+      "revenue": [
+        {
+          "label": "Client P - Upwork",
+          "gross": 430,
+          "feePercent": 10.0,
+          "received": 387
+        },
+        {
+          "label": "Client N - Upwork",
+          "gross": 90,
+          "feePercent": 10.0,
+          "received": 81
+        },
+        {
+          "label": "Client I Upwork",
+          "gross": 180,
+          "feePercent": 10.0,
+          "received": 162
+        },
+        {
+          "label": "Client J",
+          "gross": 110,
+          "feePercent": 10.0,
+          "received": 99
+        },
+        {
+          "label": "Client M",
+          "gross": 50,
+          "feePercent": 0,
+          "received": 50
+        },
+        {
+          "label": "Client I Upwork - Receiveables",
+          "gross": 0,
+          "feePercent": 10.0,
+          "received": 315
+        }
+      ],
+      "expenses": [
+        {
+          "category": "Operations Overhead",
+          "item": "Claude AI Subscription",
+          "currency": "USD",
+          "amount": 200,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "OpenAI — ChatGPT Subscription",
+          "currency": "USD",
+          "amount": 20.5,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "OpenAI — API",
+          "currency": "USD",
+          "amount": 20,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Slack Monthly",
+          "currency": "USD",
+          "amount": 8.75,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Slack — Employee 2 & Employee 9 (2 users)",
+          "currency": "USD",
+          "amount": 18,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Workspace Premium",
+          "currency": "USD",
+          "amount": 68.03,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Zoom",
+          "currency": "USD",
+          "amount": 34,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Atlassian Loom",
+          "currency": "USD",
+          "amount": 19.18,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "WhisperFlow (Wispr)",
+          "currency": "USD",
+          "amount": 15,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Retell AI",
+          "currency": "USD",
+          "amount": 3.14,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Cloud (project 1)",
+          "currency": "USD",
+          "amount": 10,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Cloud (project 2)",
+          "currency": "USD",
+          "amount": 10,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Railway",
+          "currency": "USD",
+          "amount": 5,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "GoLogin",
+          "currency": "USD",
+          "amount": 4.53,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Obsidian",
+          "currency": "USD",
+          "amount": 10,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Apify Subscription",
+          "currency": "USD",
+          "amount": 29,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Business Transaction Cost (Wise fees)",
+          "currency": "USD",
+          "amount": 3.85,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Fees",
+          "currency": "USD",
+          "amount": 9.84,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner A",
+          "currency": "USD",
+          "amount": 109.08,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner B",
+          "currency": "USD",
+          "amount": 148.16,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 9",
+          "currency": "USD",
+          "amount": 152.98,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 5",
+          "currency": "USD",
+          "amount": 52.41,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 7 — Client I App outsourcing",
+          "currency": "USD",
+          "amount": 70.83,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD) Salary",
+          "currency": "USD",
+          "amount": 45.92,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2 (Upwork BD) Commission",
+          "currency": "USD",
+          "amount": 37.52,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Connects",
+          "currency": "USD",
+          "amount": 345,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Linkedin Sales Navigator",
+          "currency": "USD",
+          "amount": 30,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Instantly (Cold Email)",
+          "currency": "USD",
+          "amount": 47,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Prospeo.io (Lead Data)",
+          "currency": "USD",
+          "amount": 99,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Proxy Cost (2captcha)",
+          "currency": "USD",
+          "amount": 40,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Proxy Cost (2captcha)",
+          "currency": "USD",
+          "amount": 20,
+          "funding": "COMPANY"
+        }
+      ],
+      "workbook": {
+        "netRevenue": 779,
+        "companyExpense": 1686.72,
+        "externalFunding": 0,
+        "netProfitCompany": -907.72,
+        "takeHome": {
+          "Partner A": -272.316,
+          "Partner B": -272.316,
+          "Partner C": -226.93
+        }
+      }
+    },
+    {
+      "tab": "Sep 2026",
+      "rate": 275,
+      "revenue": [
+        {
+          "label": "Client G - Upwork",
+          "gross": 50,
+          "feePercent": 0,
+          "received": 50
+        },
+        {
+          "label": "Client Q - till 2nd Oct",
+          "gross": 730,
+          "feePercent": 0,
+          "received": 730
+        },
+        {
+          "label": "Client D Direct",
+          "gross": 140,
+          "feePercent": 0,
+          "received": 140
+        },
+        {
+          "label": "Client A - Upwork",
+          "gross": 170,
+          "feePercent": 10.0,
+          "received": 153
+        },
+        {
+          "label": "Client R Upwork",
+          "gross": 60,
+          "feePercent": 10.0,
+          "received": 54
+        },
+        {
+          "label": "Client L Project 4",
+          "gross": 130,
+          "feePercent": 0,
+          "received": 130
+        }
+      ],
+      "expenses": [
+        {
+          "category": "Operations Overhead",
+          "item": "Claude AI (Anthropic)",
+          "currency": "USD",
+          "amount": 200.68,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Cloud (project 3)",
+          "currency": "USD",
+          "amount": 100,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Cloud (project 4)",
+          "currency": "USD",
+          "amount": 100,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Google Workspace Premium",
+          "currency": "USD",
+          "amount": 83.2,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Zoom",
+          "currency": "USD",
+          "amount": 34.12,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Apify Subscription",
+          "currency": "USD",
+          "amount": 32.83,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "OpenAI — ChatGPT Subscription",
+          "currency": "USD",
+          "amount": 20.62,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Atlassian Loom",
+          "currency": "USD",
+          "amount": 19.25,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "WhisperFlow (Wispr)",
+          "currency": "USD",
+          "amount": 15.05,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Cloudflare",
+          "currency": "USD",
+          "amount": 10.46,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Obsidian",
+          "currency": "USD",
+          "amount": 10.03,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Slack Monthly",
+          "currency": "USD",
+          "amount": 8.75,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "GoLogin",
+          "currency": "USD",
+          "amount": 4.57,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Retell AI",
+          "currency": "USD",
+          "amount": 2,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Overhead",
+          "item": "Elevate Transaction Tax",
+          "currency": "USD",
+          "amount": 3,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner A",
+          "currency": "USD",
+          "amount": 113.46,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Partner B",
+          "currency": "USD",
+          "amount": 147.75,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 5",
+          "currency": "USD",
+          "amount": 88.74,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 9",
+          "currency": "USD",
+          "amount": 87.33,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Operations Salaries",
+          "item": "Employee 6",
+          "currency": "USD",
+          "amount": 37.09,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Salaries",
+          "item": "Employee 2",
+          "currency": "USD",
+          "amount": 45.82,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Connects — 1000",
+          "currency": "USD",
+          "amount": 150,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Connects — 666",
+          "currency": "USD",
+          "amount": 99.9,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Connects — 500",
+          "currency": "USD",
+          "amount": 75,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Instantly",
+          "currency": "USD",
+          "amount": 47.15,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "2captcha",
+          "currency": "USD",
+          "amount": 36,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "LinkedIn Sales Navigator",
+          "currency": "USD",
+          "amount": 30.11,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Pro Subscription",
+          "currency": "USD",
+          "amount": 19.99,
+          "funding": "COMPANY"
+        },
+        {
+          "category": "Sales Overheads",
+          "item": "Upwork Withdrawal Fee (Payoneer)",
+          "currency": "USD",
+          "amount": 2,
+          "funding": "COMPANY"
+        }
+      ],
+      "workbook": {
+        "netRevenue": 1257,
+        "companyExpense": 1624.9,
+        "externalFunding": 0,
+        "netProfitCompany": -367.9,
+        "takeHome": {
+          "Partner A": -110.37,
+          "Partner B": -110.37,
+          "Partner C": -91.975
+        }
+      }
+    },
+    {
+      "tab": "Oct 2026",
+      "rate": 278,
+      "revenue": [
+        {
+          "label": "Client G - Project 1",
+          "gross": 610,
+          "feePercent": 0,
+          "received": 610
+        },
+        {
+          "label": "Client Q - Upwork",
+          "gross": 480,
+          "feePercent": 0,
+          "received": 240
+        },
+        {
+          "label": "Client N - Upwork",
+          "gross": 70,
+          "feePercent": 10.0,
+          "received": 63
+        },
+        {
+          "label": "Client G - Project 2",
+          "gross": 370,
+          "feePercent": 0,
+          "received": 370
+        },
+        {
+          "label": "Client G - Project 3",
+          "gross": 170,
+          "feePercent": 0,
+          "received": 170
+        },
+        {
+          "label": "Client N - Direct",
+          "gross": 70,
+          "feePercent": 10.0,
+          "received": 63
+        }
+      ],
+      "expenses": [],
+      "workbook": {
+        "netRevenue": 1756,
+        "companyExpense": 0,
+        "externalFunding": 0,
+        "netProfitCompany": 1756,
+        "takeHome": {
+          "Partner A": 526.8,
+          "Partner B": 526.8,
+          "Partner C": 439
+        }
+      }
+    },
+    {
+      "tab": "Nov 2026",
+      "rate": 278,
+      "revenue": [
+        {
+          "label": "Client G - Project 2",
+          "gross": 180,
+          "feePercent": 0,
+          "received": 180
+        },
+        {
+          "label": "Client Q - Upwork",
+          "gross": 700,
+          "feePercent": 0,
+          "received": 0
+        },
+        {
+          "label": "Client N - Upwork",
+          "gross": 100,
+          "feePercent": 10.0,
+          "received": 0
+        },
+        {
+          "label": "Client G - Project 3",
+          "gross": 180,
+          "feePercent": 0,
+          "received": 0
+        },
+        {
+          "label": "Client E",
+          "gross": 90,
+          "feePercent": 0,
+          "received": 0
+        }
+      ],
+      "expenses": [],
+      "workbook": {
+        "netRevenue": 1240,
+        "companyExpense": 0,
+        "externalFunding": 0,
+        "netProfitCompany": 1240,
+        "takeHome": {
+          "Partner A": 372,
+          "Partner B": 372,
+          "Partner C": 310
+        }
+      }
+    },
+    {
+      "tab": "Dec 2026",
+      "rate": 278,
+      "revenue": [],
+      "expenses": [],
+      "workbook": {
+        "netRevenue": 0,
+        "companyExpense": 0,
+        "externalFunding": 0,
+        "netProfitCompany": 0,
+        "takeHome": {
+          "Partner A": 0,
+          "Partner B": 0,
+          "Partner C": 0
+        }
+      }
+    }
+  ]
+}
