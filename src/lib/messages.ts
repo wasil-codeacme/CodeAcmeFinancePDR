@@ -91,6 +91,15 @@ export const MESSAGES = {
     NOTHING_SELECTED: 'Pick at least one month to import.',
     DONE: 'Import finished.',
   },
+  PERIOD: {
+    CLOSED_MONTH: 'This month is closed and read-only. Reopen it first:',
+    ALREADY_CLOSED: 'That month is already closed.',
+    NOT_CLOSED: 'That month is not closed.',
+    DRAFTS_OPEN: 'Confirm or delete the drafts in this month before closing it.',
+    CLOSED: 'Month closed.',
+    REOPENED: 'Month reopened.',
+    RESERVE_ADDED: 'Reserve added.',
+  },
   PNL: {
     RATE_MISSING: 'Set an exchange rate in Settings to convert PKR expenses.',
     NO_SPLIT: 'No profit split applies to this month yet. Set one in Settings.',
