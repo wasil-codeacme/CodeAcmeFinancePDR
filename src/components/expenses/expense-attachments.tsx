@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { useActionRunner } from '@/hooks/use-action-runner';
+import { useOptimisticList } from '@/hooks/use-optimistic-list';
 import { formatFileSize } from '@/lib/format';
 import { MESSAGES } from '@/lib/messages';
 import { ROUTES } from '@/lib/routes';
@@ -19,13 +20,13 @@ import type { ExpenseRecord } from '@/types/expense';
 const ACCEPTED_TYPES = 'application/pdf,image/png,image/jpeg,image/webp';
 
 function AttachmentList({ expense }: { expense: ExpenseRecord }) {
-  const { run, isPending } = useActionRunner();
-  if (expense.attachments.length === 0) {
+  const { rows: attachments, mutate } = useOptimisticList(expense.attachments);
+  if (attachments.length === 0) {
     return <p className="text-muted-foreground text-sm">No files yet.</p>;
   }
   return (
     <ul className="divide-y rounded-lg border">
-      {expense.attachments.map((attachment) => (
+      {attachments.map((attachment) => (
         <li key={attachment.id} className="flex items-center justify-between gap-2 px-3 py-2">
           <a
             href={ROUTES.EXPENSE_ATTACHMENT(attachment.id)}
@@ -44,13 +45,14 @@ function AttachmentList({ expense }: { expense: ExpenseRecord }) {
             description="It is removed from the expense; the audit log keeps a record."
             confirmLabel={MESSAGES.COMMON.DELETE}
             onConfirm={() =>
-              run(
+              mutate(
+                { type: 'remove', id: attachment.id },
                 () => removeExpenseAttachment({ id: attachment.id }),
                 MESSAGES.EXPENSE.ATTACHMENT_REMOVED,
               )
             }
             trigger={
-              <IconButton size="icon-sm" variant="ghost" label="Remove file" disabled={isPending}>
+              <IconButton size="icon-sm" variant="ghost" label="Remove file">
                 <Trash2 />
               </IconButton>
             }

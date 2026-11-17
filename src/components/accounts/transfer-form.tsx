@@ -17,7 +17,7 @@ import { SectionCard } from '@/components/shared/section-card';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { Button } from '@/components/ui/button';
 import { useActionForm } from '@/hooks/use-action-form';
-import { useActionRunner } from '@/hooks/use-action-runner';
+import { useOptimisticList } from '@/hooks/use-optimistic-list';
 import { MESSAGES } from '@/lib/messages';
 import { formatDateLabel } from '@/lib/month';
 import { createTransfer, deleteTransfer } from '@/server/actions/account.actions';
@@ -105,7 +105,7 @@ export function TransfersPanel({
   canDelete,
   ...formProps
 }: TransfersPanelProps) {
-  const { run, isPending } = useActionRunner();
+  const { rows: optimisticTransfers, mutate } = useOptimisticList(transfers);
   return (
     <SectionCard
       title="Transfers"
@@ -125,11 +125,11 @@ export function TransfersPanel({
         )
       }
     >
-      {transfers.length === 0 ? (
+      {optimisticTransfers.length === 0 ? (
         <p className="text-muted-foreground text-sm">No transfers this month.</p>
       ) : (
         <ul className="divide-y">
-          {transfers.map((transfer) => (
+          {optimisticTransfers.map((transfer) => (
             <li key={transfer.id} className="flex items-center justify-between gap-2 py-2 text-sm">
               <div className="min-w-0">
                 <div className="truncate font-medium">
@@ -149,15 +149,14 @@ export function TransfersPanel({
                     description="Its fee expense is removed too. The audit log keeps a copy."
                     confirmLabel={MESSAGES.COMMON.DELETE}
                     onConfirm={() =>
-                      run(() => deleteTransfer({ id: transfer.id }), MESSAGES.COMMON.DELETED)
+                      mutate(
+                        { type: 'remove', id: transfer.id },
+                        () => deleteTransfer({ id: transfer.id }),
+                        MESSAGES.COMMON.DELETED,
+                      )
                     }
                     trigger={
-                      <IconButton
-                        size="icon-sm"
-                        variant="ghost"
-                        label="Delete transfer"
-                        disabled={isPending}
-                      >
+                      <IconButton size="icon-sm" variant="ghost" label="Delete transfer">
                         <Trash2 />
                       </IconButton>
                     }

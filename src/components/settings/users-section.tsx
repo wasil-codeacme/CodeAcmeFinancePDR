@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { type Role, Role as RoleValue } from '@/generated/prisma/enums';
 import { useActionForm } from '@/hooks/use-action-form';
-import { useActionRunner } from '@/hooks/use-action-runner';
+import { useOptimisticList } from '@/hooks/use-optimistic-list';
 import { ROLE_LABEL, USER_STATUS_LABEL, optionsFrom } from '@/lib/labels';
 import { MESSAGES } from '@/lib/messages';
 import { changeUserRole, inviteUser, removeUser } from '@/server/actions/user.actions';
@@ -56,7 +56,7 @@ export function UsersSection({
   users: UserRow[];
   currentUserId: string;
 }) {
-  const { run, isPending } = useActionRunner();
+  const { rows: optimisticUsers, mutate } = useOptimisticList(users);
   return (
     <SectionCard
       title="Users"
@@ -75,7 +75,7 @@ export function UsersSection({
       }
     >
       <ul className="divide-y">
-        {users.map((user) => (
+        {optimisticUsers.map((user) => (
           <li key={user.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
             <div className="grid min-w-0 gap-0.5">
               <span className="truncate text-sm font-medium">
@@ -86,9 +86,13 @@ export function UsersSection({
             <div className="flex items-center gap-1">
               <Select
                 value={user.role}
-                disabled={isPending || user.id === currentUserId}
+                disabled={user.id === currentUserId}
                 onValueChange={(role: Role) =>
-                  run(() => changeUserRole({ userId: user.id, role }), MESSAGES.USER.ROLE_CHANGED)
+                  mutate(
+                    { type: 'update', id: user.id, patch: { role } },
+                    () => changeUserRole({ userId: user.id, role }),
+                    MESSAGES.USER.ROLE_CHANGED,
+                  )
                 }
               >
                 <SelectTrigger size="sm" className="w-40" aria-label={`Role for ${user.name}`}>
@@ -108,15 +112,14 @@ export function UsersSection({
                   description="They are signed out everywhere and can no longer sign in. Their past entries stay."
                   confirmLabel="Remove"
                   onConfirm={() =>
-                    run(() => removeUser({ userId: user.id }), MESSAGES.USER.REMOVED)
+                    mutate(
+                      { type: 'remove', id: user.id },
+                      () => removeUser({ userId: user.id }),
+                      MESSAGES.USER.REMOVED,
+                    )
                   }
                   trigger={
-                    <IconButton
-                      size="icon-sm"
-                      variant="ghost"
-                      label={`Remove ${user.name}`}
-                      disabled={isPending}
-                    >
+                    <IconButton size="icon-sm" variant="ghost" label={`Remove ${user.name}`}>
                       <Trash2 />
                     </IconButton>
                   }

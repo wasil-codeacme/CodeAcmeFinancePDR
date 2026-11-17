@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/table';
 import { LedgerEntryType } from '@/generated/prisma/enums';
 import { useActionForm } from '@/hooks/use-action-form';
-import { useActionRunner } from '@/hooks/use-action-runner';
+import { useOptimisticList } from '@/hooks/use-optimistic-list';
 import { MESSAGES } from '@/lib/messages';
 import { formatDateLabel, formatMonthLabel } from '@/lib/month';
 import {
@@ -96,7 +96,7 @@ type PartnerLedgerCardProps = { ledger: PartnerLedgerView; accounts: Option[]; t
 
 /** PRD §5.6: share earned each month, withdrawals, and a pending balance that carries forward. */
 export function PartnerLedgerCard({ ledger, accounts, today }: PartnerLedgerCardProps) {
-  const { run, isPending } = useActionRunner();
+  const { rows: manualEntries, mutate } = useOptimisticList(ledger.manualEntries);
   return (
     <Card>
       <CardHeader>
@@ -194,9 +194,9 @@ export function PartnerLedgerCard({ ledger, accounts, today }: PartnerLedgerCard
             </Table>
           </div>
         )}
-        {ledger.manualEntries.length > 0 ? (
+        {manualEntries.length > 0 ? (
           <ul className="divide-y text-sm">
-            {ledger.manualEntries.map((entry) => (
+            {manualEntries.map((entry) => (
               <li key={entry.id} className="flex items-center justify-between gap-2 py-1.5">
                 <span className="min-w-0 truncate">
                   {ENTRY_LABEL[entry.type]} · {formatDateLabel(entry.occurredOn)}
@@ -210,15 +210,14 @@ export function PartnerLedgerCard({ ledger, accounts, today }: PartnerLedgerCard
                     description="It is removed from the ledger and the account's expected balance."
                     confirmLabel={MESSAGES.COMMON.DELETE}
                     onConfirm={() =>
-                      run(() => deleteLedgerEntry({ id: entry.id }), MESSAGES.COMMON.DELETED)
+                      mutate(
+                        { type: 'remove', id: entry.id },
+                        () => deleteLedgerEntry({ id: entry.id }),
+                        MESSAGES.COMMON.DELETED,
+                      )
                     }
                     trigger={
-                      <IconButton
-                        size="icon-sm"
-                        variant="ghost"
-                        label="Delete entry"
-                        disabled={isPending}
-                      >
+                      <IconButton size="icon-sm" variant="ghost" label="Delete entry">
                         <Trash2 />
                       </IconButton>
                     }

@@ -12,7 +12,7 @@ import { SectionCard } from '@/components/shared/section-card';
 import { SubmitButton } from '@/components/shared/submit-button';
 import { Button } from '@/components/ui/button';
 import { useActionForm } from '@/hooks/use-action-form';
-import { useActionRunner } from '@/hooks/use-action-runner';
+import { useOptimisticList } from '@/hooks/use-optimistic-list';
 import { MESSAGES } from '@/lib/messages';
 import { type MonthKey, addMonths, formatDateLabel, formatMonthLabel } from '@/lib/month';
 import { addNextMonthReserve, deleteNextMonthReserve } from '@/server/actions/period.actions';
@@ -56,7 +56,7 @@ export function ReservesAndAdvances({
   advances,
   readOnly,
 }: ReservesAndAdvancesProps) {
-  const { run, isPending } = useActionRunner();
+  const { rows: optimisticReserves, mutate } = useOptimisticList(reserves);
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <SectionCard
@@ -77,11 +77,11 @@ export function ReservesAndAdvances({
           )
         }
       >
-        {reserves.length === 0 ? (
+        {optimisticReserves.length === 0 ? (
           <p className="text-muted-foreground text-sm">Nothing reserved.</p>
         ) : (
           <ul className="divide-y text-sm">
-            {reserves.map((reserve) => (
+            {optimisticReserves.map((reserve) => (
               <li key={reserve.id} className="flex items-center justify-between gap-2 py-1.5">
                 <span className="truncate">{reserve.note ?? 'Reserve'}</span>
                 <span className="flex items-center gap-1">
@@ -92,18 +92,14 @@ export function ReservesAndAdvances({
                       description="It is removed from next month's reserved cash."
                       confirmLabel={MESSAGES.COMMON.DELETE}
                       onConfirm={() =>
-                        run(
+                        mutate(
+                          { type: 'remove', id: reserve.id },
                           () => deleteNextMonthReserve({ id: reserve.id }),
                           MESSAGES.COMMON.DELETED,
                         )
                       }
                       trigger={
-                        <IconButton
-                          size="icon-sm"
-                          variant="ghost"
-                          label="Remove reserve"
-                          disabled={isPending}
-                        >
+                        <IconButton size="icon-sm" variant="ghost" label="Remove reserve">
                           <Trash2 />
                         </IconButton>
                       }
