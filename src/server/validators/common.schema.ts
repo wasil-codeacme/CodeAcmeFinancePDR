@@ -22,6 +22,12 @@ export const monthKeySchema = z.custom<MonthKey>(
 
 export const isoDateSchema = z.string().refine(isIsoDate, 'Use a date like 2026-01-31.');
 
+/** A date a form may leave blank; blank and missing both mean null. */
+export const optionalIsoDateSchema = z
+  .union([z.literal(''), isoDateSchema, z.null()])
+  .optional()
+  .transform((value) => (value ? value : null));
+
 export const nameSchema = z.string().trim().min(1, 'Required.').max(MAX_NAME_LENGTH);
 
 export const optionalTextSchema = z

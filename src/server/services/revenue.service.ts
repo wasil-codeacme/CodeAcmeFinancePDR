@@ -12,6 +12,7 @@ import { PERMISSION, hasPermission } from '@/lib/permissions';
 import { resolveDefaultFee } from '@/server/domain/fee-default';
 import { summarizeReceivables } from '@/server/domain/revenue-math';
 import { figuresOf, toReceivableTotalsView, toRevenueRow } from '@/server/domain/revenue-view';
+import { assertMonthsOpen } from '@/server/period-guard';
 import { ForbiddenError, NotFoundError, RuleViolationError } from '@/server/errors';
 import { auditedChange, auditedCreate } from '@/server/repositories/audited-write';
 import { clientRepository, projectRepository } from '@/server/repositories/client.repository';
@@ -66,6 +67,7 @@ export async function createRevenueEntry(
   actor: SessionUser,
   input: CreateRevenueInput,
 ): Promise<RevenueEntryRecord> {
+  await assertMonthsOpen(input.bookingMonth);
   const defaults = await defaultsFor(input.clientId, input.projectId, input.bookingMonth);
   return auditedCreate(actor.id, AUDIT_ENTITY.REVENUE_ENTRY, () =>
     revenueRepository.create(
@@ -96,6 +98,7 @@ export async function updateRevenueEntry(
   input: UpdateRevenueInput,
 ): Promise<RevenueEntryRecord> {
   const { id, ...changes } = input;
+  await assertMonthsOpen((await requireEntry(id)).bookingMonth);
   return auditedChange(actor.id, {
     action: AuditAction.UPDATE,
     entityType: AUDIT_ENTITY.REVENUE_ENTRY,
@@ -108,6 +111,7 @@ export async function updateRevenueEntry(
 /** Drafts can be discarded by anyone who books; deleting confirmed entries is founder-only (PRD §3). */
 export async function deleteRevenueEntry(actor: SessionUser, id: string): Promise<void> {
   const entry = await requireEntry(id);
+  await assertMonthsOpen(entry.bookingMonth);
   if (
     entry.status === EntryStatus.CONFIRMED &&
     !hasPermission(actor.role, PERMISSION.ENTRIES_DELETE_CONFIRMED)
@@ -128,6 +132,7 @@ export async function confirmRevenueEntry(
   id: string,
 ): Promise<RevenueEntryRecord> {
   const entry = await requireEntry(id);
+  await assertMonthsOpen(entry.bookingMonth);
   if (entry.gross === null) throw new RuleViolationError(MESSAGES.REVENUE.DRAFT_NEEDS_AMOUNT);
   return auditedChange(actor.id, {
     action: AuditAction.UPDATE,
@@ -143,6 +148,7 @@ export async function copyInProgressFromLastMonth(
   actor: SessionUser,
   month: MonthKey,
 ): Promise<number> {
+  await assertMonthsOpen(month);
   const previous = await revenueRepository.listForMonth(addMonths(month, -1), {});
   const candidates = previous.filter((entry) => entry.projectStatus === ProjectStatus.IN_PROGRESS);
   if (candidates.length === 0) throw new RuleViolationError(MESSAGES.REVENUE.NO_DRAFTS_TO_COPY);

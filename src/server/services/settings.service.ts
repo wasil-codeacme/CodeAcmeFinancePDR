@@ -3,6 +3,7 @@ import { cacheLife, cacheTag } from 'next/cache';
 import { CACHE_TAG, REFERENCE_CACHE_LIFE } from '@/server/cache-tags';
 import { AuditAction } from '@/generated/prisma/enums';
 import { AUDIT_ENTITY } from '@/lib/constants';
+import { assertMonthsOpen } from '@/server/period-guard';
 import { auditedChange, auditedCreate } from '@/server/repositories/audited-write';
 import {
   type AccountRecord,
@@ -172,10 +173,11 @@ export async function saveCommissionRule(
   });
 }
 
-export function saveExchangeRate(
+export async function saveExchangeRate(
   actor: SessionUser,
   input: ExchangeRateInput,
 ): Promise<ExchangeRateRecord> {
+  await assertMonthsOpen(input.month);
   return auditedChange(actor.id, {
     action: AuditAction.UPDATE,
     entityType: AUDIT_ENTITY.EXCHANGE_RATE,

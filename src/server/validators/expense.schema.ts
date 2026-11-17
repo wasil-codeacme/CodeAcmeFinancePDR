@@ -9,6 +9,7 @@ import {
   monthKeySchema,
   nameSchema,
   optionalIdSchema,
+  optionalIsoDateSchema,
   optionalTextSchema,
   positiveMoneySchema,
 } from '@/server/validators/common.schema';
@@ -38,12 +39,12 @@ function namesFundingPartnerWhenExternal(expense: {
 }
 
 export const expenseSchema = expenseFieldsSchema
-  .extend({ expenseDate: isoDateSchema })
+  .extend({ expenseDate: isoDateSchema, paidOn: optionalIsoDateSchema })
   .refine(namesFundingPartnerWhenExternal, FUNDING_PARTNER_RULE);
 export type ExpenseInput = z.infer<typeof expenseSchema>;
 
 export const updateExpenseSchema = expenseFieldsSchema
-  .extend({ id: idSchema, expenseDate: isoDateSchema })
+  .extend({ id: idSchema, expenseDate: isoDateSchema, paidOn: optionalIsoDateSchema })
   .refine(namesFundingPartnerWhenExternal, FUNDING_PARTNER_RULE);
 export type UpdateExpenseInput = z.infer<typeof updateExpenseSchema>;
 

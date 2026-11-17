@@ -190,6 +190,7 @@ async function writeExpenseLine(
       {
         status: EntryStatus.CONFIRMED,
         expenseDate: dateInMonth(month.month, FIRST_DAY),
+        paidOn: null,
         categoryId: category.id,
         item: line.item,
         payeeTeamMemberId: null,

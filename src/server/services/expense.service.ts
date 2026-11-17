@@ -6,6 +6,7 @@ import { type MonthKey, dateInMonth, monthOfIsoDate } from '@/lib/month';
 import { PERMISSION, hasPermission } from '@/lib/permissions';
 import { type CurrencyPair, toDisplayCurrency } from '@/server/domain/currency';
 import { isTemplateDue } from '@/server/domain/recurrence';
+import { assertMonthsOpen } from '@/server/period-guard';
 import {
   ForbiddenError,
   MissingExchangeRateError,
@@ -123,6 +124,14 @@ async function toExpenseData(
   };
 }
 
+/** The P&L month and, for an advance, the earlier month the cash left in. */
+function monthsTouched(input: { expenseDate: string; paidOn: string | null }): MonthKey[] {
+  const months = [monthOfIsoDate(input.expenseDate)];
+  if (input.paidOn && monthOfIsoDate(input.paidOn) !== months[0])
+    months.push(monthOfIsoDate(input.paidOn));
+  return months;
+}
+
 async function requireExpense(id: string): Promise<ExpenseRecord> {
   const expense = await expenseRepository.findById(id);
   if (!expense) throw new NotFoundError();
@@ -133,6 +142,7 @@ export async function createExpense(
   actor: SessionUser,
   input: ExpenseInput,
 ): Promise<ExpenseRecord> {
+  await assertMonthsOpen(...monthsTouched(input));
   const data = await toExpenseData(input, EntryStatus.CONFIRMED, null);
   return auditedCreate(actor.id, AUDIT_ENTITY.EXPENSE, () =>
     expenseRepository.create(data, actor.id),
@@ -145,6 +155,7 @@ export async function updateExpense(
 ): Promise<ExpenseRecord> {
   const { id, ...fields } = input;
   const existing = await requireExpense(id);
+  await assertMonthsOpen(...monthsTouched(existing), ...monthsTouched(fields));
   const data = await toExpenseData(fields, existing.status, existing.recurringTemplateId);
   return auditedChange(actor.id, {
     action: AuditAction.UPDATE,
@@ -157,6 +168,7 @@ export async function updateExpense(
 
 export async function deleteExpense(actor: SessionUser, id: string): Promise<void> {
   const expense = await requireExpense(id);
+  await assertMonthsOpen(...monthsTouched(expense));
   if (
     expense.status === EntryStatus.CONFIRMED &&
     !hasPermission(actor.role, PERMISSION.ENTRIES_DELETE_CONFIRMED)
@@ -174,6 +186,7 @@ export async function deleteExpense(actor: SessionUser, id: string): Promise<voi
 
 export async function confirmExpense(actor: SessionUser, id: string): Promise<ExpenseRecord> {
   const expense = await requireExpense(id);
+  await assertMonthsOpen(...monthsTouched(expense));
   return auditedChange(actor.id, {
     action: AuditAction.UPDATE,
     entityType: AUDIT_ENTITY.EXPENSE,
@@ -184,6 +197,7 @@ export async function confirmExpense(actor: SessionUser, id: string): Promise<Ex
 }
 
 export async function confirmAllDrafts(actor: SessionUser, month: MonthKey): Promise<number> {
+  await assertMonthsOpen(month);
   const drafts = (await expenseRepository.listForMonth(month)).filter(
     (expense) => expense.status === EntryStatus.DRAFT,
   );
@@ -198,6 +212,7 @@ export async function generateRecurringDrafts(
   actor: SessionUser,
   month: MonthKey,
 ): Promise<number> {
+  await assertMonthsOpen(month);
   const [templates, alreadyGenerated] = await Promise.all([
     recurringTemplateRepository.listActive(),
     expenseRepository.templateIdsGeneratedFor(month),
@@ -209,7 +224,7 @@ export async function generateRecurringDrafts(
   await runInTransaction(async () => {
     for (const template of due) {
       const data = await toExpenseData(
-        { ...template, expenseDate: dateInMonth(month, template.dayOfMonth) },
+        { ...template, expenseDate: dateInMonth(month, template.dayOfMonth), paidOn: null },
         EntryStatus.DRAFT,
         template.id,
       );

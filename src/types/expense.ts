@@ -6,6 +6,8 @@ export type ExpenseRecord = {
   id: string;
   status: EntryStatus;
   expenseDate: string;
+  /** Set when cash left in an earlier month than the expense counts in (an advance). */
+  paidOn: string | null;
   month: MonthKey;
   categoryId: string;
   categoryName: string;

@@ -9,6 +9,7 @@ import type { ExpenseRecord } from '@/types/expense';
 export type ExpenseData = {
   status: EntryStatus;
   expenseDate: string;
+  paidOn: string | null;
   categoryId: string;
   item: string;
   payeeTeamMemberId: string | null;
@@ -35,6 +36,7 @@ function toRecord(row: ExpenseRow): ExpenseRecord {
     id: row.id,
     status: row.status,
     expenseDate: dateToIsoDate(row.expenseDate),
+    paidOn: row.paidOn ? dateToIsoDate(row.paidOn) : null,
     month: dateToMonthKey(row.month),
     categoryId: row.categoryId,
     categoryName: row.category.name,
@@ -58,6 +60,7 @@ function toRow(data: ExpenseData) {
   return {
     ...data,
     expenseDate: isoDateToDate(data.expenseDate),
+    paidOn: data.paidOn ? isoDateToDate(data.paidOn) : null,
     month: monthKeyToDbDate(monthOfIsoDate(data.expenseDate)),
   };
 }

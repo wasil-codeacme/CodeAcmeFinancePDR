@@ -9,12 +9,13 @@ import {
 import { AUDIT_ENTITY } from '@/lib/constants';
 import { Decimal, ZERO, sumDecimals } from '@/lib/decimal';
 import { MESSAGES } from '@/lib/messages';
-import { toIsoDate } from '@/lib/month';
+import { monthOfIsoDate, toIsoDate, toMonthKey } from '@/lib/month';
 import { PERMISSION, hasPermission } from '@/lib/permissions';
 import { AGEING_BUCKET_ORDER, ageInDays, ageingBucket } from '@/server/domain/ageing';
 import { summarizeReceivables } from '@/server/domain/revenue-math';
 import { figuresOf, toReceivableTotalsView, toRevenueRow } from '@/server/domain/revenue-view';
 import { ForbiddenError, NotFoundError, RuleViolationError } from '@/server/errors';
+import { assertMonthsOpen, isMonthClosed } from '@/server/period-guard';
 import { auditedChange, auditedCreate } from '@/server/repositories/audited-write';
 import { clientRepository } from '@/server/repositories/client.repository';
 import { revenueRepository } from '@/server/repositories/revenue.repository';
@@ -72,6 +73,7 @@ function invoiceStatusAfter(outstanding: Decimal): InvoiceStatus {
 
 /** "Mark received": full or partial; escrow funding is recorded as safe but not yet cash. */
 export async function recordReceipt(actor: SessionUser, input: RecordReceiptInput): Promise<void> {
+  await assertMonthsOpen(monthOfIsoDate(input.receivedOn));
   const entry = await requireConfirmedEntry(input.revenueEntryId);
   const figures = figuresOf(entry);
   const amount = new Decimal(input.amount);
@@ -97,6 +99,7 @@ export async function releaseEscrow(actor: SessionUser, input: ReleaseEscrowInpu
   const receipt = await revenueRepository.findReceipt(input.receiptId);
   if (!receipt) throw new NotFoundError();
   if (!receipt.isEscrow) throw new RuleViolationError(MESSAGES.RECEIVABLE.RECEIPT_NOT_ESCROW);
+  await assertMonthsOpen(monthOfIsoDate(input.receivedOn));
   await auditedChange(actor.id, {
     action: AuditAction.UPDATE,
     entityType: AUDIT_ENTITY.RECEIPT,
@@ -119,6 +122,7 @@ export async function deleteReceipt(actor: SessionUser, receiptId: string): Prom
   if (!hasPermission(actor.role, PERMISSION.ENTRIES_DELETE_CONFIRMED)) throw new ForbiddenError();
   const receipt = await revenueRepository.findReceipt(receiptId);
   if (!receipt) throw new NotFoundError();
+  await assertMonthsOpen(toMonthKey(receipt.receivedOn));
   await auditedChange(actor.id, {
     action: AuditAction.DELETE,
     entityType: AUDIT_ENTITY.RECEIPT,
@@ -129,8 +133,9 @@ export async function deleteReceipt(actor: SessionUser, receiptId: string): Prom
 }
 
 /**
- * Reduces or writes off money that will not arrive. With no month close yet (PRD step 2),
- * the adjustment posts to the entry's own booking month and flows through its profit.
+ * Reduces or writes off money that will not arrive. It lowers profit in the booking month
+ * while that month is open; once it is closed, the adjustment posts to the month of the
+ * adjustment date instead (PRD §5.6), so closed figures never change.
  */
 export async function adjustReceivable(
   actor: SessionUser,
@@ -144,11 +149,15 @@ export async function adjustReceivable(
     input.kind === AdjustmentKind.WRITE_OFF ? outstanding : new Decimal(input.amount ?? 0);
   if (amount.greaterThan(outstanding))
     throw new RuleViolationError(MESSAGES.RECEIVABLE.AMOUNT_EXCEEDS_OUTSTANDING);
+  const postingMonth = (await isMonthClosed(entry.bookingMonth))
+    ? monthOfIsoDate(input.adjustedOn)
+    : entry.bookingMonth;
+  await assertMonthsOpen(postingMonth);
   await auditedCreate(actor.id, AUDIT_ENTITY.RECEIVABLE_ADJUSTMENT, () =>
     revenueRepository.createAdjustment({
       revenueEntryId: entry.id,
       adjustedOn: input.adjustedOn,
-      postingMonth: entry.bookingMonth,
+      postingMonth,
       amount: amount.toString(),
       kind: input.kind,
       reason: input.reason,
@@ -179,6 +188,7 @@ export async function createStandaloneReceivable(
   actor: SessionUser,
   input: StandaloneReceivableInput,
 ): Promise<void> {
+  await assertMonthsOpen(input.bookingMonth);
   if (!(await clientRepository.findById(input.clientId))) throw new NotFoundError();
   await auditedCreate(actor.id, AUDIT_ENTITY.REVENUE_ENTRY, () =>
     revenueRepository.create(
