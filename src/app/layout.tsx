@@ -3,6 +3,8 @@ import { IBM_Plex_Mono, Inter } from 'next/font/google';
 import type { ReactNode } from 'react';
 
 import { Providers } from '@/components/providers';
+import { env } from '@/config/env';
+import { SITE } from '@/lib/site';
 
 import '@/app/globals.css';
 
@@ -15,8 +17,17 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: { default: 'CodeAcme Finance', template: '%s · CodeAcme Finance' },
-  description: 'Revenue, receivables, expenses and P&L for CodeAcme.',
+  metadataBase: new URL(env.APP_URL),
+  title: { default: SITE.NAME, template: `%s · ${SITE.NAME}` },
+  description: SITE.DESCRIPTION,
+  applicationName: SITE.NAME,
+  openGraph: {
+    type: 'website',
+    siteName: SITE.NAME,
+    title: SITE.NAME,
+    description: SITE.DESCRIPTION,
+  },
+  twitter: { card: 'summary_large_image', title: SITE.NAME, description: SITE.DESCRIPTION },
   robots: { index: false, follow: false },
 };
 

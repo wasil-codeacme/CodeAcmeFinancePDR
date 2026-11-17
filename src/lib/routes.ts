@@ -44,10 +44,17 @@ export const ROUTES = {
   API: {
     HEALTH: '/api/health',
   },
+  /** Generated icons and link-preview images (Next metadata routes). */
+  BRAND_IMAGES: ['/icon', '/apple-icon', '/opengraph-image', '/twitter-image'],
 } as const;
 
 /** Routes reachable without a session; everything else requires login. */
-export const PUBLIC_ROUTES: readonly string[] = [ROUTES.AUTH.LOGIN, ROUTES.API.HEALTH];
+export const PUBLIC_ROUTES: readonly string[] = [
+  ROUTES.AUTH.LOGIN,
+  ROUTES.API.HEALTH,
+  // Chat apps fetch link previews without a session, so the images must be reachable.
+  ...ROUTES.BRAND_IMAGES,
+];
 
 export function withSearchParams(path: string, params: Record<string, string | undefined>): string {
   const search = new URLSearchParams();
