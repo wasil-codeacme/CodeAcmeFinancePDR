@@ -256,6 +256,27 @@
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* The fading page is painted on a layer above everything, whatever its z-index. The sticky top
+   bar gets its own layer that swaps instantly, so content never slides over it mid-fade. */
+::view-transition-group(app-header),
+::view-transition-old(app-header),
+::view-transition-new(app-header) {
+  animation: none;
+}
+::view-transition-old(app-header) {
+  display: none;
+}
+
+/* Phones swap pages instantly: a fade there drew the page over the open side panel and made the
+   fixed bottom tab bar flicker. */
+@media (width < 48rem) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(*),
   ::view-transition-new(*),

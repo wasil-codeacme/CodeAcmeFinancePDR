@@ -18,6 +18,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Role } from '@/generated/prisma/enums';
@@ -55,6 +56,11 @@ type AppSidebarProps = { user: { name: string; email: string; role: Role } };
 /** Only sections the user's role may open are listed (permissions are re-checked on the server). */
 export function AppSidebar({ user }: AppSidebarProps) {
   const activeHref = navItemFor(usePathname())?.href;
+  const { isMobile, setOpenMobile } = useSidebar();
+  // On a phone the panel covers the page, so tapping a destination should reveal it.
+  const closeOnPhone = () => {
+    if (isMobile) setOpenMobile(false);
+  };
   return (
     <Sidebar collapsible="icon">
       <SidebarBrand />
@@ -76,7 +82,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
                           isActive={item.href === activeHref}
                           tooltip={item.label}
                         >
-                          <Link href={item.href} prefetch>
+                          <Link href={item.href} prefetch onClick={closeOnPhone}>
                             <Icon />
                             <span>{item.label}</span>
                           </Link>
