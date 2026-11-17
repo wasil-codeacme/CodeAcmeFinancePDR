@@ -50,6 +50,7 @@ export const commissionRuleSchema = z.object({
   effectiveFrom: monthKeySchema,
   ratePercent: percentSchema,
   base: z.enum(CommissionBase),
+  categoryId: optionalIdSchema,
 });
 export type CommissionRuleInput = z.infer<typeof commissionRuleSchema>;
 

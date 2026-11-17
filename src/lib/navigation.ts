@@ -10,6 +10,9 @@ export const NAV_ICON = {
   PNL: 'pnl',
   CLIENTS: 'clients',
   SETTINGS: 'settings',
+  ACCOUNTS: 'accounts',
+  PARTNERS: 'partners',
+  CLOSE: 'close',
 } as const;
 export type NavIcon = (typeof NAV_ICON)[keyof typeof NAV_ICON];
 
@@ -89,6 +92,35 @@ export const NAV_GROUPS: readonly NavGroup[] = [
         href: ROUTES.CLIENTS,
         icon: NAV_ICON.CLIENTS,
         permission: PERMISSION.ENTRIES_WRITE,
+        inTabBar: false,
+      },
+    ],
+  },
+  {
+    label: 'Month end',
+    items: [
+      {
+        label: 'Accounts',
+        shortLabel: 'Accounts',
+        href: ROUTES.ACCOUNTS,
+        icon: NAV_ICON.ACCOUNTS,
+        permission: PERMISSION.BALANCES_WRITE,
+        inTabBar: false,
+      },
+      {
+        label: 'Partners',
+        shortLabel: 'Partners',
+        href: ROUTES.PARTNERS,
+        icon: NAV_ICON.PARTNERS,
+        permission: PERMISSION.DISTRIBUTION_VIEW,
+        inTabBar: false,
+      },
+      {
+        label: 'Month close',
+        shortLabel: 'Close',
+        href: ROUTES.CLOSE,
+        icon: NAV_ICON.CLOSE,
+        permission: PERMISSION.PERIOD_CLOSE,
         inTabBar: false,
       },
     ],

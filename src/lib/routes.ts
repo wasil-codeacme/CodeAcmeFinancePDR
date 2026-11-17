@@ -10,6 +10,10 @@ export const ROUTES = {
   RECURRING_TEMPLATES: '/expenses/recurring',
   PNL: '/pnl',
   CLIENTS: '/clients',
+  ACCOUNTS: '/accounts',
+  ACCOUNT_DETAIL: (accountId: string) => `/accounts/${accountId}`,
+  PARTNERS: '/partners',
+  CLOSE: '/close',
   CLIENT_DETAIL: (clientId: string) => `/clients/${clientId}`,
   SETTINGS: {
     ROOT: '/settings',

@@ -80,3 +80,18 @@ describe('closePostings', () => {
     ]);
   });
 });
+
+describe('closePostings precision', () => {
+  it('posts exact amounts so take-home in the ledger equals the P&L to the cent', () => {
+    const distribution = computeDistribution({
+      distributableProfit: new Decimal('970.456834532374'),
+      shares: [{ partnerId: 'c', partnerName: 'C', splitPercent: '30' }],
+      reserveRule: { enabled: true, reservePercent: '5', appliesInLossMonth: true },
+      rate: null,
+    });
+    const [share, reserve] = closePostings(distribution, {});
+    const takeHome = new Decimal(share?.amount ?? 0).plus(reserve?.amount ?? 0);
+    expect(takeHome.toFixed(2)).toBe(distribution.partners[0]?.takeHome.toFixed(2));
+    expect(takeHome.toFixed(2)).toBe('242.61');
+  });
+});

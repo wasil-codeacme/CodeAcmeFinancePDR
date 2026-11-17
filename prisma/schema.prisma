@@ -523,8 +523,9 @@ model PartnerLedgerEntry {
   month       DateTime        @db.Date
   occurredOn  DateTime        @db.Date
   type        LedgerEntryType
-  /// Signed, in the reporting currency: shares and funding are positive, reserves and withdrawals negative.
-  amount      Decimal         @db.Decimal(14, 2)
+  /// Signed, in the reporting currency: shares and funding are positive, reserves and withdrawals
+  /// negative. Kept exact (not cents) because close postings come straight from the exact P&L.
+  amount      Decimal         @db.Decimal(24, 12)
   accountId   String?
   note        String?         @db.Text
   /// Set on entries the month close posts; reopening the month removes exactly these.

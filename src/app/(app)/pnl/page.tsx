@@ -10,6 +10,7 @@ import { MonthPicker } from '@/components/shared/month-picker';
 import { PageHeader } from '@/components/shared/page-header';
 import { ControlsSkeleton, TableSkeleton } from '@/components/shared/skeletons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { SEARCH_PARAM } from '@/lib/constants';
 import { MESSAGES } from '@/lib/messages';
@@ -34,7 +35,12 @@ async function PnlContent({ searchParams }: Pick<PageProps<'/pnl'>, 'searchParam
 
   return (
     <div className="grid gap-5">
-      <MonthPicker month={month} />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <MonthPicker month={month} />
+        {result.kind === PNL_RESULT.READY && result.closedAt ? (
+          <Badge variant="secondary">Closed — figures as closed</Badge>
+        ) : null}
+      </div>
       <PendingSection fallback={<TableSkeleton rows={14} />}>
         {result.kind === PNL_RESULT.READY ? (
           <div className="grid gap-6">

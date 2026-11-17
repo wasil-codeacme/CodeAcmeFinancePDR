@@ -18,10 +18,11 @@ import { commissionRuleSchema } from '@/server/validators/settings.schema';
 type CommissionFormProps = {
   rules: CommissionRuleRecord[];
   earners: string[];
+  categories: { value: string; label: string }[];
   defaultMonth: MonthKey;
 };
 
-export function CommissionForm({ rules, earners, defaultMonth }: CommissionFormProps) {
+export function CommissionForm({ rules, earners, categories, defaultMonth }: CommissionFormProps) {
   const latest = rules[0];
   const { form, submit, isPending } = useActionForm({
     schema: commissionRuleSchema,
@@ -29,6 +30,7 @@ export function CommissionForm({ rules, earners, defaultMonth }: CommissionFormP
       effectiveFrom: defaultMonth,
       ratePercent: latest?.ratePercent ?? '',
       base: latest?.base ?? CommissionBase.NET_REVENUE,
+      categoryId: latest?.categoryId ?? '',
     },
     action: saveCommissionRule,
     successMessage: MESSAGES.SETTINGS.VERSION_SAVED,
@@ -48,6 +50,13 @@ export function CommissionForm({ rules, earners, defaultMonth }: CommissionFormP
               options={optionsFrom(COMMISSION_BASE_LABEL)}
             />
           </div>
+          <SelectField
+            name="categoryId"
+            label="Posted to expense category"
+            hint="Usually Sales Salaries."
+            options={categories}
+            emptyLabel="Not set"
+          />
           <MonthField name="effectiveFrom" label="Applies from month" className="max-w-48" />
           <div>
             <SubmitButton isPending={isPending}>Save commission</SubmitButton>

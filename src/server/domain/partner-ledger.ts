@@ -1,6 +1,5 @@
 import { LedgerEntryType } from '@/generated/prisma/enums';
 import { Decimal, type DecimalString, ZERO } from '@/lib/decimal';
-import { MONEY_DECIMALS } from '@/lib/constants';
 import { type MonthKey, compareMonthKeys } from '@/lib/month';
 import type { Distribution } from '@/server/domain/distribution';
 
@@ -65,13 +64,10 @@ export function summarizeLedger(entries: readonly LedgerEntryInput[]): LedgerMon
 
 export type ClosePosting = { partnerId: string; type: LedgerEntryType; amount: DecimalString };
 
-function cents(value: Decimal): DecimalString {
-  return value.toDecimalPlaces(MONEY_DECIMALS, Decimal.ROUND_HALF_UP).toString();
-}
-
 /**
  * What closing a month writes to each partner's ledger: the baseline share, the reserve held
- * back (negative), and any external funding the partner put in that month.
+ * back (negative), and any external funding the partner put in that month. Amounts stay
+ * exact, like the P&L they come from, so ledger take-home matches the P&L to the cent.
  */
 export function closePostings(
   distribution: Distribution,
@@ -82,14 +78,14 @@ export function closePostings(
       {
         partnerId: partner.partnerId,
         type: LedgerEntryType.PROFIT_SHARE,
-        amount: cents(partner.baselineShare),
+        amount: partner.baselineShare.toString(),
       },
     ];
     if (!partner.reserve.isZero()) {
       postings.push({
         partnerId: partner.partnerId,
         type: LedgerEntryType.RESERVE,
-        amount: cents(partner.reserve.negated()),
+        amount: partner.reserve.negated().toString(),
       });
     }
     const funded = fundedByPartnerId[partner.partnerId];
@@ -97,7 +93,7 @@ export function closePostings(
       postings.push({
         partnerId: partner.partnerId,
         type: LedgerEntryType.FUNDING_IN,
-        amount: cents(funded),
+        amount: funded.toString(),
       });
     }
     return postings;

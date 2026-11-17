@@ -1,12 +1,15 @@
-import { EntryStatus, type FundingSource } from '@/generated/prisma/enums';
+import { EntryStatus, type ExpenseKind, type FundingSource } from '@/generated/prisma/enums';
 import type { Prisma } from '@/generated/prisma/client';
 import type { DecimalString } from '@/lib/decimal';
-import { type MonthKey, isoDateToDate, monthOfIsoDate } from '@/lib/month';
+import { type MonthKey, isoDateToDate, monthDateRange, monthOfIsoDate } from '@/lib/month';
 import { db } from '@/server/repositories/db';
 import { dateToIsoDate, dateToMonthKey, monthKeyToDbDate } from '@/server/repositories/mappers';
 import type { ExpenseRecord } from '@/types/expense';
 
 export type ExpenseData = {
+  /** Defaults to a hand-entered expense; set for BD commission and transfer fees. */
+  kind?: ExpenseKind;
+  transferId?: string | null;
   status: EntryStatus;
   expenseDate: string;
   paidOn: string | null;
@@ -75,6 +78,32 @@ export const expenseRepository = {
       orderBy: [{ expenseDate: 'asc' }, { createdAt: 'asc' }],
     });
     return rows.map(toRecord);
+  },
+
+  /** Advances: confirmed expenses paid in this month that count in a later month. */
+  async listAdvancesPaidIn(month: MonthKey): Promise<ExpenseRecord[]> {
+    const { start, endExclusive } = monthDateRange(month);
+    const rows = await db().expense.findMany({
+      where: {
+        ...LIVE,
+        status: EntryStatus.CONFIRMED,
+        paidOn: { gte: start, lt: endExclusive },
+        month: { gte: endExclusive },
+      },
+      include: EXPENSE_INCLUDE,
+      orderBy: { month: 'asc' },
+    });
+    return rows.map(toRecord);
+  },
+
+  async listByKindForMonth(
+    month: MonthKey,
+    kind: ExpenseKind,
+  ): Promise<{ id: string; status: EntryStatus; payeeTeamMemberId: string | null }[]> {
+    return db().expense.findMany({
+      where: { ...LIVE, kind, month: monthKeyToDbDate(month) },
+      select: { id: true, status: true, payeeTeamMemberId: true },
+    });
   },
 
   countDraftsForMonth(month: MonthKey): Promise<number> {

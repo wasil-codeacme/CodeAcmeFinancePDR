@@ -79,6 +79,11 @@ function ExpenseFields({ options }: { options: ExpenseFormOptions }) {
           options={options.categories}
         />
         <DateField name="expenseDate" label="Date" hint="Sets which month it counts in." />
+        <DateField
+          name="paidOn"
+          label="Paid on (advance only)"
+          hint="Only if the cash left in an earlier month."
+        />
       </div>
       <TextField name="item" label="Item or vendor" />
       <div className="grid gap-3 sm:grid-cols-[1fr_8rem]">
@@ -124,6 +129,7 @@ export function CreateExpenseForm({ options, defaultDate, onDone }: CreateExpens
     schema: expenseSchema,
     defaultValues: {
       expenseDate: defaultDate,
+      paidOn: '',
       categoryId: '',
       item: '',
       payeeTeamMemberId: '',
@@ -160,6 +166,7 @@ export function EditExpenseForm({ expense, options, onDone }: EditExpenseFormPro
     defaultValues: {
       id: expense.id,
       expenseDate: expense.expenseDate,
+      paidOn: expense.paidOn ?? '',
       categoryId: expense.categoryId,
       item: expense.item,
       payeeTeamMemberId: expense.payeeTeamMemberId ?? '',

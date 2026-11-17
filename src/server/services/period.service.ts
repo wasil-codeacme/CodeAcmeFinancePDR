@@ -1,18 +1,33 @@
-import { AuditAction, PeriodStatus } from '@/generated/prisma/enums';
+import { AuditAction, ExpenseKind, PeriodStatus } from '@/generated/prisma/enums';
 import { AUDIT_ENTITY } from '@/lib/constants';
 import { MESSAGES } from '@/lib/messages';
-import { type MonthKey, dateInMonth } from '@/lib/month';
+import { sumDecimals } from '@/lib/decimal';
+import { type MonthKey, addMonths, dateInMonth } from '@/lib/month';
 import { closePostings } from '@/server/domain/partner-ledger';
 import { toClosedPeriodSnapshot } from '@/server/domain/pnl-snapshot';
-import { RuleViolationError } from '@/server/errors';
-import { PNL_RESULT, type ReadyPnl, loadMonthlyPnl } from '@/server/read-models/monthly-pnl';
+import { NotFoundError, RuleViolationError } from '@/server/errors';
+import { assertMonthsOpen } from '@/server/period-guard';
+import { loadBdCommission } from '@/server/read-models/bd-commission';
+import {
+  PNL_RESULT,
+  type ReadyPnl,
+  loadMonthlyPnl,
+  readMonthlyPnl,
+} from '@/server/read-models/monthly-pnl';
+import { accountBalanceRepository } from '@/server/repositories/account-balance.repository';
+import { auditedChange, auditedCreate } from '@/server/repositories/audited-write';
 import { auditRepository } from '@/server/repositories/audit.repository';
 import { runInTransaction } from '@/server/repositories/db';
 import { expenseRepository } from '@/server/repositories/expense.repository';
 import { ledgerRepository } from '@/server/repositories/ledger.repository';
-import { periodRepository } from '@/server/repositories/period.repository';
+import {
+  nextMonthReserveRepository,
+  periodRepository,
+} from '@/server/repositories/period.repository';
 import { revenueRepository } from '@/server/repositories/revenue.repository';
+import { accountRepository } from '@/server/repositories/settings.repository';
 import type { SessionUser } from '@/types/auth';
+import type { CloseOverview } from '@/types/period';
 
 const LAST_DAY = 31;
 
@@ -98,5 +113,82 @@ export async function reopenMonth(
       before: period,
       after: { month, reason, ledgerEntriesRemoved: removed },
     });
+  });
+}
+
+/** Everything the month-close screen shows: readiness checks, the P&L, reserves and advances. */
+export async function getCloseOverview(month: MonthKey): Promise<CloseOverview> {
+  const [
+    period,
+    revenueDrafts,
+    expenseDrafts,
+    pnl,
+    commission,
+    posted,
+    reserves,
+    advances,
+    balances,
+    accounts,
+  ] = await Promise.all([
+    periodRepository.findByMonth(month),
+    revenueRepository.countDraftsForMonth(month),
+    expenseRepository.countDraftsForMonth(month),
+    readMonthlyPnl(month, { includeDistribution: true }),
+    loadBdCommission(month),
+    expenseRepository.listByKindForMonth(month, ExpenseKind.BD_COMMISSION),
+    nextMonthReserveRepository.listForMonth(month),
+    expenseRepository.listAdvancesPaidIn(month),
+    accountBalanceRepository.listBalances(),
+    accountRepository.list(),
+  ]);
+  const activeAccounts = accounts.filter((account) => account.active);
+  const enteredIds = new Set(
+    balances.filter((balance) => balance.month === month).map((balance) => balance.accountId),
+  );
+  return {
+    month,
+    isClosed: period?.status === PeriodStatus.CLOSED,
+    closedAt: period?.closedAt ?? null,
+    reopenReason: period?.reopenReason ?? null,
+    checks: {
+      drafts: revenueDrafts + expenseDrafts,
+      rateSet: pnl.kind === PNL_RESULT.READY && pnl.rate !== null,
+      splitSet: pnl.kind === PNL_RESULT.READY && pnl.hasSplit,
+      commissionDue: sumDecimals(commission.rows.map((row) => row.commission)).toString(),
+      commissionPosted: posted.length > 0,
+      balancesEntered: activeAccounts.filter((account) => enteredIds.has(account.id)).length,
+      activeAccounts: activeAccounts.length,
+    },
+    pnl,
+    reserves,
+    advances,
+  };
+}
+
+/** Cash set aside at close for next month's costs (replaces the hand-typed Closing cells). */
+export async function addNextMonthReserve(
+  actor: SessionUser,
+  input: { month: MonthKey; amount: string; note: string | null },
+): Promise<void> {
+  await assertMonthsOpen(input.month);
+  await auditedCreate(actor.id, AUDIT_ENTITY.NEXT_MONTH_RESERVE, () =>
+    nextMonthReserveRepository.create({
+      ...input,
+      targetMonth: addMonths(input.month, 1),
+      createdById: actor.id,
+    }),
+  );
+}
+
+export async function deleteNextMonthReserve(actor: SessionUser, id: string): Promise<void> {
+  const reserve = await nextMonthReserveRepository.findById(id);
+  if (!reserve) throw new NotFoundError();
+  await assertMonthsOpen(reserve.month);
+  await auditedChange(actor.id, {
+    action: AuditAction.DELETE,
+    entityType: AUDIT_ENTITY.NEXT_MONTH_RESERVE,
+    entityId: id,
+    loadBefore: async () => reserve,
+    apply: () => nextMonthReserveRepository.softDelete(id),
   });
 }

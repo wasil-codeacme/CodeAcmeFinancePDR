@@ -1,5 +1,8 @@
 import {
   ArrowDownToLine,
+  Landmark,
+  Lock,
+  UsersRound,
   Building2,
   LayoutDashboard,
   type LucideIcon,
@@ -21,4 +24,7 @@ export const NAV_ICONS: Record<NavIcon, LucideIcon> = {
   [NAV_ICON.PNL]: Receipt,
   [NAV_ICON.CLIENTS]: Building2,
   [NAV_ICON.SETTINGS]: Settings,
+  [NAV_ICON.ACCOUNTS]: Landmark,
+  [NAV_ICON.PARTNERS]: UsersRound,
+  [NAV_ICON.CLOSE]: Lock,
 };

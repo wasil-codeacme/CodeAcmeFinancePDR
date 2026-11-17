@@ -91,6 +91,23 @@ export const MESSAGES = {
     NOTHING_SELECTED: 'Pick at least one month to import.',
     DONE: 'Import finished.',
   },
+  ACCOUNT: {
+    CLOSING_SAVED: 'Closing balance saved.',
+    TRANSFER_RECORDED: 'Transfer recorded.',
+    SAME_ACCOUNT: 'Pick two different accounts.',
+    FEE_CATEGORY_REQUIRED: 'Pick the expense category for the fee.',
+    RECEIVED_AMOUNT_REQUIRED: 'The accounts use different currencies; enter the amount received.',
+  },
+  COMMISSION: {
+    CATEGORY_REQUIRED:
+      'Set a commission rule with an expense category in Settings → BD commission.',
+    NOTHING_DUE: 'No BD commission is due: no confirmed revenue this month names a BD person.',
+  },
+  LEDGER: {
+    WITHDRAWAL_RECORDED: 'Withdrawal recorded.',
+    FUNDING_RECORDED: 'Funding recorded.',
+    POSTED_BY_CLOSE: 'This entry was posted by the month close. Reopen the month to change it.',
+  },
   PERIOD: {
     CLOSED_MONTH: 'This month is closed and read-only. Reopen it first:',
     ALREADY_CLOSED: 'That month is already closed.',

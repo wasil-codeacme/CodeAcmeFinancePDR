@@ -69,7 +69,7 @@ export function GrossInput({
   );
 }
 
-/** Fee % is editable; the resulting fee amount sits under it. */
+/** Fee % is editable; the resulting fee sits beside it on the same line. */
 export function FeeInput({
   entry,
   figures,
@@ -77,20 +77,22 @@ export function FeeInput({
   onEdit,
 }: Pick<RevenueEntryViewProps, 'entry' | 'figures' | 'disabled' | 'onEdit'>) {
   return (
-    <div className="grid justify-items-end gap-0.5">
-      <div className="flex items-center gap-1">
+    <div className="flex items-center justify-end gap-2">
+      <div className="relative">
         <InlineTextCell
           numeric
           label="Fee %"
           value={entry.feePercent}
           pattern={PERCENT_INPUT_PATTERN}
           disabled={disabled}
-          className="w-14 min-w-0"
+          className="w-16 min-w-0 pr-6"
           onCommit={(feePercent) => onEdit({ feePercent })}
         />
-        <span className="text-muted-foreground text-xs">%</span>
+        <span className="text-muted-foreground pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-xs">
+          %
+        </span>
       </div>
-      <Money value={figures.fee} className="text-muted-foreground text-xs" />
+      <Money value={figures.fee} className="text-muted-foreground w-16 text-right" />
     </div>
   );
 }

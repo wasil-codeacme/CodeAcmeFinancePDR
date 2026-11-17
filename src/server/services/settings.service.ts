@@ -169,6 +169,7 @@ export async function saveCommissionRule(
       commissionRuleRepository.upsert(input.effectiveFrom, {
         ratePercent: input.ratePercent,
         base: input.base,
+        categoryId: input.categoryId,
       }),
   });
 }

@@ -204,6 +204,34 @@ export const revenueRepository = {
     return toRecord(row);
   },
 
+  /** Confirmed booked entries in the month that name the BD person who closed them. */
+  async commissionEntriesForMonth(
+    month: MonthKey,
+  ): Promise<{ closedByTeamMemberId: string; gross: DecimalString; feePercent: DecimalString }[]> {
+    const rows = await db().revenueEntry.findMany({
+      where: {
+        ...LIVE,
+        kind: RevenueKind.BOOKED,
+        status: EntryStatus.CONFIRMED,
+        bookingMonth: monthKeyToDbDate(month),
+        closedByTeamMemberId: { not: null },
+        gross: { not: null },
+      },
+      select: { closedByTeamMemberId: true, gross: true, feePercent: true },
+    });
+    return rows.flatMap((row) =>
+      row.closedByTeamMemberId && row.gross
+        ? [
+            {
+              closedByTeamMemberId: row.closedByTeamMemberId,
+              gross: row.gross.toString(),
+              feePercent: row.feePercent.toString(),
+            },
+          ]
+        : [],
+    );
+  },
+
   countDraftsForMonth(month: MonthKey): Promise<number> {
     return db().revenueEntry.count({
       where: { ...LIVE, status: EntryStatus.DRAFT, bookingMonth: monthKeyToDbDate(month) },

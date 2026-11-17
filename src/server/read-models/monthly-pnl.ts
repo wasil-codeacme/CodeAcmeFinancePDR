@@ -1,12 +1,14 @@
-import { FundingSource } from '@/generated/prisma/enums';
+import { FundingSource, PeriodStatus } from '@/generated/prisma/enums';
 import { Decimal, type DecimalString } from '@/lib/decimal';
-import type { MonthKey } from '@/lib/month';
+import { type MonthKey, isMonthKey } from '@/lib/month';
 import { toReportingCurrency } from '@/server/domain/currency';
 import { pickEffectiveVersion } from '@/server/domain/effective-version';
 import { type MonthlyPnl, computeMonthlyPnl } from '@/server/domain/pnl';
+import { parseClosedPeriodSnapshot } from '@/server/domain/pnl-snapshot';
 import { MissingExchangeRateError } from '@/server/errors';
 import { companyRepository } from '@/server/repositories/company.repository';
 import { expenseRepository } from '@/server/repositories/expense.repository';
+import { periodRepository } from '@/server/repositories/period.repository';
 import {
   reserveRuleRepository,
   splitVersionRepository,
@@ -104,4 +106,31 @@ export async function loadMonthlyPnl(
     if (error instanceof MissingExchangeRateError) return { kind: PNL_RESULT.MISSING_RATE };
     throw error;
   }
+}
+
+/**
+ * The month's P&L as the business should see it: a closed month from the snapshot it was
+ * closed with (PRD §5.6), an open month computed live. Founder-only distribution figures are
+ * dropped for anyone who may not see them.
+ */
+export async function readMonthlyPnl(
+  month: MonthKey,
+  options: { includeDistribution: boolean },
+): Promise<MonthlyPnlResult> {
+  const period = await periodRepository.findByMonth(month);
+  const snapshot =
+    period?.status === PeriodStatus.CLOSED ? parseClosedPeriodSnapshot(period.snapshot) : null;
+  if (!snapshot) return loadMonthlyPnl(month, options);
+  return {
+    kind: PNL_RESULT.READY,
+    pnl: options.includeDistribution ? snapshot.pnl : { ...snapshot.pnl, distribution: null },
+    rate:
+      snapshot.rate && isMonthKey(snapshot.rate.month)
+        ? { value: snapshot.rate.value, month: snapshot.rate.month }
+        : null,
+    currencies: snapshot.currencies,
+    hasSplit: true,
+    fundedByPartnerId: {},
+    closedAt: period?.closedAt ?? null,
+  };
 }

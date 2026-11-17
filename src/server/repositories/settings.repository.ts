@@ -14,6 +14,8 @@ export type CommissionRuleRecord = {
   effectiveFrom: MonthKey;
   ratePercent: DecimalString;
   base: CommissionBase;
+  /** The expense category BD commission is posted to (a sales line in the workbook). */
+  categoryId: string | null;
 };
 
 export type AccountRecord = {
@@ -60,12 +62,13 @@ export const commissionRuleRepository = {
       effectiveFrom: dateToMonthKey(row.effectiveFrom),
       ratePercent: decimalToString(row.ratePercent),
       base: row.base,
+      categoryId: row.categoryId,
     }));
   },
 
   async upsert(
     effectiveFrom: MonthKey,
-    data: { ratePercent: DecimalString; base: CommissionBase },
+    data: { ratePercent: DecimalString; base: CommissionBase; categoryId: string | null },
   ): Promise<{ id: string }> {
     const effectiveDate = monthKeyToDbDate(effectiveFrom);
     return db().commissionRuleVersion.upsert({

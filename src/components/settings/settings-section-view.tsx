@@ -61,11 +61,24 @@ export async function SettingsSectionView({
       );
     }
     case SETTINGS_SECTION.COMMISSION: {
-      const [rules, members] = await Promise.all([listCommissionRules(), listTeamMembers()]);
+      const [rules, members, categories] = await Promise.all([
+        listCommissionRules(),
+        listTeamMembers(),
+        listExpenseCategories(),
+      ]);
       const earners = members
         .filter((member) => member.earnsCommission && member.active)
         .map((member) => member.name);
-      return <CommissionForm rules={rules} earners={earners} defaultMonth={currentMonth} />;
+      return (
+        <CommissionForm
+          rules={rules}
+          earners={earners}
+          categories={categories
+            .filter((category) => category.active)
+            .map((category) => ({ value: category.id, label: category.name }))}
+          defaultMonth={currentMonth}
+        />
+      );
     }
     case SETTINGS_SECTION.ACCOUNTS: {
       const [accounts, company] = await Promise.all([listAccounts(), getCompany()]);
