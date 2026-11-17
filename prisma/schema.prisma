@@ -1,0 +1,587 @@
+// Money is stored as exact decimals and rounded only for display, because the
+// reference workbook sums unrounded PKR/rate conversions (see docs/adr/0002).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  FOUNDER
+  FINANCE_MANAGER
+}
+
+enum UserStatus {
+  INVITED
+  ACTIVE
+  REMOVED
+}
+
+enum AccountType {
+  BANK
+  PLATFORM
+  WALLET
+  CASH
+  OTHER
+}
+
+enum PnlLine {
+  OPERATIONS_OVERHEAD
+  OPERATIONS_SALARIES
+  MANAGEMENT
+  SALES_SALARIES
+  SALES_OVERHEAD
+}
+
+enum TeamMemberType {
+  PARTNER
+  EMPLOYEE
+  CONTRACTOR
+  BD
+}
+
+enum CommissionBase {
+  NET_REVENUE
+  GROSS_REVENUE
+}
+
+enum ProjectStatus {
+  IN_PROGRESS
+  IN_REVIEW
+  COMPLETED
+  PARTIAL
+}
+
+enum InvoiceStatus {
+  INITIATED
+  PROCESSED
+  PARTIALLY_PAID
+  PAID
+}
+
+enum EntryStatus {
+  DRAFT
+  CONFIRMED
+}
+
+enum RevenueKind {
+  BOOKED
+  STANDALONE
+}
+
+enum AdjustmentKind {
+  REDUCTION
+  WRITE_OFF
+}
+
+enum FundingSource {
+  COMPANY
+  EXTERNAL
+}
+
+enum Frequency {
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+enum PeriodStatus {
+  OPEN
+  CLOSED
+}
+
+enum LedgerEntryType {
+  PROFIT_SHARE
+  RESERVE
+  WITHDRAWAL
+  FUNDING_IN
+  ADJUSTMENT
+}
+
+enum ExpenseKind {
+  MANUAL
+  BD_COMMISSION
+  TRANSFER_FEE
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  CLOSE
+  REOPEN
+}
+
+model User {
+  id          String     @id @default(cuid())
+  email       String     @unique @db.VarChar(255)
+  name        String     @db.VarChar(255)
+  role        Role
+  status      UserStatus @default(INVITED)
+  invitedById String?
+  lastLoginAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  sessions   Session[]
+  loginCodes LoginCode[]
+}
+
+model LoginCode {
+  id         String    @id @default(cuid())
+  userId     String
+  codeHash   String    @db.VarChar(64)
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique @db.VarChar(64)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CompanySettings {
+  id                    String    @id @default(cuid())
+  singleton             String    @unique @default("COMPANY") @db.VarChar(16)
+  name                  String    @db.VarChar(255)
+  reportingCurrency     String    @db.VarChar(3)
+  displayCurrency       String    @db.VarChar(3)
+  onboardingCompletedAt DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Partner {
+  id        String   @id @default(cuid())
+  name      String   @unique @db.VarChar(255)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shares          ProfitSplitShare[]
+  fundedExpenses  Expense[]
+  fundedTemplates RecurringTemplate[]
+  ledgerEntries   PartnerLedgerEntry[]
+}
+
+model ProfitSplitVersion {
+  id            String   @id @default(cuid())
+  effectiveFrom DateTime @unique @db.Date
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  shares ProfitSplitShare[]
+}
+
+model ProfitSplitShare {
+  id           String  @id @default(cuid())
+  versionId    String
+  partnerId    String
+  splitPercent Decimal @db.Decimal(7, 4)
+
+  version ProfitSplitVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  partner Partner            @relation(fields: [partnerId], references: [id])
+
+  @@unique([versionId, partnerId])
+}
+
+model ReserveRuleVersion {
+  id                 String   @id @default(cuid())
+  effectiveFrom      DateTime @unique @db.Date
+  enabled            Boolean
+  reservePercent     Decimal  @db.Decimal(7, 4)
+  appliesInLossMonth Boolean
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model CommissionRuleVersion {
+  id            String         @id @default(cuid())
+  effectiveFrom DateTime       @unique @db.Date
+  ratePercent   Decimal        @db.Decimal(7, 4)
+  base          CommissionBase
+  categoryId    String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  category ExpenseCategory? @relation(fields: [categoryId], references: [id])
+}
+
+model Account {
+  id                  String      @id @default(cuid())
+  name                String      @unique @db.VarChar(255)
+  type                AccountType
+  currency            String      @db.VarChar(3)
+  ownerLabel          String?     @db.VarChar(255)
+  openingBalance      Decimal     @db.Decimal(14, 2)
+  openingBalanceMonth DateTime    @db.Date
+  active              Boolean     @default(true)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  receipts      Receipt[]
+  expenses      Expense[]
+  templates     RecurringTemplate[]
+  balances      AccountBalance[]
+  transfersOut  Transfer[]           @relation("TransferFrom")
+  transfersIn   Transfer[]           @relation("TransferTo")
+  ledgerEntries PartnerLedgerEntry[]
+}
+
+model Platform {
+  id        String   @id @default(cuid())
+  name      String   @unique @db.VarChar(255)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  feeVersions    PlatformFeeVersion[]
+  clients        Client[]
+  projects       Project[]
+  revenueEntries RevenueEntry[]
+}
+
+model PlatformFeeVersion {
+  id            String   @id @default(cuid())
+  platformId    String
+  effectiveFrom DateTime @db.Date
+  feePercent    Decimal  @db.Decimal(7, 4)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  platform Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)
+
+  @@unique([platformId, effectiveFrom])
+}
+
+model ExpenseCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique @db.VarChar(255)
+  sortOrder Int
+  pnlLine   PnlLine
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  expenses           Expense[]
+  templates          RecurringTemplate[]
+  defaultTeamMembers TeamMember[]
+  commissionRules    CommissionRuleVersion[]
+}
+
+model TeamMember {
+  id                String         @id @default(cuid())
+  name              String         @unique @db.VarChar(255)
+  type              TeamMemberType
+  defaultCategoryId String?
+  earnsCommission   Boolean        @default(false)
+  active            Boolean        @default(true)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  defaultCategory ExpenseCategory?    @relation(fields: [defaultCategoryId], references: [id])
+  expenses        Expense[]
+  templates       RecurringTemplate[]
+  closedRevenue   RevenueEntry[]
+}
+
+model ExchangeRate {
+  id        String   @id @default(cuid())
+  month     DateTime @unique @db.Date
+  rate      Decimal  @db.Decimal(14, 4)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  id                String   @id @default(cuid())
+  name              String   @unique @db.VarChar(255)
+  defaultPlatformId String?
+  defaultFeePercent Decimal? @db.Decimal(7, 4)
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  defaultPlatform Platform?      @relation(fields: [defaultPlatformId], references: [id])
+  projects        Project[]
+  revenueEntries  RevenueEntry[]
+}
+
+model Project {
+  id                 String        @id @default(cuid())
+  clientId           String
+  name               String        @db.VarChar(255)
+  platformId         String?
+  feePercentOverride Decimal?      @db.Decimal(7, 4)
+  status             ProjectStatus @default(IN_PROGRESS)
+  active             Boolean       @default(true)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  client         Client         @relation(fields: [clientId], references: [id])
+  platform       Platform?      @relation(fields: [platformId], references: [id])
+  revenueEntries RevenueEntry[]
+
+  @@unique([clientId, name])
+}
+
+model RevenueEntry {
+  id                   String        @id @default(cuid())
+  kind                 RevenueKind   @default(BOOKED)
+  status               EntryStatus   @default(CONFIRMED)
+  clientId             String
+  projectId            String?
+  platformId           String?
+  bookingMonth         DateTime      @db.Date
+  description          String?       @db.VarChar(255)
+  gross                Decimal?      @db.Decimal(14, 2)
+  feePercent           Decimal       @db.Decimal(7, 4)
+  projectStatus        ProjectStatus
+  invoiceStatus        InvoiceStatus @default(INITIATED)
+  referredBy           String?       @db.VarChar(255)
+  closedByTeamMemberId String?
+  expectedDate         DateTime?     @db.Date
+  notes                String?       @db.Text
+  createdById          String
+  updatedById          String?
+  deletedAt            DateTime?
+  deletedById          String?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  client      Client                 @relation(fields: [clientId], references: [id])
+  project     Project?               @relation(fields: [projectId], references: [id])
+  platform    Platform?              @relation(fields: [platformId], references: [id])
+  closedBy    TeamMember?            @relation(fields: [closedByTeamMemberId], references: [id])
+  receipts    Receipt[]
+  adjustments ReceivableAdjustment[]
+
+  @@index([bookingMonth])
+  @@index([clientId])
+}
+
+model Receipt {
+  id             String    @id @default(cuid())
+  revenueEntryId String
+  receivedOn     DateTime  @db.Date
+  amount         Decimal   @db.Decimal(14, 2)
+  accountId      String?
+  isEscrow       Boolean   @default(false)
+  notes          String?   @db.Text
+  createdById    String
+  deletedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  revenueEntry RevenueEntry @relation(fields: [revenueEntryId], references: [id])
+  account      Account?     @relation(fields: [accountId], references: [id])
+
+  @@index([revenueEntryId])
+}
+
+model ReceivableAdjustment {
+  id             String         @id @default(cuid())
+  revenueEntryId String
+  adjustedOn     DateTime       @db.Date
+  postingMonth   DateTime       @db.Date
+  amount         Decimal        @db.Decimal(14, 2)
+  kind           AdjustmentKind
+  reason         String         @db.Text
+  createdById    String
+  deletedAt      DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  revenueEntry RevenueEntry @relation(fields: [revenueEntryId], references: [id])
+
+  @@index([revenueEntryId])
+  @@index([postingMonth])
+}
+
+model Expense {
+  id                  String        @id @default(cuid())
+  kind                ExpenseKind   @default(MANUAL)
+  status              EntryStatus   @default(CONFIRMED)
+  expenseDate         DateTime      @db.Date
+  month               DateTime      @db.Date
+  /// When cash left the account; set earlier than the expense month for an advance (prepayment).
+  paidOn              DateTime?     @db.Date
+  transferId          String?
+  categoryId          String
+  item                String        @db.VarChar(255)
+  payeeTeamMemberId   String?
+  amount              Decimal       @db.Decimal(14, 2)
+  currency            String        @db.VarChar(3)
+  fundingSource       FundingSource @default(COMPANY)
+  fundingPartnerId    String?
+  paidFromAccountId   String?
+  recurringTemplateId String?
+  notes               String?       @db.Text
+  createdById         String
+  updatedById         String?
+  deletedAt           DateTime?
+  deletedById         String?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  category          ExpenseCategory    @relation(fields: [categoryId], references: [id])
+  payee             TeamMember?        @relation(fields: [payeeTeamMemberId], references: [id])
+  fundingPartner    Partner?           @relation(fields: [fundingPartnerId], references: [id])
+  paidFromAccount   Account?           @relation(fields: [paidFromAccountId], references: [id])
+  recurringTemplate RecurringTemplate? @relation(fields: [recurringTemplateId], references: [id])
+  transfer          Transfer?          @relation(fields: [transferId], references: [id])
+
+  @@unique([recurringTemplateId, month])
+  @@index([month])
+  @@index([paidOn])
+}
+
+model RecurringTemplate {
+  id                String        @id @default(cuid())
+  categoryId        String
+  item              String        @db.VarChar(255)
+  payeeTeamMemberId String?
+  amount            Decimal       @db.Decimal(14, 2)
+  currency          String        @db.VarChar(3)
+  fundingSource     FundingSource @default(COMPANY)
+  fundingPartnerId  String?
+  paidFromAccountId String?
+  notes             String?       @db.Text
+  frequency         Frequency     @default(MONTHLY)
+  dayOfMonth        Int           @default(1)
+  startMonth        DateTime      @db.Date
+  endMonth          DateTime?     @db.Date
+  active            Boolean       @default(true)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  category        ExpenseCategory @relation(fields: [categoryId], references: [id])
+  payee           TeamMember?     @relation(fields: [payeeTeamMemberId], references: [id])
+  fundingPartner  Partner?        @relation(fields: [fundingPartnerId], references: [id])
+  paidFromAccount Account?        @relation(fields: [paidFromAccountId], references: [id])
+  expenses        Expense[]
+}
+
+model AccountBalance {
+  id             String   @id @default(cuid())
+  accountId      String
+  month          DateTime @db.Date
+  closingBalance Decimal  @db.Decimal(14, 2)
+  enteredById    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  account Account @relation(fields: [accountId], references: [id])
+
+  @@unique([accountId, month])
+}
+
+model Transfer {
+  id             String    @id @default(cuid())
+  fromAccountId  String
+  toAccountId    String
+  transferredOn  DateTime  @db.Date
+  month          DateTime  @db.Date
+  amount         Decimal   @db.Decimal(14, 2)
+  receivedAmount Decimal   @db.Decimal(14, 2)
+  fee            Decimal   @default(0) @db.Decimal(14, 2)
+  note           String?   @db.Text
+  createdById    String
+  deletedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  fromAccount Account   @relation("TransferFrom", fields: [fromAccountId], references: [id])
+  toAccount   Account   @relation("TransferTo", fields: [toAccountId], references: [id])
+  feeExpenses Expense[]
+
+  @@index([month])
+}
+
+model PartnerLedgerEntry {
+  id          String          @id @default(cuid())
+  partnerId   String
+  month       DateTime        @db.Date
+  occurredOn  DateTime        @db.Date
+  type        LedgerEntryType
+  /// Signed, in the reporting currency: shares and funding are positive, reserves and withdrawals negative.
+  amount      Decimal         @db.Decimal(14, 2)
+  accountId   String?
+  note        String?         @db.Text
+  /// Set on entries the month close posts; reopening the month removes exactly these.
+  periodId    String?
+  createdById String
+  deletedAt   DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  partner Partner  @relation(fields: [partnerId], references: [id])
+  account Account? @relation(fields: [accountId], references: [id])
+  period  Period?  @relation(fields: [periodId], references: [id])
+
+  @@index([partnerId, month])
+  @@index([month])
+}
+
+model NextMonthReserve {
+  id          String    @id @default(cuid())
+  month       DateTime  @db.Date
+  targetMonth DateTime  @db.Date
+  amount      Decimal   @db.Decimal(14, 2)
+  note        String?   @db.Text
+  createdById String
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([month])
+}
+
+model Period {
+  id           String       @id @default(cuid())
+  month        DateTime     @unique @db.Date
+  status       PeriodStatus @default(OPEN)
+  snapshot     Json?
+  closedById   String?
+  closedAt     DateTime?
+  reopenedById String?
+  reopenedAt   DateTime?
+  reopenReason String?      @db.Text
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  ledgerEntries PartnerLedgerEntry[]
+}
+
+model AuditLog {
+  id          String      @id @default(cuid())
+  actorUserId String?
+  action      AuditAction
+  entityType  String      @db.VarChar(64)
+  entityId    String      @db.VarChar(64)
+  before      Json?
+  after       Json?
+  createdAt   DateTime    @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
