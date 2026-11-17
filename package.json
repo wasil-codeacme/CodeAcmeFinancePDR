@@ -22,7 +22,8 @@
     "reconcile:workbook": "tsx scripts/reconcile-workbook.ts",
     "postinstall": "prisma generate",
     "prepare": "husky",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "db:seed:demo": "tsx --env-file=.env scripts/seed-demo.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.6",
