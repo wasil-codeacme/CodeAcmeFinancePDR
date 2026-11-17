@@ -148,3 +148,27 @@ export function parsePnlSnapshot(stored: unknown): MonthlyPnl | null {
       : null,
   };
 }
+
+const closedPeriodSnapshotSchema = z.object({
+  pnl: z.unknown(),
+  rate: z.object({ value: z.string(), month: z.string() }).nullable(),
+  currencies: z.object({ reporting: z.string(), display: z.string() }),
+});
+
+export type ClosedPeriodSnapshot = {
+  pnl: MonthlyPnl;
+  rate: { value: string; month: string } | null;
+  currencies: { reporting: string; display: string };
+};
+
+/** What a month close stores on the period: the P&L plus the rate and currencies it used. */
+export function toClosedPeriodSnapshot(snapshot: ClosedPeriodSnapshot) {
+  return { pnl: toPnlSnapshot(snapshot.pnl), rate: snapshot.rate, currencies: snapshot.currencies };
+}
+
+export function parseClosedPeriodSnapshot(stored: unknown): ClosedPeriodSnapshot | null {
+  const parsed = closedPeriodSnapshotSchema.safeParse(stored);
+  if (!parsed.success) return null;
+  const pnl = parsePnlSnapshot(parsed.data.pnl);
+  return pnl ? { pnl, rate: parsed.data.rate, currencies: parsed.data.currencies } : null;
+}

@@ -74,6 +74,12 @@ export const expenseRepository = {
     return rows.map(toRecord);
   },
 
+  countDraftsForMonth(month: MonthKey): Promise<number> {
+    return db().expense.count({
+      where: { ...LIVE, status: EntryStatus.DRAFT, month: monthKeyToDbDate(month) },
+    });
+  },
+
   countForMonth(month: MonthKey): Promise<number> {
     return db().expense.count({ where: { ...LIVE, month: monthKeyToDbDate(month) } });
   },
@@ -132,7 +138,13 @@ export const expenseRepository = {
   async pnlExpensesForMonth(month: MonthKey) {
     const rows = await db().expense.findMany({
       where: { ...LIVE, status: EntryStatus.CONFIRMED, month: monthKeyToDbDate(month) },
-      select: { amount: true, currency: true, fundingSource: true, categoryId: true },
+      select: {
+        amount: true,
+        currency: true,
+        fundingSource: true,
+        categoryId: true,
+        fundingPartnerId: true,
+      },
     });
     return rows.map((row) => ({ ...row, amount: row.amount.toString() }));
   },

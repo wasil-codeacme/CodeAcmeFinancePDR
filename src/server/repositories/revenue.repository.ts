@@ -204,6 +204,12 @@ export const revenueRepository = {
     return toRecord(row);
   },
 
+  countDraftsForMonth(month: MonthKey): Promise<number> {
+    return db().revenueEntry.count({
+      where: { ...LIVE, status: EntryStatus.DRAFT, bookingMonth: monthKeyToDbDate(month) },
+    });
+  },
+
   countForMonth(month: MonthKey): Promise<number> {
     return db().revenueEntry.count({ where: { ...LIVE, bookingMonth: monthKeyToDbDate(month) } });
   },
