@@ -43,18 +43,18 @@ async function ClientHistory({ params }: Pick<PageProps<'/clients/[clientId]'>, 
       {history.length === 0 ? (
         <EmptyState title="No revenue booked for this client yet" />
       ) : (
-        <div className="bg-card overflow-x-auto rounded-xl border shadow-xs">
+        <div className="bg-card overflow-hidden rounded-xl border shadow-xs">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Month</TableHead>
                 <TableHead>Project</TableHead>
-                <TableHead className="text-right">Gross</TableHead>
+                <TableHead className="hidden text-right lg:table-cell">Gross</TableHead>
                 <TableHead className="text-right">Net</TableHead>
-                <TableHead className="text-right">Received</TableHead>
+                <TableHead className="hidden text-right md:table-cell">Received</TableHead>
                 <TableHead className="text-right">Outstanding</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Invoice</TableHead>
+                <TableHead className="hidden lg:table-cell">Status</TableHead>
+                <TableHead className="hidden md:table-cell">Invoice</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -79,20 +79,24 @@ async function ClientHistory({ params }: Pick<PageProps<'/clients/[clientId]'>, 
                       <Badge variant="outline">Receivable only</Badge>
                     ) : null}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="hidden text-right lg:table-cell">
                     <Money value={row.figures.gross} />
                   </TableCell>
                   <TableCell className="text-right">
                     <Money value={row.figures.net} />
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="hidden text-right md:table-cell">
                     <Money value={row.figures.received} />
                   </TableCell>
                   <TableCell className="text-right">
                     <Money value={row.figures.outstanding} />
                   </TableCell>
-                  <TableCell>{PROJECT_STATUS_LABEL[row.projectStatus]}</TableCell>
-                  <TableCell>{INVOICE_STATUS_LABEL[row.invoiceStatus]}</TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    {PROJECT_STATUS_LABEL[row.projectStatus]}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {INVOICE_STATUS_LABEL[row.invoiceStatus]}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

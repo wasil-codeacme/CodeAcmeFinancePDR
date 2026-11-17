@@ -14,7 +14,6 @@ import { FormDialog } from '@/components/shared/form-dialog';
 import { Money } from '@/components/shared/money';
 import { Badge } from '@/components/ui/badge';
 import { IconButton } from '@/components/shared/icon-button';
-import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -40,14 +39,14 @@ function RowActions({
 }) {
   const escrowReceipts = item.receipts.filter((receipt) => receipt.isEscrow);
   return (
-    <div className="flex flex-wrap justify-end gap-1">
+    <div className="flex justify-end gap-0.5">
       <FormDialog
         title={`Payment from ${item.clientName}`}
         description="Record money that landed, in full or in part."
         trigger={
-          <Button size="sm" variant="outline">
-            <HandCoins /> Received
-          </Button>
+          <IconButton size="icon-sm" variant="outline" label="Mark received (full or part)">
+            <HandCoins />
+          </IconButton>
         }
       >
         {(close) => (
@@ -66,9 +65,9 @@ function RowActions({
           title="Release escrow"
           description={`Escrow of ${receipt.amount} funded on ${formatDateLabel(receipt.receivedOn)}.`}
           trigger={
-            <Button size="sm" variant="ghost">
-              <ShieldCheck /> Release
-            </Button>
+            <IconButton size="icon-sm" variant="ghost" label="Release escrow as received">
+              <ShieldCheck />
+            </IconButton>
           }
         >
           {(close) => (
@@ -122,59 +121,55 @@ export function ReceivablesTable({ items, accounts, today }: ReceivablesTablePro
     );
   }
   return (
-    <div className="bg-card overflow-x-auto rounded-xl border shadow-xs">
+    <div className="bg-card overflow-hidden rounded-xl border shadow-xs">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Client</TableHead>
-            <TableHead>Booked</TableHead>
-            <TableHead className="text-right">Net</TableHead>
-            <TableHead className="text-right">Received</TableHead>
-            <TableHead className="text-right">Escrow (safe)</TableHead>
-            <TableHead className="text-right">At risk</TableHead>
+            <TableHead className="hidden md:table-cell">Booked · expected</TableHead>
+            <TableHead className="hidden text-right lg:table-cell">Net</TableHead>
+            <TableHead className="hidden text-right lg:table-cell">Received</TableHead>
             <TableHead className="text-right">Outstanding</TableHead>
-            <TableHead>Expected</TableHead>
             <TableHead className="sr-only">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {items.map((item) => (
             <TableRow key={item.id}>
-              <TableCell className="min-w-44">
-                <div className="font-medium">{item.clientName}</div>
+              <TableCell className="max-w-56">
+                <div className="truncate font-medium">{item.clientName}</div>
                 <div className="text-muted-foreground flex items-center gap-1 text-xs">
-                  {item.projectName ?? item.description ?? '—'}
+                  <span className="truncate">{item.projectName ?? item.description ?? '—'}</span>
                   {item.kind === RevenueKind.STANDALONE ? (
                     <Badge variant="outline">Not revenue</Badge>
                   ) : null}
                 </div>
+                {/* On phones the booked/expected column is hidden, so its facts sit here. */}
+                <div className="text-muted-foreground text-xs md:hidden">
+                  {formatMonthLabel(item.bookingMonth)} · {item.ageingBucket}
+                  {item.isOverdue ? ' · overdue' : ''}
+                </div>
               </TableCell>
-              <TableCell className="whitespace-nowrap">
+              <TableCell className="hidden whitespace-nowrap md:table-cell">
                 {formatMonthLabel(item.bookingMonth)}
-                <span className="text-muted-foreground block text-xs">{item.ageingBucket}</span>
+                <span className="text-muted-foreground block text-xs">
+                  {item.ageingBucket}
+                  {item.expectedDate ? ` · due ${formatDateLabel(item.expectedDate)}` : ''}
+                </span>
+                {item.isOverdue ? <Badge variant="destructive">Overdue</Badge> : null}
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="hidden text-right lg:table-cell">
                 <Money value={item.figures.net} />
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="hidden text-right lg:table-cell">
                 <Money value={item.figures.received} />
               </TableCell>
               <TableCell className="text-right">
-                <Money value={item.figures.fundedEscrow} />
-              </TableCell>
-              <TableCell className="text-right">
-                <Money value={item.figures.unfunded} emphasizeNegative />
-              </TableCell>
-              <TableCell className="text-right font-semibold">
-                <Money value={item.figures.outstanding} />
-              </TableCell>
-              <TableCell className="whitespace-nowrap">
-                {item.expectedDate ? formatDateLabel(item.expectedDate) : '—'}
-                {item.isOverdue ? (
-                  <Badge variant="destructive" className="ml-1">
-                    Overdue
-                  </Badge>
-                ) : null}
+                <Money value={item.figures.outstanding} className="font-semibold" />
+                <span className="text-muted-foreground block text-xs whitespace-nowrap">
+                  safe <Money value={item.figures.fundedEscrow} /> · at risk{' '}
+                  <Money value={item.figures.unfunded} emphasizeNegative />
+                </span>
               </TableCell>
               <TableCell>
                 <RowActions item={item} accounts={accounts} today={today} />

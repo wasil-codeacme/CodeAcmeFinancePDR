@@ -43,16 +43,16 @@ export function ExpenseGroups({ groups, options, canDeleteConfirmed }: ExpenseGr
     );
   }
   return (
-    <div className="bg-card overflow-x-auto rounded-xl border shadow-xs">
+    <div className="bg-card overflow-hidden rounded-xl border shadow-xs">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Item</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead className="text-right">{display}</TableHead>
+            <TableHead className="hidden md:table-cell">Date</TableHead>
+            <TableHead className="hidden text-right sm:table-cell">{display}</TableHead>
             <TableHead className="text-right">{reporting}</TableHead>
-            <TableHead>Funding</TableHead>
-            <TableHead>Paid from</TableHead>
+            <TableHead className="hidden lg:table-cell">Funding</TableHead>
+            <TableHead className="hidden lg:table-cell">Paid from</TableHead>
             <TableHead className="sr-only">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -85,25 +85,35 @@ function GroupRows({
       </TableRow>
       {group.rows.map((row) => (
         <TableRow key={row.id}>
-          <TableCell className="min-w-48">
-            <div className="font-medium">{row.item}</div>
+          <TableCell className="max-w-64">
+            <div className="truncate font-medium">{row.item}</div>
             {row.payeeName || row.notes ? (
-              <div className="text-muted-foreground text-xs">
+              <div className="text-muted-foreground truncate text-xs">
                 {[row.payeeName, row.notes].filter(Boolean).join(' · ')}
               </div>
             ) : null}
+            {/* Columns hidden on smaller screens surface here instead. */}
+            <div className="text-muted-foreground truncate text-xs lg:hidden">
+              <span className="md:hidden">{formatDateLabel(row.expenseDate)} · </span>
+              {row.fundingPartnerName ? `Funded by ${row.fundingPartnerName}` : 'Company'}
+              {row.paidFromAccountName ? ` · ${row.paidFromAccountName}` : ''}
+            </div>
           </TableCell>
-          <TableCell className="whitespace-nowrap">{formatDateLabel(row.expenseDate)}</TableCell>
-          <TableCell className="text-right">
+          <TableCell className="hidden whitespace-nowrap md:table-cell">
+            {formatDateLabel(row.expenseDate)}
+          </TableCell>
+          <TableCell className="hidden text-right sm:table-cell">
             <Money value={row.displayAmount} currency={options.currencies.display} />
           </TableCell>
           <TableCell className="text-right">
             <Money value={row.reportingAmount} />
           </TableCell>
-          <TableCell>
+          <TableCell className="hidden lg:table-cell">
             <FundingCell row={row} />
           </TableCell>
-          <TableCell className="text-muted-foreground">{row.paidFromAccountName ?? '—'}</TableCell>
+          <TableCell className="text-muted-foreground hidden lg:table-cell">
+            {row.paidFromAccountName ?? '—'}
+          </TableCell>
           <TableCell>
             <ExpenseRowActions
               expense={row}
@@ -114,10 +124,9 @@ function GroupRows({
         </TableRow>
       ))}
       <TableRow className="hover:bg-transparent">
-        <TableCell colSpan={2} className="text-muted-foreground text-right text-xs">
-          {group.categoryName} total
-        </TableCell>
-        <TableCell className="text-right font-medium">
+        <TableCell className="text-muted-foreground text-xs">{group.categoryName} total</TableCell>
+        <TableCell className="hidden md:table-cell" />
+        <TableCell className="hidden text-right font-medium sm:table-cell">
           <Money value={group.displayTotal} currency={options.currencies.display} />
         </TableCell>
         <TableCell className="text-right font-medium">
@@ -128,7 +137,9 @@ function GroupRows({
             </span>
           ) : null}
         </TableCell>
-        <TableCell colSpan={3} />
+        <TableCell className="hidden lg:table-cell" />
+        <TableCell className="hidden lg:table-cell" />
+        <TableCell />
       </TableRow>
     </>
   );

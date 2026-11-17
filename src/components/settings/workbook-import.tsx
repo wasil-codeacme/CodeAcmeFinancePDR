@@ -140,16 +140,18 @@ export function WorkbookImport({ accounts }: { accounts: AccountOption[] }) {
         {preview ? (
           <>
             <PreviewNotes preview={preview} />
-            <div className="bg-card overflow-x-auto rounded-xl border shadow-xs">
+            <div className="bg-card overflow-hidden rounded-xl border shadow-xs">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-10" />
                     <TableHead>Tab</TableHead>
-                    <TableHead className="text-right">Revenue lines</TableHead>
-                    <TableHead className="text-right">Expense lines</TableHead>
-                    <TableHead className="text-right">Rate</TableHead>
-                    <TableHead className="text-right">Workbook net profit</TableHead>
+                    <TableHead className="hidden text-right md:table-cell">Revenue lines</TableHead>
+                    <TableHead className="hidden text-right md:table-cell">Expense lines</TableHead>
+                    <TableHead className="hidden text-right lg:table-cell">Rate</TableHead>
+                    <TableHead className="hidden text-right sm:table-cell">
+                      Workbook net profit
+                    </TableHead>
                     <TableHead className="text-right">App net profit</TableHead>
                     <TableHead>Check</TableHead>
                   </TableRow>
@@ -166,14 +168,16 @@ export function WorkbookImport({ accounts }: { accounts: AccountOption[] }) {
                         />
                       </TableCell>
                       <TableCell className="font-medium">{month.tab}</TableCell>
-                      <TableCell className="text-right tabular-nums">
+                      <TableCell className="hidden text-right tabular-nums md:table-cell">
                         {month.revenueLines}
                       </TableCell>
-                      <TableCell className="text-right tabular-nums">
+                      <TableCell className="hidden text-right tabular-nums md:table-cell">
                         {month.expenseLines}
                       </TableCell>
-                      <TableCell className="text-right tabular-nums">{month.rate ?? '—'}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="hidden text-right tabular-nums lg:table-cell">
+                        {month.rate ?? '—'}
+                      </TableCell>
+                      <TableCell className="hidden text-right sm:table-cell">
                         <Money value={month.workbookNetProfit} />
                       </TableCell>
                       <TableCell className="text-right">

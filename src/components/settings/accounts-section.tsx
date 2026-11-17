@@ -145,13 +145,13 @@ export function AccountsSection({
       {accounts.length === 0 ? (
         <p className="text-muted-foreground text-sm">No accounts yet.</p>
       ) : (
-        <div className="overflow-x-auto">
+        <div>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Owner</TableHead>
+                <TableHead className="hidden md:table-cell">Type</TableHead>
+                <TableHead className="hidden sm:table-cell">Owner</TableHead>
                 <TableHead className="text-right">Opening balance</TableHead>
                 <TableHead />
               </TableRow>
@@ -163,8 +163,12 @@ export function AccountsSection({
                     {account.name}{' '}
                     {!account.active ? <Badge variant="secondary">Inactive</Badge> : null}
                   </TableCell>
-                  <TableCell>{ACCOUNT_TYPE_LABEL[account.type]}</TableCell>
-                  <TableCell>{account.ownerLabel ?? '—'}</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {ACCOUNT_TYPE_LABEL[account.type]}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell">
+                    {account.ownerLabel ?? '—'}
+                  </TableCell>
                   <TableCell className="text-right">
                     <Money value={account.openingBalance} currency={account.currency} />
                     <span className="text-muted-foreground block text-xs">

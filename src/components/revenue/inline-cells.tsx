@@ -82,7 +82,7 @@ export function InlineSelectCell<TValue extends string>({
       disabled={disabled}
       onValueChange={(next: TValue) => next !== value && onCommit(next)}
     >
-      <SelectTrigger size="sm" aria-label={label} className="min-w-32">
+      <SelectTrigger size="sm" aria-label={label} className="w-36">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

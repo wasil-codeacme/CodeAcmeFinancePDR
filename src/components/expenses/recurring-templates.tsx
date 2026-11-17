@@ -197,15 +197,15 @@ export function RecurringTemplatesTable({
     );
   }
   return (
-    <div className="bg-card overflow-x-auto rounded-xl border shadow-xs">
+    <div className="bg-card overflow-hidden rounded-xl border shadow-xs">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Item</TableHead>
-            <TableHead>Category</TableHead>
+            <TableHead className="hidden md:table-cell">Category</TableHead>
             <TableHead className="text-right">Amount</TableHead>
-            <TableHead>Repeats</TableHead>
-            <TableHead>Funding</TableHead>
+            <TableHead className="hidden lg:table-cell">Repeats</TableHead>
+            <TableHead className="hidden lg:table-cell">Funding</TableHead>
             <TableHead className="sr-only">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -216,15 +216,17 @@ export function RecurringTemplatesTable({
                 {template.item}{' '}
                 {!template.active ? <Badge variant="secondary">Stopped</Badge> : null}
               </TableCell>
-              <TableCell>{template.categoryName}</TableCell>
+              <TableCell className="hidden md:table-cell">{template.categoryName}</TableCell>
               <TableCell className="text-right">
                 <Money value={template.amount} currency={template.currency} />
               </TableCell>
-              <TableCell className="whitespace-nowrap">
+              <TableCell className="hidden whitespace-nowrap lg:table-cell">
                 {FREQUENCY_LABEL[template.frequency]} from {formatMonthLabel(template.startMonth)}
                 {template.endMonth ? ` to ${formatMonthLabel(template.endMonth)}` : ''}
               </TableCell>
-              <TableCell>{FUNDING_SOURCE_LABEL[template.fundingSource]}</TableCell>
+              <TableCell className="hidden lg:table-cell">
+                {FUNDING_SOURCE_LABEL[template.fundingSource]}
+              </TableCell>
               <TableCell className="text-right">
                 <FormDialog
                   title="Edit recurring expense"

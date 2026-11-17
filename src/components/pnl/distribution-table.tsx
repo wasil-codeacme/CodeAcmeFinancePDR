@@ -19,14 +19,14 @@ type DistributionTableProps = {
 /** Founders only: each partner's baseline share, reserve and take-home (PRD §6). */
 export function DistributionTable({ distribution, currencies }: DistributionTableProps) {
   return (
-    <div className="bg-card overflow-x-auto rounded-xl border shadow-xs">
+    <div className="bg-card overflow-hidden rounded-xl border shadow-xs">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Partner</TableHead>
-            <TableHead className="text-right">Split</TableHead>
-            <TableHead className="text-right">Baseline share</TableHead>
-            <TableHead className="text-right">(−) Reserve</TableHead>
+            <TableHead className="hidden text-right md:table-cell">Split</TableHead>
+            <TableHead className="hidden text-right lg:table-cell">Baseline share</TableHead>
+            <TableHead className="hidden text-right sm:table-cell">(−) Reserve</TableHead>
             <TableHead className="text-right">Take-home ({currencies.reporting})</TableHead>
             <TableHead className="text-right">Take-home ({currencies.display})</TableHead>
           </TableRow>
@@ -35,13 +35,13 @@ export function DistributionTable({ distribution, currencies }: DistributionTabl
           {distribution.partners.map((partner) => (
             <TableRow key={partner.partnerId}>
               <TableCell className="font-medium">{partner.partnerName}</TableCell>
-              <TableCell className="text-right">
+              <TableCell className="hidden text-right md:table-cell">
                 {formatPercentValue(partner.splitPercent)}
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="hidden text-right lg:table-cell">
                 <Money value={partner.baselineShare} />
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="hidden text-right sm:table-cell">
                 <Money value={partner.reserve} />
               </TableCell>
               <TableCell className="text-right font-semibold">
@@ -55,11 +55,19 @@ export function DistributionTable({ distribution, currencies }: DistributionTabl
         </TableBody>
         <TableFooter>
           <TableRow>
-            <TableCell colSpan={2}>Distributable profit</TableCell>
-            <TableCell className="text-right">
+            <TableCell>
+              Distributable profit
+              <Money
+                value={distribution.distributableProfit}
+                emphasizeNegative
+                className="block font-medium lg:hidden"
+              />
+            </TableCell>
+            <TableCell className="hidden md:table-cell" />
+            <TableCell className="hidden text-right lg:table-cell">
               <Money value={distribution.distributableProfit} emphasizeNegative />
             </TableCell>
-            <TableCell className="text-right">
+            <TableCell className="hidden text-right sm:table-cell">
               <Money value={distribution.totalReserves} />
             </TableCell>
             <TableCell colSpan={2} className="text-muted-foreground text-right text-xs">

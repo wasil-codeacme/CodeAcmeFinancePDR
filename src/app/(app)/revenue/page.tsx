@@ -22,6 +22,7 @@ import { ROUTES } from '@/lib/routes';
 import { requireBooksUser } from '@/server/auth/current-user';
 import { listClients } from '@/server/services/client.service';
 import { listPlatforms } from '@/server/services/platform.service';
+import { listTeamMembers } from '@/server/services/settings.service';
 import { getRevenueMonth } from '@/server/services/revenue.service';
 
 export const metadata: Metadata = { title: 'Revenue' };
@@ -47,10 +48,11 @@ async function RevenueContent({ searchParams }: Pick<PageProps<'/revenue'>, 'sea
     projectStatus: projectStatusParam(stringParam(params[SEARCH_PARAM.STATUS])),
     search: stringParam(params[SEARCH_PARAM.QUERY]),
   };
-  const [view, clients, platforms] = await Promise.all([
+  const [view, clients, platforms, teamMembers] = await Promise.all([
     getRevenueMonth(month, filters),
     listClients(),
     listPlatforms(),
+    listTeamMembers(),
   ]);
   const activeClients = clients.filter((client) => client.active);
 
@@ -93,6 +95,12 @@ async function RevenueContent({ searchParams }: Pick<PageProps<'/revenue'>, 'sea
         <RevenueTable
           entries={view.rows}
           canDeleteConfirmed={hasPermission(user.role, PERMISSION.ENTRIES_DELETE_CONFIRMED)}
+          options={{
+            platforms: platforms.map((platform) => ({ value: platform.id, label: platform.name })),
+            teamMembers: teamMembers
+              .filter((member) => member.active)
+              .map((member) => ({ value: member.id, label: member.name })),
+          }}
         />
       </PendingSection>
     </div>
