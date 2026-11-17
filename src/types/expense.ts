@@ -56,11 +56,12 @@ export type ExpenseCategoryGroup = {
   displayTotal: DecimalString | null;
 };
 
+export type ExpenseCategoryMeta = { id: string; name: string; pnlLine: PnlLine; active: boolean };
+
 export type ExpenseMonthView = {
-  groups: ExpenseCategoryGroup[];
-  drafts: ExpenseRow[];
-  companyTotal: DecimalString;
-  externalTotal: DecimalString;
+  /** Every line of the month, confirmed and draft; the page groups them (groupExpenseMonth). */
+  rows: ExpenseRow[];
+  categories: ExpenseCategoryMeta[];
   rate: { value: DecimalString; month: MonthKey } | null;
   currencies: { reporting: string; display: string };
 };

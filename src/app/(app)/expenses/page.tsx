@@ -3,20 +3,17 @@ import { connection } from 'next/server';
 import { Suspense } from 'react';
 
 import { PendingSection } from '@/components/layout/pending-navigation';
-import { DraftsPanel } from '@/components/expenses/drafts-panel';
-import { ExpenseGroups } from '@/components/expenses/expense-groups';
+import { ExpenseMonth } from '@/components/expenses/expense-month';
 import {
   AddExpenseButton,
   GenerateDraftsButton,
   ManageCategoriesLink,
   ManageRecurringLink,
 } from '@/components/expenses/expense-toolbar';
-import { Money } from '@/components/shared/money';
 import { MonthPicker } from '@/components/shared/month-picker';
 import { PageHeader } from '@/components/shared/page-header';
 import { ControlsSkeleton, StatCardsSkeleton, TableSkeleton } from '@/components/shared/skeletons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent } from '@/components/ui/card';
 import { SEARCH_PARAM } from '@/lib/constants';
 import { MESSAGES } from '@/lib/messages';
 import { dateInMonth, formatMonthLabel, monthFromSearchParam } from '@/lib/month';
@@ -89,38 +86,21 @@ async function ExpensesContent({ searchParams }: Pick<PageProps<'/expenses'>, 's
           <AlertDescription>{MESSAGES.PNL.RATE_MISSING}</AlertDescription>
         </Alert>
       ) : null}
-      <PendingSection fallback={<StatCardsSkeleton count={3} />}>
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-          <Card size="sm">
-            <CardContent className="grid gap-1">
-              <span className="text-muted-foreground text-xs">
-                Company expense ({view.currencies.reporting})
-              </span>
-              <Money value={view.companyTotal} className="text-base font-semibold" />
-            </CardContent>
-          </Card>
-          <Card size="sm">
-            <CardContent className="grid gap-1">
-              <span className="text-muted-foreground text-xs">
-                Externally funded ({view.currencies.reporting})
-              </span>
-              <Money value={view.externalTotal} className="text-base font-semibold" />
-            </CardContent>
-          </Card>
-          <Card size="sm">
-            <CardContent className="grid gap-1">
-              <span className="text-muted-foreground text-xs">Exchange rate</span>
-              <span className="font-figures text-base font-semibold">{rateNote ?? '—'}</span>
-            </CardContent>
-          </Card>
-        </div>
-      </PendingSection>
-      <PendingSection fallback={<TableSkeleton />}>
-        <DraftsPanel drafts={view.drafts} month={month} options={options} />
-        <ExpenseGroups
-          groups={view.groups}
+      <PendingSection
+        fallback={
+          <div className="grid gap-5">
+            <StatCardsSkeleton count={3} />
+            <TableSkeleton />
+          </div>
+        }
+      >
+        <ExpenseMonth
+          rows={view.rows}
+          categories={view.categories}
+          month={month}
           options={options}
           canDeleteConfirmed={canDeleteConfirmed}
+          rateNote={rateNote}
         />
       </PendingSection>
     </div>

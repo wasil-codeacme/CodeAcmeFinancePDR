@@ -1,6 +1,6 @@
 import { AuditAction, EntryStatus, FundingSource } from '@/generated/prisma/enums';
 import { AUDIT_ENTITY } from '@/lib/constants';
-import { Decimal, sumDecimals } from '@/lib/decimal';
+import { Decimal } from '@/lib/decimal';
 import { MESSAGES } from '@/lib/messages';
 import { type MonthKey, dateInMonth, monthOfIsoDate } from '@/lib/month';
 import { PERMISSION, hasPermission } from '@/lib/permissions';
@@ -25,12 +25,7 @@ import {
 } from '@/server/repositories/settings.repository';
 import type { ExpenseInput, UpdateExpenseInput } from '@/server/validators/expense.schema';
 import type { SessionUser } from '@/types/auth';
-import type {
-  ExpenseCategoryGroup,
-  ExpenseMonthView,
-  ExpenseRecord,
-  ExpenseRow,
-} from '@/types/expense';
+import type { ExpenseMonthView, ExpenseRecord, ExpenseRow } from '@/types/expense';
 
 async function requireCurrencies(): Promise<CurrencyPair> {
   const company = await companyRepository.find();
@@ -51,15 +46,7 @@ function toExpenseRow(
   return { ...expense, reportingAmount, displayAmount: displayAmount?.toString() ?? null };
 }
 
-function totalOf(rows: readonly ExpenseRow[], source: FundingSource): string {
-  return sumDecimals(
-    rows
-      .filter((row) => row.fundingSource === source)
-      .map((row) => new Decimal(row.reportingAmount ?? 0)),
-  ).toString();
-}
-
-/** PRD §5.3: the month grouped by category with subtotals in both currencies. */
+/** PRD §5.3: the month's lines in both currencies, and the categories they group under. */
 export async function getExpenseMonth(month: MonthKey): Promise<ExpenseMonthView> {
   const [expenses, categories, currencies, rate] = await Promise.all([
     expenseRepository.listForMonth(month),
@@ -67,34 +54,14 @@ export async function getExpenseMonth(month: MonthKey): Promise<ExpenseMonthView
     requireCurrencies(),
     exchangeRateRepository.findEffective(month),
   ]);
-  const rows = expenses.map((expense) => toExpenseRow(expense, rate?.rate ?? null, currencies));
-  const confirmed = rows.filter((row) => row.status === EntryStatus.CONFIRMED);
-  const groups: ExpenseCategoryGroup[] = categories
-    .map((category) => {
-      const categoryRows = confirmed.filter((row) => row.categoryId === category.id);
-      const displayValues = categoryRows.map((row) => row.displayAmount);
-      return {
-        categoryId: category.id,
-        categoryName: category.name,
-        pnlLine: category.pnlLine,
-        rows: categoryRows,
-        companyTotal: totalOf(categoryRows, FundingSource.COMPANY),
-        externalTotal: totalOf(categoryRows, FundingSource.EXTERNAL),
-        displayTotal: displayValues.includes(null)
-          ? null
-          : sumDecimals(displayValues.map((value) => new Decimal(value ?? 0))).toString(),
-      };
-    })
-    .filter(
-      (group) =>
-        group.rows.length > 0 ||
-        categories.find((category) => category.id === group.categoryId)?.active,
-    );
   return {
-    groups,
-    drafts: rows.filter((row) => row.status === EntryStatus.DRAFT),
-    companyTotal: totalOf(confirmed, FundingSource.COMPANY),
-    externalTotal: totalOf(confirmed, FundingSource.EXTERNAL),
+    rows: expenses.map((expense) => toExpenseRow(expense, rate?.rate ?? null, currencies)),
+    categories: categories.map((category) => ({
+      id: category.id,
+      name: category.name,
+      pnlLine: category.pnlLine,
+      active: category.active,
+    })),
     rate: rate ? { value: rate.rate, month: rate.month } : null,
     currencies,
   };

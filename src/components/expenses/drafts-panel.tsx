@@ -1,5 +1,8 @@
 import type { ExpenseFormOptions } from '@/components/expenses/expense-form';
-import { ExpenseRowActions } from '@/components/expenses/expense-row-actions';
+import {
+  ExpenseRowActions,
+  type ExpenseRowCallbacks,
+} from '@/components/expenses/expense-row-actions';
 import { ConfirmAllDraftsButton } from '@/components/expenses/expense-toolbar';
 import { Money } from '@/components/shared/money';
 import {
@@ -13,10 +16,14 @@ import {
 import type { MonthKey } from '@/lib/month';
 import type { ExpenseRow } from '@/types/expense';
 
-type DraftsPanelProps = { drafts: ExpenseRow[]; month: MonthKey; options: ExpenseFormOptions };
+type DraftsPanelProps = ExpenseRowCallbacks & {
+  drafts: ExpenseRow[];
+  month: MonthKey;
+  options: ExpenseFormOptions;
+};
 
 /** PRD §5.3: drafts from recurring templates wait here; each is confirmed or adjusted first. */
-export function DraftsPanel({ drafts, month, options }: DraftsPanelProps) {
+export function DraftsPanel({ drafts, month, options, ...callbacks }: DraftsPanelProps) {
   if (drafts.length === 0) return null;
   return (
     <Card className="border-amber-300/60 bg-amber-50/50 dark:bg-amber-950/10">
@@ -39,7 +46,12 @@ export function DraftsPanel({ drafts, month, options }: DraftsPanelProps) {
               </div>
               <div className="flex items-center gap-3">
                 <Money value={draft.amount} currency={draft.currency} />
-                <ExpenseRowActions expense={draft} options={options} canDeleteConfirmed={false} />
+                <ExpenseRowActions
+                  expense={draft}
+                  options={options}
+                  canDeleteConfirmed={false}
+                  {...callbacks}
+                />
               </div>
             </li>
           ))}

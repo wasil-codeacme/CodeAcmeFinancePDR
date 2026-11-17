@@ -1,5 +1,8 @@
 import type { ExpenseFormOptions } from '@/components/expenses/expense-form';
-import { ExpenseRowActions } from '@/components/expenses/expense-row-actions';
+import {
+  ExpenseRowActions,
+  type ExpenseRowCallbacks,
+} from '@/components/expenses/expense-row-actions';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Money } from '@/components/shared/money';
 import { Badge } from '@/components/ui/badge';
@@ -16,7 +19,7 @@ import { FUNDING_SOURCE_LABEL } from '@/lib/labels';
 import { formatDateLabel } from '@/lib/month';
 import type { ExpenseCategoryGroup, ExpenseRow } from '@/types/expense';
 
-type ExpenseGroupsProps = {
+type ExpenseGroupsProps = ExpenseRowCallbacks & {
   groups: ExpenseCategoryGroup[];
   options: ExpenseFormOptions;
   canDeleteConfirmed: boolean;
@@ -31,7 +34,13 @@ function FundingCell({ row }: { row: ExpenseRow }) {
 }
 
 /** PRD §5.3: the month grouped by category, with subtotals in both currencies. */
-export function ExpenseGroups({ groups, options, canDeleteConfirmed }: ExpenseGroupsProps) {
+export function ExpenseGroups({
+  groups,
+  options,
+  canDeleteConfirmed,
+  onConfirm,
+  onDelete,
+}: ExpenseGroupsProps) {
   const { reporting, display } = options.currencies;
   const withRows = groups.filter((group) => group.rows.length > 0);
   if (withRows.length === 0) {
@@ -65,6 +74,8 @@ export function ExpenseGroups({ groups, options, canDeleteConfirmed }: ExpenseGr
               group={group}
               options={options}
               canDeleteConfirmed={canDeleteConfirmed}
+              onConfirm={onConfirm}
+              onDelete={onDelete}
             />
           ))}
         </TableBody>
@@ -77,6 +88,7 @@ function GroupRows({
   group,
   options,
   canDeleteConfirmed,
+  ...callbacks
 }: { group: ExpenseCategoryGroup } & Omit<ExpenseGroupsProps, 'groups'>) {
   return (
     <>
@@ -106,6 +118,7 @@ function GroupRows({
               options={options}
               canDeleteConfirmed={canDeleteConfirmed}
               className="mt-1 justify-start sm:hidden"
+              {...callbacks}
             />
           </TableCell>
           <TableCell className="hidden whitespace-nowrap md:table-cell">
@@ -128,6 +141,7 @@ function GroupRows({
               expense={row}
               options={options}
               canDeleteConfirmed={canDeleteConfirmed}
+              {...callbacks}
             />
           </TableCell>
         </TableRow>

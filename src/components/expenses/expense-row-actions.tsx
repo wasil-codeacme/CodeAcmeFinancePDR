@@ -8,13 +8,17 @@ import { ConfirmActionButton } from '@/components/shared/confirm-action-button';
 import { FormDialog } from '@/components/shared/form-dialog';
 import { IconButton } from '@/components/shared/icon-button';
 import { EntryStatus } from '@/generated/prisma/enums';
-import { useActionRunner } from '@/hooks/use-action-runner';
 import { MESSAGES } from '@/lib/messages';
 import { cn } from '@/lib/utils';
-import { confirmExpense, deleteExpense } from '@/server/actions/expense.actions';
 import type { ExpenseRecord } from '@/types/expense';
 
-type ExpenseRowActionsProps = {
+/** Confirm and delete are run by the list that owns the rows, so they show at once. */
+export type ExpenseRowCallbacks = {
+  onConfirm: (expense: ExpenseRecord) => void;
+  onDelete: (expense: ExpenseRecord) => void;
+};
+
+type ExpenseRowActionsProps = ExpenseRowCallbacks & {
   expense: ExpenseRecord;
   options: ExpenseFormOptions;
   canDeleteConfirmed: boolean;
@@ -26,8 +30,9 @@ export function ExpenseRowActions({
   options,
   canDeleteConfirmed,
   className,
+  onConfirm,
+  onDelete,
 }: ExpenseRowActionsProps) {
-  const { run, isPending } = useActionRunner();
   const isDraft = expense.status === EntryStatus.DRAFT;
   return (
     <div className={cn('flex justify-end gap-1', className)}>
@@ -36,8 +41,7 @@ export function ExpenseRowActions({
           size="icon-sm"
           variant="outline"
           label="Confirm expense"
-          disabled={isPending}
-          onClick={() => run(() => confirmExpense({ id: expense.id }), MESSAGES.EXPENSE.CONFIRMED)}
+          onClick={() => onConfirm(expense)}
         >
           <Check />
         </IconButton>
@@ -62,9 +66,9 @@ export function ExpenseRowActions({
               : MESSAGES.COMMON.CONFIRM_DELETE_BODY
           }
           confirmLabel={MESSAGES.COMMON.DELETE}
-          onConfirm={() => run(() => deleteExpense({ id: expense.id }), MESSAGES.COMMON.DELETED)}
+          onConfirm={() => onDelete(expense)}
           trigger={
-            <IconButton size="icon-sm" variant="ghost" label="Delete expense" disabled={isPending}>
+            <IconButton size="icon-sm" variant="ghost" label="Delete expense">
               <Trash2 />
             </IconButton>
           }
