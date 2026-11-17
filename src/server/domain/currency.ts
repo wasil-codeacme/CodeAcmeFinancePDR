@@ -35,6 +35,24 @@ export function toDisplayCurrency(
   return new Decimal(amount).times(rate);
 }
 
+/** Moves an amount between the two company currencies at the month's rate (accounts, transfers). */
+export function convertCurrency(
+  amount: DecimalString,
+  from: string,
+  to: string,
+  rate: DecimalString | null,
+  currencies: CurrencyPair,
+): Decimal {
+  if (from === to) return new Decimal(amount);
+  const inReporting = toReportingCurrency(amount, from, rate, currencies);
+  if (to === currencies.reporting) return inReporting;
+  if (to !== currencies.display) {
+    throw new RuleViolationError(MESSAGES.SETTINGS.CURRENCY_NOT_SUPPORTED);
+  }
+  if (rate === null) throw new MissingExchangeRateError();
+  return inReporting.times(rate);
+}
+
 export function reportingToDisplay(amount: Decimal, rate: DecimalString | null): Decimal | null {
   return rate === null ? null : amount.times(rate);
 }
