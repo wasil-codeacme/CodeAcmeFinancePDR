@@ -43,6 +43,14 @@ export const periodRepository = {
     return row ? toPeriod(row) : null;
   },
 
+  async listByMonths(months: readonly MonthKey[]): Promise<PeriodRecord[]> {
+    if (months.length === 0) return [];
+    const rows = await db().period.findMany({
+      where: { month: { in: months.map(monthKeyToDbDate) } },
+    });
+    return rows.map(toPeriod);
+  },
+
   async closedAmong(months: readonly MonthKey[]): Promise<MonthKey[]> {
     if (months.length === 0) return [];
     const rows = await db().period.findMany({

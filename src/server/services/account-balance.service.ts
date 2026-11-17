@@ -3,12 +3,15 @@ import { AUDIT_ENTITY } from '@/lib/constants';
 import { Decimal, sumDecimals } from '@/lib/decimal';
 import { MESSAGES } from '@/lib/messages';
 import { type MonthKey, compareMonthKeys, monthOfIsoDate } from '@/lib/month';
-import { PERMISSION, hasPermission } from '@/lib/permissions';
-import { type AccountMonth, computeAccountTimeline } from '@/server/domain/account-balances';
 import {
-  type AccountMovementMap,
-  aggregateAccountMovements,
-} from '@/server/domain/account-movements';
+  enteredClosingsByAccount,
+  loadMovements,
+  requireCurrencies,
+  timelineFor,
+} from '@/server/read-models/account-timelines';
+import { PERMISSION, hasPermission } from '@/lib/permissions';
+import type { AccountMonth } from '@/server/domain/account-balances';
+import type { AccountMovementMap } from '@/server/domain/account-movements';
 import { convertCurrency } from '@/server/domain/currency';
 import { pickEffectiveVersion } from '@/server/domain/effective-version';
 import {
@@ -20,63 +23,12 @@ import {
 import { assertMonthsOpen, isMonthClosed } from '@/server/period-guard';
 import { accountBalanceRepository } from '@/server/repositories/account-balance.repository';
 import { auditedChange, auditedCreate } from '@/server/repositories/audited-write';
-import { companyRepository } from '@/server/repositories/company.repository';
 import { runInTransaction } from '@/server/repositories/db';
 import { expenseRepository } from '@/server/repositories/expense.repository';
-import { ledgerRepository } from '@/server/repositories/ledger.repository';
-import {
-  type AccountRecord,
-  accountRepository,
-  exchangeRateRepository,
-} from '@/server/repositories/settings.repository';
+import { type AccountRecord, accountRepository } from '@/server/repositories/settings.repository';
 import type { ClosingBalanceInput, TransferInput } from '@/server/validators/account.schema';
 import type { AccountMonthRow, AccountsMonthView } from '@/types/account';
 import type { SessionUser } from '@/types/auth';
-
-type Currencies = { reporting: string; display: string };
-
-async function requireCurrencies(): Promise<Currencies> {
-  const company = await companyRepository.find();
-  if (!company) throw new NotFoundError();
-  return { reporting: company.reportingCurrency, display: company.displayCurrency };
-}
-
-/** Everything that moved cash, grouped per account and month in each account's currency. */
-async function loadMovements(accounts: readonly AccountRecord[], currencies: Currencies) {
-  const [receipts, expenses, transfers, ledger, rates] = await Promise.all([
-    accountBalanceRepository.receiptsIntoAccounts(),
-    accountBalanceRepository.expensesPaidFromAccounts(),
-    accountBalanceRepository.listTransfers(),
-    ledgerRepository.list(),
-    exchangeRateRepository.list(),
-  ]);
-  const rateVersions = rates.map((rate) => ({ effectiveFrom: rate.month, rate: rate.rate }));
-  const aggregated = aggregateAccountMovements({
-    accounts,
-    receipts,
-    expenses,
-    transfers,
-    ledger,
-    currencies,
-    rateFor: (month) => pickEffectiveVersion(rateVersions, month)?.rate ?? null,
-  });
-  return { ...aggregated, transfers, rateVersions };
-}
-
-function timelineFor(
-  account: AccountRecord,
-  throughMonth: MonthKey,
-  movements: AccountMovementMap,
-  enteredByAccount: Map<string, Record<MonthKey, string>>,
-): AccountMonth[] {
-  return computeAccountTimeline({
-    openingBalance: account.openingBalance,
-    openingMonth: account.openingBalanceMonth,
-    throughMonth,
-    movements: movements[account.id] ?? {},
-    enteredClosings: enteredByAccount.get(account.id) ?? {},
-  });
-}
 
 function toRow(
   account: AccountRecord,
@@ -102,16 +54,6 @@ function toRow(
     closing: month.closing.toString(),
     difference: month.difference?.toString() ?? null,
   };
-}
-
-async function enteredClosingsByAccount(): Promise<Map<string, Record<MonthKey, string>>> {
-  const byAccount = new Map<string, Record<MonthKey, string>>();
-  for (const balance of await accountBalanceRepository.listBalances()) {
-    const months = byAccount.get(balance.accountId) ?? {};
-    months[balance.month] = balance.closingBalance;
-    byAccount.set(balance.accountId, months);
-  }
-  return byAccount;
 }
 
 /** PRD §5.4: every account's opening, movements, expected and entered closing for one month. */
@@ -241,6 +183,7 @@ export async function createTransfer(actor: SessionUser, input: TransferInput): 
           fundingPartnerId: null,
           paidFromAccountId: null,
           recurringTemplateId: null,
+          salesChannel: null,
           notes: null,
         },
         actor.id,

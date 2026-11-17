@@ -15,7 +15,7 @@ import { FundingSource } from '@/generated/prisma/enums';
 import { useActionForm } from '@/hooks/use-action-form';
 import { Decimal } from '@/lib/decimal';
 import { formatMoney } from '@/lib/format';
-import { FUNDING_SOURCE_LABEL, optionsFrom } from '@/lib/labels';
+import { FUNDING_SOURCE_LABEL, SALES_CHANNEL_LABEL, optionsFrom } from '@/lib/labels';
 import { MESSAGES } from '@/lib/messages';
 import { createExpense, updateExpense } from '@/server/actions/expense.actions';
 import { expenseSchema, updateExpenseSchema } from '@/server/validators/expense.schema';
@@ -30,6 +30,8 @@ export type ExpenseFormOptions = {
   teamMembers: Option[];
   partners: Option[];
   accounts: Option[];
+  /** Categories on a sales P&L line; only these carry a sales channel (PRD §5.8). */
+  salesCategoryIds: string[];
   currencies: { reporting: string; display: string };
   rate: string | null;
 };
@@ -61,6 +63,23 @@ function FundingPartnerField({ partners }: { partners: Option[] }) {
       label="Funded by"
       placeholder="Pick a partner"
       options={partners}
+    />
+  );
+}
+
+const SALES_CHANNEL_OPTIONS = optionsFrom(SALES_CHANNEL_LABEL);
+
+/** Shown only for a sales category, so Sales CAC can show spend per channel. */
+export function SalesChannelField({ salesCategoryIds }: { salesCategoryIds: string[] }) {
+  const categoryId = useWatch<ExpenseFormValues, 'categoryId'>({ name: 'categoryId' });
+  if (!salesCategoryIds.includes(categoryId)) return null;
+  return (
+    <SelectField
+      name="salesChannel"
+      label="Sales channel"
+      hint="Counts toward this channel in Sales CAC."
+      options={SALES_CHANNEL_OPTIONS}
+      emptyLabel="Not tagged"
     />
   );
 }
@@ -113,6 +132,7 @@ function ExpenseFields({ options }: { options: ExpenseFormOptions }) {
           emptyLabel="Not recorded"
         />
       </div>
+      <SalesChannelField salesCategoryIds={options.salesCategoryIds} />
       <TextareaField name="notes" label="Notes" />
     </>
   );
@@ -138,6 +158,7 @@ export function CreateExpenseForm({ options, defaultDate, onDone }: CreateExpens
       fundingSource: FundingSource.COMPANY,
       fundingPartnerId: '',
       paidFromAccountId: '',
+      salesChannel: '',
       notes: '',
     },
     action: createExpense,
@@ -175,6 +196,7 @@ export function EditExpenseForm({ expense, options, onDone }: EditExpenseFormPro
       fundingSource: expense.fundingSource,
       fundingPartnerId: expense.fundingPartnerId ?? '',
       paidFromAccountId: expense.paidFromAccountId ?? '',
+      salesChannel: expense.salesChannel ?? '',
       notes: expense.notes ?? '',
     },
     action: updateExpense,

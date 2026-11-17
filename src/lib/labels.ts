@@ -8,6 +8,7 @@ import {
   PnlLine,
   ProjectStatus,
   Role,
+  SalesChannel,
   TeamMemberType,
   UserStatus,
 } from '@/generated/prisma/enums';
@@ -42,6 +43,14 @@ export const PNL_LINE_ORDER: readonly PnlLine[] = [
   PnlLine.SALES_SALARIES,
   PnlLine.SALES_OVERHEAD,
 ];
+
+export const SALES_CHANNEL_LABEL: Record<SalesChannel, string> = {
+  [SalesChannel.UPWORK]: 'Upwork',
+  [SalesChannel.COLD_EMAIL]: 'Cold email',
+  [SalesChannel.COLD_CALL]: 'Cold call',
+  [SalesChannel.LINKEDIN]: 'LinkedIn',
+  [SalesChannel.OTHER]: 'Other',
+};
 
 export const FUNDING_SOURCE_LABEL: Record<FundingSource, string> = {
   [FundingSource.COMPANY]: 'Company',

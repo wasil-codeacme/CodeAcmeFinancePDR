@@ -1,4 +1,4 @@
-import { InvoiceStatus, PnlLine, ProjectStatus } from '@/generated/prisma/enums';
+import { InvoiceStatus, PnlLine, ProjectStatus, SalesChannel } from '@/generated/prisma/enums';
 import { INVOICE_STATUS_LABEL, PROJECT_STATUS_LABEL } from '@/lib/labels';
 import type { ParsedRevenueLine } from '@/server/import/workbook-parser';
 
@@ -78,4 +78,20 @@ export function projectStatusFrom(text: string | null): ProjectStatus {
 
 export function invoiceStatusFrom(text: string | null): InvoiceStatus {
   return fromLabel(INVOICE_STATUS_LABEL, text, InvoiceStatus.INITIATED);
+}
+
+const CHANNEL_KEYWORDS: readonly (readonly [string, SalesChannel])[] = [
+  ['upwork', SalesChannel.UPWORK],
+  ['cold email', SalesChannel.COLD_EMAIL],
+  ['cold call', SalesChannel.COLD_CALL],
+  ['linkedin', SalesChannel.LINKEDIN],
+];
+
+/**
+ * The workbook names sales costs after their channel ("Upwork Connects", "Cold Call Tools"),
+ * so an imported sales line can be tagged for Sales CAC; anything unclear stays untagged.
+ */
+export function salesChannelFromItem(item: string): SalesChannel | null {
+  const name = normalizeName(item);
+  return CHANNEL_KEYWORDS.find(([keyword]) => name.includes(keyword))?.[1] ?? null;
 }

@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/table';
 import { XLSX_EXTENSION } from '@/lib/constants';
 import { MESSAGES } from '@/lib/messages';
-import type { MonthKey } from '@/lib/month';
+import { type MonthKey, formatMonthLabel } from '@/lib/month';
 import { importWorkbook, previewWorkbookImport } from '@/server/actions/import.actions';
 import type { ImportPreview } from '@/types/import';
 
@@ -40,6 +40,10 @@ function PreviewNotes({ preview }: { preview: ImportPreview }) {
     preview.newCategories.length
       ? `New expense categories: ${preview.newCategories.join(', ')}`
       : null,
+    preview.salesActivityMonths.length
+      ? `Sales CAC activity for ${preview.salesActivityMonths.map(formatMonthLabel).join(', ')} (for the months you tick)`
+      : null,
+    ...preview.salesActivityWarnings,
   ].filter(Boolean);
   return (
     <div className="grid gap-1 text-sm">

@@ -4,7 +4,7 @@ import { Pencil, Plus } from 'lucide-react';
 import { FormProvider, useWatch } from 'react-hook-form';
 import type { z } from 'zod';
 
-import type { ExpenseFormOptions } from '@/components/expenses/expense-form';
+import { type ExpenseFormOptions, SalesChannelField } from '@/components/expenses/expense-form';
 import {
   CheckboxField,
   MonthField,
@@ -93,6 +93,7 @@ function TemplateFields({ options }: { options: ExpenseFormOptions }) {
           emptyLabel="Not recorded"
         />
       </div>
+      <SalesChannelField salesCategoryIds={options.salesCategoryIds} />
       <div className="grid gap-3 sm:grid-cols-3">
         <SelectField name="frequency" label="Repeats" options={optionsFrom(FREQUENCY_LABEL)} />
         <MonthField name="startMonth" label="From" />
@@ -118,6 +119,7 @@ function toFormValues(
     fundingSource: template?.fundingSource ?? FundingSource.COMPANY,
     fundingPartnerId: template?.fundingPartnerId ?? '',
     paidFromAccountId: template?.paidFromAccountId ?? '',
+    salesChannel: template?.salesChannel ?? '',
     notes: template?.notes ?? '',
     frequency: template?.frequency ?? Frequency.MONTHLY,
     dayOfMonth: template?.dayOfMonth ?? 1,

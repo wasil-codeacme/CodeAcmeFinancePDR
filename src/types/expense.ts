@@ -1,4 +1,10 @@
-import type { EntryStatus, Frequency, FundingSource, PnlLine } from '@/generated/prisma/enums';
+import type {
+  EntryStatus,
+  Frequency,
+  FundingSource,
+  PnlLine,
+  SalesChannel,
+} from '@/generated/prisma/enums';
 import type { DecimalString } from '@/lib/decimal';
 import type { MonthKey } from '@/lib/month';
 
@@ -22,6 +28,7 @@ export type ExpenseRecord = {
   paidFromAccountId: string | null;
   paidFromAccountName: string | null;
   recurringTemplateId: string | null;
+  salesChannel: SalesChannel | null;
   notes: string | null;
 };
 
@@ -61,6 +68,7 @@ export type RecurringTemplateRecord = {
   fundingSource: FundingSource;
   fundingPartnerId: string | null;
   paidFromAccountId: string | null;
+  salesChannel: SalesChannel | null;
   notes: string | null;
   frequency: Frequency;
   dayOfMonth: number;

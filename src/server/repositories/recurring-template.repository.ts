@@ -23,6 +23,7 @@ function toRecord(row: TemplateRow): RecurringTemplateRecord {
     fundingSource: row.fundingSource,
     fundingPartnerId: row.fundingPartnerId,
     paidFromAccountId: row.paidFromAccountId,
+    salesChannel: row.salesChannel,
     notes: row.notes,
     frequency: row.frequency,
     dayOfMonth: row.dayOfMonth,

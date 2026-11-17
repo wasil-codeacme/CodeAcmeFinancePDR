@@ -1,4 +1,5 @@
-import { FundingSource } from '@/generated/prisma/enums';
+import { AuditAction, FundingSource } from '@/generated/prisma/enums';
+import { AUDIT_ENTITY } from '@/lib/constants';
 import { Decimal } from '@/lib/decimal';
 import { MESSAGES } from '@/lib/messages';
 import type { MonthKey } from '@/lib/month';
@@ -10,14 +11,21 @@ import {
   pnlLineForSection,
   splitClientAndPlatform,
 } from '@/server/import/workbook-mapping';
+import {
+  type ParsedSalesCac,
+  SALES_CAC_SHEET_PATTERN,
+  parseSalesCacSheet,
+} from '@/server/import/sales-cac-parser';
 import { type ParsedMonth, parseWorkbook } from '@/server/import/workbook-parser';
 import { importMonth, type ImportLookups } from '@/server/import/workbook-writer';
+import { auditedChange } from '@/server/repositories/audited-write';
 import { clientRepository } from '@/server/repositories/client.repository';
 import { companyRepository } from '@/server/repositories/company.repository';
 import { expenseRepository } from '@/server/repositories/expense.repository';
 import { platformRepository } from '@/server/repositories/platform.repository';
 import { partnerRepository } from '@/server/repositories/profit-sharing.repository';
 import { revenueRepository } from '@/server/repositories/revenue.repository';
+import { salesActivityRepository } from '@/server/repositories/sales-activity.repository';
 import {
   accountRepository,
   expenseCategoryRepository,
@@ -36,10 +44,19 @@ async function requireCurrencies(): Promise<Currencies> {
   return { reporting: company.reportingCurrency, display: company.displayCurrency };
 }
 
-async function readWorkbook(file: ArrayBuffer): Promise<ParsedMonth[]> {
-  const months = parseWorkbook(await spreadsheetReader.read(file));
+type ReadWorkbook = { months: ParsedMonth[]; salesCac: ParsedSalesCac };
+
+async function readWorkbook(file: ArrayBuffer): Promise<ReadWorkbook> {
+  const sheets = await spreadsheetReader.read(file);
+  const months = parseWorkbook(sheets);
   if (months.length === 0) throw new RuleViolationError(MESSAGES.IMPORT.NO_MONTH_TABS);
-  return months;
+  const cacSheet = sheets.find(
+    (sheet) => !sheet.hidden && SALES_CAC_SHEET_PATTERN.test(sheet.name),
+  );
+  // The sheet names months without a year; it belongs to the same year as the month tabs.
+  const year = Number(months.at(-1)?.month.slice(0, 4));
+  const salesCac = cacSheet ? parseSalesCacSheet(cacSheet, year) : { activity: [], warnings: [] };
+  return { months, salesCac };
 }
 
 async function monthHasEntries(month: MonthKey): Promise<boolean> {
@@ -112,14 +129,15 @@ function missingNames(wanted: Iterable<string>, existing: readonly { name: strin
 
 /** Reads the workbook and reports what an import would create, without writing anything. */
 export async function previewWorkbookImport(file: ArrayBuffer): Promise<ImportPreview> {
-  const [months, currencies, clients, categories, partners, platforms] = await Promise.all([
-    readWorkbook(file),
-    requireCurrencies(),
-    clientRepository.list(),
-    expenseCategoryRepository.list(),
-    partnerRepository.list(),
-    platformRepository.list(),
-  ]);
+  const [{ months, salesCac }, currencies, clients, categories, partners, platforms] =
+    await Promise.all([
+      readWorkbook(file),
+      requireCurrencies(),
+      clientRepository.list(),
+      expenseCategoryRepository.list(),
+      partnerRepository.list(),
+      platformRepository.list(),
+    ]);
   const platformNames = platforms.map((platform) => platform.name);
   const clientNames = months.flatMap((month) =>
     month.revenue.map((line) => splitClientAndPlatform(line, platformNames).clientName),
@@ -135,6 +153,8 @@ export async function previewWorkbookImport(file: ArrayBuffer): Promise<ImportPr
       categories,
     ),
     missingPartners: missingNames(partnerNames, partners),
+    salesActivityMonths: [...new Set(salesCac.activity.map((entry) => entry.month))].sort(),
+    salesActivityWarnings: salesCac.warnings,
   };
 }
 
@@ -159,7 +179,7 @@ export async function importWorkbook(
   file: ArrayBuffer,
   options: { months: readonly MonthKey[]; receivedAccountId: string },
 ): Promise<ImportResult> {
-  const [months, currencies, lookups] = await Promise.all([
+  const [{ months, salesCac }, currencies, lookups] = await Promise.all([
     readWorkbook(file),
     requireCurrencies(),
     loadLookups(options.receivedAccountId),
@@ -176,6 +196,7 @@ export async function importWorkbook(
     revenueLines: 0,
     expenseLines: 0,
     skippedTabs: [],
+    salesActivityRows: 0,
   };
   for (const month of chosen) {
     if (await monthHasEntries(month.month)) {
@@ -186,6 +207,19 @@ export async function importWorkbook(
     result.monthsImported += 1;
     result.revenueLines += written.revenueLines;
     result.expenseLines += written.expenseLines;
+  }
+  // Counts are upserted per channel and month, so importing twice never doubles them.
+  for (const activity of salesCac.activity.filter((entry) =>
+    options.months.includes(entry.month),
+  )) {
+    await auditedChange(actor.id, {
+      action: AuditAction.UPDATE,
+      entityType: AUDIT_ENTITY.SALES_ACTIVITY,
+      entityId: `${activity.channel}:${activity.month}`,
+      loadBefore: () => salesActivityRepository.find(activity.month, activity.channel),
+      apply: () => salesActivityRepository.upsert(activity, actor.id),
+    });
+    result.salesActivityRows += 1;
   }
   return result;
 }

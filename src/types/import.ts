@@ -19,6 +19,9 @@ export type ImportPreview = {
   newClients: string[];
   newCategories: string[];
   missingPartners: string[];
+  /** Months of the "Sales CAC" sheet with response, lead or call counts to bring in. */
+  salesActivityMonths: MonthKey[];
+  salesActivityWarnings: string[];
 };
 
 export type ImportResult = {
@@ -26,4 +29,5 @@ export type ImportResult = {
   revenueLines: number;
   expenseLines: number;
   skippedTabs: string[];
+  salesActivityRows: number;
 };

@@ -108,6 +108,15 @@ enum ExpenseKind {
   TRANSFER_FEE
 }
 
+/// PRD §5.8: the channel a sales expense and its activity belong to, for cost per lead.
+enum SalesChannel {
+  UPWORK
+  COLD_EMAIL
+  COLD_CALL
+  LINKEDIN
+  OTHER
+}
+
 enum AuditAction {
   CREATE
   UPDATE
@@ -435,6 +444,8 @@ model Expense {
   fundingPartnerId    String?
   paidFromAccountId   String?
   recurringTemplateId String?
+  /// Set on sales expenses (PRD §5.8) so Sales CAC can show spend per channel.
+  salesChannel        SalesChannel?
   notes               String?       @db.Text
   createdById         String
   updatedById         String?
@@ -465,6 +476,7 @@ model RecurringTemplate {
   fundingSource     FundingSource @default(COMPANY)
   fundingPartnerId  String?
   paidFromAccountId String?
+  salesChannel      SalesChannel?
   notes             String?       @db.Text
   frequency         Frequency     @default(MONTHLY)
   dayOfMonth        Int           @default(1)
@@ -585,4 +597,19 @@ model AuditLog {
 
   @@index([entityType, entityId])
   @@index([createdAt])
+}
+
+/// PRD §5.8: interested responses, leads closed and calls made per channel each month.
+model SalesActivity {
+  id                  String       @id @default(cuid())
+  month               DateTime     @db.Date
+  channel             SalesChannel
+  interestedResponses Int          @default(0)
+  leadsClosed         Int          @default(0)
+  callsMade           Int          @default(0)
+  updatedById         String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  @@unique([month, channel])
 }

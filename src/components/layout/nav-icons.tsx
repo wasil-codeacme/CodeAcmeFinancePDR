@@ -1,9 +1,11 @@
 import {
   ArrowDownToLine,
+  ChartColumn,
   Coins,
   Contact,
   Landmark,
   Lock,
+  Target,
   UsersRound,
   Building2,
   LayoutDashboard,
@@ -31,4 +33,6 @@ export const NAV_ICONS: Record<NavIcon, LucideIcon> = {
   [NAV_ICON.CLOSE]: Lock,
   [NAV_ICON.TEAM]: Contact,
   [NAV_ICON.RATES]: Coins,
+  [NAV_ICON.REPORTS]: ChartColumn,
+  [NAV_ICON.SALES_CAC]: Target,
 };

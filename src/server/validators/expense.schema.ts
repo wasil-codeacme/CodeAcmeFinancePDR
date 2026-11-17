@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { Frequency, FundingSource } from '@/generated/prisma/enums';
+import { Frequency, FundingSource, SalesChannel } from '@/generated/prisma/enums';
 import { MAX_DAY_OF_MONTH } from '@/lib/constants';
 import {
   currencyCodeSchema,
@@ -14,6 +14,12 @@ import {
   positiveMoneySchema,
 } from '@/server/validators/common.schema';
 
+/** Empty or missing means "not tagged"; only sales expenses keep a tag (the service checks). */
+const optionalSalesChannelSchema = z
+  .union([z.enum(SalesChannel), z.literal(''), z.null()])
+  .optional()
+  .transform((value) => (value ? value : null));
+
 const expenseFieldsSchema = z.object({
   categoryId: idSchema,
   item: nameSchema,
@@ -23,6 +29,7 @@ const expenseFieldsSchema = z.object({
   fundingSource: z.enum(FundingSource),
   fundingPartnerId: optionalIdSchema,
   paidFromAccountId: optionalIdSchema,
+  salesChannel: optionalSalesChannelSchema,
   notes: optionalTextSchema,
 });
 

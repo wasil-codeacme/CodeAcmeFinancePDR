@@ -15,6 +15,8 @@ export const PERMISSION = {
   PERIOD_CLOSE: 'period:close',
   SETTINGS_MANAGE: 'settings:manage',
   USERS_MANAGE: 'users:manage',
+  /** PRD §7: founders can export all data (it includes partner figures). */
+  DATA_EXPORT: 'data:export',
 } as const;
 export type Permission = (typeof PERMISSION)[keyof typeof PERMISSION];
 

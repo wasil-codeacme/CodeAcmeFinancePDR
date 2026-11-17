@@ -67,7 +67,11 @@ export const AUDIT_ENTITY = {
   TRANSFER: 'Transfer',
   LEDGER_ENTRY: 'PartnerLedgerEntry',
   NEXT_MONTH_RESERVE: 'NextMonthReserve',
+  SALES_ACTIVITY: 'SalesActivity',
 } as const;
+
+/** Upper bound for a typed count (responses, leads, calls) — catches a slipped key, not a rule. */
+export const MAX_ACTIVITY_COUNT = 100_000;
 export type AuditEntity = (typeof AUDIT_ENTITY)[keyof typeof AUDIT_ENTITY];
 
 export const SEARCH_PARAM = {
@@ -77,4 +81,10 @@ export const SEARCH_PARAM = {
   STATUS: 'status',
   QUERY: 'q',
   STEP: 'step',
+  PERIOD: 'period',
+  REPORT: 'report',
+  FORMAT: 'format',
+  FIGURE: 'figure',
+  LINE: 'line',
+  FUNDING: 'funding',
 } as const;

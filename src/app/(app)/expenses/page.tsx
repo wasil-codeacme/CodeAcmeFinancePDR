@@ -22,6 +22,7 @@ import { MESSAGES } from '@/lib/messages';
 import { dateInMonth, formatMonthLabel, monthFromSearchParam } from '@/lib/month';
 import { PERMISSION, hasPermission } from '@/lib/permissions';
 import { requireBooksUser } from '@/server/auth/current-user';
+import { isSalesLine } from '@/server/domain/sales-cac';
 import { getExpenseMonth } from '@/server/services/expense.service';
 import { getProfitSharingSettings } from '@/server/services/profit-sharing.service';
 import {
@@ -52,6 +53,9 @@ async function ExpensesContent({ searchParams }: Pick<PageProps<'/expenses'>, 's
     categories: categories
       .filter((category) => category.active)
       .map((category) => ({ value: category.id, label: category.name })),
+    salesCategoryIds: categories
+      .filter((category) => category.active && isSalesLine(category.pnlLine))
+      .map((category) => category.id),
     teamMembers: members
       .filter((member) => member.active)
       .map((member) => ({ value: member.id, label: member.name })),

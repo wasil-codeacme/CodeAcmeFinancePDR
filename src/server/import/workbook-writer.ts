@@ -9,11 +9,13 @@ import { AUDIT_ENTITY } from '@/lib/constants';
 import { Decimal } from '@/lib/decimal';
 import { dateInMonth } from '@/lib/month';
 import { computeRevenueLine } from '@/server/domain/revenue-math';
+import { channelForExpense } from '@/server/domain/sales-cac';
 import {
   invoiceStatusFrom,
   normalizeName,
   pnlLineForSection,
   projectStatusFrom,
+  salesChannelFromItem,
   splitClientAndPlatform,
 } from '@/server/import/workbook-mapping';
 import type {
@@ -202,6 +204,7 @@ async function writeExpenseLine(
         fundingPartnerId: partner?.id ?? null,
         paidFromAccountId: null,
         recurringTemplateId: null,
+        salesChannel: channelForExpense(category.pnlLine, salesChannelFromItem(line.item)),
         notes: line.note,
       },
       actor.id,

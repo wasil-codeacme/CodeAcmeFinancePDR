@@ -1,20 +1,25 @@
 import { AuditAction, FundingSource } from '@/generated/prisma/enums';
 import { AUDIT_ENTITY } from '@/lib/constants';
+import { channelForExpense } from '@/server/domain/sales-cac';
 import { NotFoundError } from '@/server/errors';
 import { auditedChange, auditedCreate } from '@/server/repositories/audited-write';
 import {
   type RecurringTemplateData,
   recurringTemplateRepository,
 } from '@/server/repositories/recurring-template.repository';
+import { expenseCategoryRepository } from '@/server/repositories/settings.repository';
 import type { RecurringTemplateInput } from '@/server/validators/expense.schema';
 import type { SessionUser } from '@/types/auth';
 import type { RecurringTemplateRecord } from '@/types/expense';
 
-function toData(input: RecurringTemplateInput): RecurringTemplateData {
+async function toData(input: RecurringTemplateInput): Promise<RecurringTemplateData> {
+  const category = await expenseCategoryRepository.findById(input.categoryId);
+  if (!category) throw new NotFoundError();
   return {
     ...input,
     fundingPartnerId:
       input.fundingSource === FundingSource.EXTERNAL ? input.fundingPartnerId : null,
+    salesChannel: channelForExpense(category.pnlLine, input.salesChannel),
   };
 }
 
@@ -26,8 +31,8 @@ export function createRecurringTemplate(
   actor: SessionUser,
   input: RecurringTemplateInput,
 ): Promise<RecurringTemplateRecord> {
-  return auditedCreate(actor.id, AUDIT_ENTITY.RECURRING_TEMPLATE, () =>
-    recurringTemplateRepository.create(toData(input)),
+  return auditedCreate(actor.id, AUDIT_ENTITY.RECURRING_TEMPLATE, async () =>
+    recurringTemplateRepository.create(await toData(input)),
   );
 }
 
@@ -45,6 +50,6 @@ export function updateRecurringTemplate(
       if (!existing) throw new NotFoundError();
       return existing;
     },
-    apply: () => recurringTemplateRepository.update(id, toData(input)),
+    apply: async () => recurringTemplateRepository.update(id, await toData(input)),
   });
 }

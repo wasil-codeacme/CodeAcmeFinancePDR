@@ -24,6 +24,7 @@ describe('role permissions (PRD §3)', () => {
     PERMISSION.SETTINGS_MANAGE,
     PERMISSION.USERS_MANAGE,
     PERMISSION.ENTRIES_DELETE_CONFIRMED,
+    PERMISSION.DATA_EXPORT,
   ])('keeps founder-only %s away from the finance manager', (permission) => {
     expect(hasPermission(Role.FINANCE_MANAGER, permission)).toBe(false);
   });

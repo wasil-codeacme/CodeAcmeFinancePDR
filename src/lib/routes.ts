@@ -18,6 +18,16 @@ export const ROUTES = {
   PARTNERS: '/partners',
   CLOSE: '/close',
   CLIENT_DETAIL: (clientId: string) => `/clients/${clientId}`,
+  REPORTS: {
+    PNL: '/reports',
+    DISTRIBUTION: '/reports/distribution',
+    RECEIVABLES: '/reports/receivables',
+    CASH: '/reports/cash',
+    CHARTS: '/reports/charts',
+    ENTRIES: '/reports/entries',
+    EXPORT: '/reports/export',
+  },
+  SALES_CAC: '/reports/sales-cac',
   SETTINGS: {
     ROOT: '/settings',
     COMPANY: '/settings/company',

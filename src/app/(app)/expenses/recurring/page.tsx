@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { currentMonthKey } from '@/lib/month';
 import { PERMISSION } from '@/lib/permissions';
 import { requireBooksUser } from '@/server/auth/current-user';
+import { isSalesLine } from '@/server/domain/sales-cac';
 import { getCompany } from '@/server/services/company.service';
 import { getProfitSharingSettings } from '@/server/services/profit-sharing.service';
 import { listRecurringTemplates } from '@/server/services/recurring-template.service';
@@ -37,6 +38,9 @@ async function RecurringContent() {
     categories: categories
       .filter((category) => category.active)
       .map((category) => ({ value: category.id, label: category.name })),
+    salesCategoryIds: categories
+      .filter((category) => category.active && isSalesLine(category.pnlLine))
+      .map((category) => category.id),
     teamMembers: members
       .filter((member) => member.active)
       .map((member) => ({ value: member.id, label: member.name })),

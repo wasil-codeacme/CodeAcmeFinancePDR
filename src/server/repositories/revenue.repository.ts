@@ -314,34 +314,44 @@ export const revenueRepository = {
   },
 
   /** P&L inputs for a month: confirmed booked lines and adjustments posted to it. */
-  async pnlRevenueForMonth(
-    month: MonthKey,
-  ): Promise<{ gross: DecimalString; feePercent: DecimalString }[]> {
+  /** Booked, confirmed revenue for the P&L of several months, in one query. */
+  async pnlRevenueForMonths(
+    months: readonly MonthKey[],
+  ): Promise<{ month: MonthKey; gross: DecimalString; feePercent: DecimalString }[]> {
+    if (months.length === 0) return [];
     const rows = await db().revenueEntry.findMany({
       where: {
         ...LIVE,
         kind: RevenueKind.BOOKED,
         status: EntryStatus.CONFIRMED,
-        bookingMonth: monthKeyToDbDate(month),
+        bookingMonth: { in: months.map(monthKeyToDbDate) },
         gross: { not: null },
       },
-      select: { gross: true, feePercent: true },
+      select: { bookingMonth: true, gross: true, feePercent: true },
     });
     return rows.map((row) => ({
+      month: dateToMonthKey(row.bookingMonth),
       gross: row.gross?.toString() ?? '0',
       feePercent: row.feePercent.toString(),
     }));
   },
 
-  async pnlAdjustmentsForMonth(month: MonthKey): Promise<DecimalString[]> {
+  /** Write-offs and reductions by the month they post to (PRD §5.6). */
+  async pnlAdjustmentsForMonths(
+    months: readonly MonthKey[],
+  ): Promise<{ month: MonthKey; amount: DecimalString }[]> {
+    if (months.length === 0) return [];
     const rows = await db().receivableAdjustment.findMany({
       where: {
         ...LIVE,
-        postingMonth: monthKeyToDbDate(month),
+        postingMonth: { in: months.map(monthKeyToDbDate) },
         revenueEntry: { ...LIVE, kind: RevenueKind.BOOKED, status: EntryStatus.CONFIRMED },
       },
-      select: { amount: true },
+      select: { postingMonth: true, amount: true },
     });
-    return rows.map((row) => row.amount.toString());
+    return rows.map((row) => ({
+      month: dateToMonthKey(row.postingMonth),
+      amount: row.amount.toString(),
+    }));
   },
 };

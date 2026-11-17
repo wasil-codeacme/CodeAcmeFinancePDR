@@ -99,6 +99,7 @@ describe('closed months are read-only (PRD §5.6)', () => {
         fundingSource: FundingSource.COMPANY,
         fundingPartnerId: null,
         paidFromAccountId: null,
+        salesChannel: null,
         notes: null,
       }),
     ).rejects.toThrow(CLOSED);

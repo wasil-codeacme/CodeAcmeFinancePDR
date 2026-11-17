@@ -4,79 +4,150 @@ import Link from 'next/link';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
 
+import { ChartCard, PeriodBars } from '@/components/reports/charts/chart-primitives';
 import { Money } from '@/components/shared/money';
 import { PageHeader } from '@/components/shared/page-header';
-import { StatCardsSkeleton } from '@/components/shared/skeletons';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CardListSkeleton, StatCardsSkeleton } from '@/components/shared/skeletons';
 import { Button } from '@/components/ui/button';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Decimal } from '@/lib/decimal';
-import { formatRatioAsPercent } from '@/lib/format';
-import { MESSAGES } from '@/lib/messages';
-import { currentMonthKey, formatLongMonthLabel } from '@/lib/month';
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { SEARCH_PARAM } from '@/lib/constants';
+import { formatCurrency, formatRatioAsPercent } from '@/lib/format';
 import { PERMISSION } from '@/lib/permissions';
-import { ROUTES } from '@/lib/routes';
+import { ROUTES, withSearchParams } from '@/lib/routes';
 import { requireBooksUser } from '@/server/auth/current-user';
-import { PNL_RESULT } from '@/server/read-models/monthly-pnl';
-import { getMonthlyPnl } from '@/server/services/pnl.service';
-import { getReceivables } from '@/server/services/receivable.service';
+import { getDashboard } from '@/server/services/dashboard.service';
+import type { PeriodGlance } from '@/types/dashboard';
 
 export const metadata: Metadata = { title: 'Dashboard' };
 
-function Stat({ label, value, note }: { label: string; value: Decimal.Value; note?: string }) {
-  return (
-    <Card className="ca-glow">
-      <CardHeader>
-        <CardDescription>{label}</CardDescription>
-        <CardTitle className="font-figures text-2xl">
-          <Money value={value} emphasizeNegative />
-        </CardTitle>
-        {note ? <p className="text-muted-foreground text-xs">{note}</p> : null}
-      </CardHeader>
-    </Card>
-  );
-}
+const PROFIT_SERIES = [
+  { key: 'revenue', label: 'Net revenue' },
+  { key: 'expenses', label: 'Company expense' },
+  { key: 'profit', label: 'Net profit' },
+];
 
 const QUICK_LINKS = [
   { label: 'Book revenue', href: ROUTES.REVENUE },
   { label: 'Add an expense', href: ROUTES.EXPENSES },
   { label: 'Chase receivables', href: ROUTES.RECEIVABLES },
-  { label: 'Monthly P&L', href: ROUTES.PNL },
+  { label: 'Reports', href: ROUTES.REPORTS.PNL },
 ] as const;
 
+function Stat({
+  label,
+  value,
+  note,
+  href,
+}: {
+  label: string;
+  value: string | null;
+  note: string;
+  href: string;
+}) {
+  return (
+    <Link href={href} prefetch className="group">
+      <Card className="ca-glow group-hover:border-foreground/20 h-full transition-colors">
+        <CardHeader>
+          <CardDescription>{label}</CardDescription>
+          <CardTitle className="font-figures text-2xl">
+            {value === null ? '—' : <Money value={value} emphasizeNegative />}
+          </CardTitle>
+          <p className="text-muted-foreground text-xs">{note}</p>
+        </CardHeader>
+      </Card>
+    </Link>
+  );
+}
+
+function GlanceRow({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+  return (
+    <div className="flex items-baseline justify-between gap-3 py-1.5 text-sm">
+      <span className={strong ? 'font-medium' : 'text-muted-foreground'}>{label}</span>
+      <Money
+        value={value}
+        emphasizeNegative={strong}
+        className={strong ? 'text-base font-semibold' : ''}
+      />
+    </div>
+  );
+}
+
+/** This month or this quarter at a glance, linking to the full statement for it. */
+function Glance({ title, glance }: { title: string; glance: PeriodGlance }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">{title}</CardTitle>
+        <CardDescription>{glance.label}</CardDescription>
+        <CardAction>
+          <Button asChild size="sm" variant="ghost">
+            <Link
+              href={withSearchParams(ROUTES.REPORTS.PNL, {
+                [SEARCH_PARAM.PERIOD]: glance.periodParam,
+              })}
+            >
+              P&amp;L <ArrowRight />
+            </Link>
+          </Button>
+        </CardAction>
+      </CardHeader>
+      <CardContent className="divide-y">
+        <GlanceRow label="Net revenue" value={glance.netRevenue} />
+        <GlanceRow label="Company expense" value={glance.companyExpense} />
+        <GlanceRow label="Net profit (company)" value={glance.netProfit} strong />
+        <div className="flex items-baseline justify-between gap-3 py-1.5 text-sm">
+          <span className="text-muted-foreground">Margin</span>
+          <span className="tabular-nums">{formatRatioAsPercent(glance.margin)}</span>
+        </div>
+        {glance.missingMonths > 0 ? (
+          <p className="text-muted-foreground pt-2 text-xs">
+            {glance.missingMonths} month(s) left out: no exchange rate yet.
+          </p>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
 async function DashboardContent() {
-  await Promise.all([requireBooksUser(PERMISSION.REPORTS_VIEW), connection()]);
-  const now = new Date();
-  const month = currentMonthKey(now);
-  const [pnlResult, receivables] = await Promise.all([
-    getMonthlyPnl(month, { includeDistribution: false }),
-    getReceivables(now),
-  ]);
+  const [user] = await Promise.all([requireBooksUser(PERMISSION.REPORTS_VIEW), connection()]);
+  const view = await getDashboard(user, new Date());
   return (
     <div className="grid gap-6">
-      <p className="ca-eyebrow text-muted-foreground text-[0.7rem]">
-        {formatLongMonthLabel(month)} so far
-      </p>
-      {pnlResult.kind === PNL_RESULT.READY ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Stat label="Net revenue" value={pnlResult.pnl.netRevenue} />
-          <Stat label="Company expense" value={pnlResult.pnl.totalCompanyExpense} />
-          <Stat
-            label="Net profit (company)"
-            value={pnlResult.pnl.netProfitCompany}
-            note={`Margin ${formatRatioAsPercent(pnlResult.pnl.marginCompany)}`}
-          />
-          <Stat
-            label="Outstanding receivables"
-            value={receivables.totals.outstanding}
-            note={`Collection rate ${formatRatioAsPercent(receivables.totals.collectionRate)}`}
-          />
-        </div>
-      ) : (
-        <Alert>
-          <AlertDescription>{MESSAGES.PNL.RATE_MISSING}</AlertDescription>
-        </Alert>
-      )}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Stat
+          label="Cash in hand"
+          value={view.cashInHand}
+          note="All accounts: typed balances where entered, expected otherwise."
+          href={ROUTES.ACCOUNTS}
+        />
+        <Stat
+          label="Outstanding receivables"
+          value={view.outstanding}
+          note={`Unfunded (at risk) ${formatCurrency(view.unfunded, view.currency)} · collection rate ${formatRatioAsPercent(view.collectionRate)}`}
+          href={ROUTES.RECEIVABLES}
+        />
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Glance title="This month" glance={view.month} />
+        <Glance title="This quarter" glance={view.quarter} />
+      </div>
+      <ChartCard
+        title={`${view.year.label} by quarter`}
+        description="Net revenue, company expense and net profit."
+        tableHref={withSearchParams(ROUTES.REPORTS.PNL, {
+          [SEARCH_PARAM.PERIOD]: view.year.periodParam,
+        })}
+      >
+        <PeriodBars data={view.year.chart} series={PROFIT_SERIES} currency={view.currency} />
+      </ChartCard>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {QUICK_LINKS.map((link) => (
           <Button key={link.href} asChild variant="outline" className="justify-between">
@@ -87,10 +158,6 @@ async function DashboardContent() {
           </Button>
         ))}
       </div>
-      <p className="text-muted-foreground text-xs">
-        Cash in hand by account arrives with month close (build step 2); quarterly charts with
-        reports (step 3).
-      </p>
     </div>
   );
 }
@@ -101,9 +168,16 @@ export default function DashboardPage() {
       <PageHeader
         eyebrow="Overview"
         title="Dashboard"
-        description="This month at a glance, from confirmed entries."
+        description="This month and this quarter at a glance, with cash in hand and what clients still owe."
       />
-      <Suspense fallback={<StatCardsSkeleton />}>
+      <Suspense
+        fallback={
+          <div className="grid gap-6">
+            <StatCardsSkeleton count={2} />
+            <CardListSkeleton count={2} />
+          </div>
+        }
+      >
         <DashboardContent />
       </Suspense>
     </>

@@ -15,6 +15,8 @@ export const NAV_ICON = {
   CLOSE: 'close',
   TEAM: 'team',
   RATES: 'rates',
+  REPORTS: 'reports',
+  SALES_CAC: 'sales-cac',
 } as const;
 export type NavIcon = (typeof NAV_ICON)[keyof typeof NAV_ICON];
 
@@ -139,6 +141,27 @@ export const NAV_GROUPS: readonly NavGroup[] = [
         href: ROUTES.CLOSE,
         icon: NAV_ICON.CLOSE,
         permission: PERMISSION.PERIOD_CLOSE,
+        inTabBar: false,
+      },
+    ],
+  },
+  {
+    label: 'Reports',
+    items: [
+      {
+        label: 'Reports',
+        shortLabel: 'Reports',
+        href: ROUTES.REPORTS.PNL,
+        icon: NAV_ICON.REPORTS,
+        permission: PERMISSION.REPORTS_VIEW,
+        inTabBar: false,
+      },
+      {
+        label: 'Sales CAC',
+        shortLabel: 'CAC',
+        href: ROUTES.SALES_CAC,
+        icon: NAV_ICON.SALES_CAC,
+        permission: PERMISSION.REPORTS_VIEW,
         inTabBar: false,
       },
     ],

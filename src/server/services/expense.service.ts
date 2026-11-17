@@ -6,6 +6,7 @@ import { type MonthKey, dateInMonth, monthOfIsoDate } from '@/lib/month';
 import { PERMISSION, hasPermission } from '@/lib/permissions';
 import { type CurrencyPair, toDisplayCurrency } from '@/server/domain/currency';
 import { isTemplateDue } from '@/server/domain/recurrence';
+import { channelForExpense } from '@/server/domain/sales-cac';
 import { assertMonthsOpen } from '@/server/period-guard';
 import {
   ForbiddenError,
@@ -115,11 +116,14 @@ async function toExpenseData(
   ) {
     throw new MissingExchangeRateError();
   }
+  const category = await expenseCategoryRepository.findById(input.categoryId);
+  if (!category) throw new NotFoundError();
   return {
     ...input,
     status,
     fundingPartnerId:
       input.fundingSource === FundingSource.EXTERNAL ? input.fundingPartnerId : null,
+    salesChannel: channelForExpense(category.pnlLine, input.salesChannel),
     recurringTemplateId: templateId,
   };
 }

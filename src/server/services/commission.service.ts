@@ -69,6 +69,7 @@ export async function postBdCommission(actor: SessionUser, month: MonthKey): Pro
             fundingPartnerId: null,
             paidFromAccountId: null,
             recurringTemplateId: null,
+            salesChannel: null,
             notes: `${row.base.toFixed(MONEY_DECIMALS)} base`,
           },
           actor.id,

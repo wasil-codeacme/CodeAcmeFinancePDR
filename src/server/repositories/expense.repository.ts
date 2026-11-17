@@ -1,4 +1,10 @@
-import { EntryStatus, type ExpenseKind, type FundingSource } from '@/generated/prisma/enums';
+import {
+  EntryStatus,
+  type ExpenseKind,
+  type FundingSource,
+  PnlLine,
+  type SalesChannel,
+} from '@/generated/prisma/enums';
 import type { Prisma } from '@/generated/prisma/client';
 import type { DecimalString } from '@/lib/decimal';
 import { type MonthKey, isoDateToDate, monthDateRange, monthOfIsoDate } from '@/lib/month';
@@ -22,6 +28,7 @@ export type ExpenseData = {
   fundingPartnerId: string | null;
   paidFromAccountId: string | null;
   recurringTemplateId: string | null;
+  salesChannel: SalesChannel | null;
   notes: string | null;
 };
 
@@ -54,6 +61,7 @@ function toRecord(row: ExpenseRow): ExpenseRecord {
     paidFromAccountId: row.paidFromAccountId,
     paidFromAccountName: row.paidFromAccount?.name ?? null,
     recurringTemplateId: row.recurringTemplateId,
+    salesChannel: row.salesChannel,
     notes: row.notes,
   };
 }
@@ -81,6 +89,31 @@ export const expenseRepository = {
   },
 
   /** Advances: confirmed expenses paid in this month that count in a later month. */
+  /** Every confirmed expense, for the founders' full data export (PRD §7). */
+  async listAllConfirmed(): Promise<ExpenseRecord[]> {
+    const rows = await db().expense.findMany({
+      where: { ...LIVE, status: EntryStatus.CONFIRMED },
+      include: EXPENSE_INCLUDE,
+      orderBy: [{ expenseDate: 'asc' }, { createdAt: 'asc' }],
+    });
+    return rows.map(toRecord);
+  },
+
+  /** Confirmed expenses across months, for drilling into a report figure. */
+  async listConfirmedForMonths(months: readonly MonthKey[]): Promise<ExpenseRecord[]> {
+    if (months.length === 0) return [];
+    const rows = await db().expense.findMany({
+      where: {
+        ...LIVE,
+        status: EntryStatus.CONFIRMED,
+        month: { in: months.map(monthKeyToDbDate) },
+      },
+      include: EXPENSE_INCLUDE,
+      orderBy: [{ expenseDate: 'asc' }, { createdAt: 'asc' }],
+    });
+    return rows.map(toRecord);
+  },
+
   async listAdvancesPaidIn(month: MonthKey): Promise<ExpenseRecord[]> {
     const { start, endExclusive } = monthDateRange(month);
     const rows = await db().expense.findMany({
@@ -167,10 +200,40 @@ export const expenseRepository = {
     );
   },
 
-  async pnlExpensesForMonth(month: MonthKey) {
+  /** Sales spend for Sales CAC: confirmed sales-line expenses plus anything tagged with a channel. */
+  async salesSpendForMonths(months: readonly MonthKey[]) {
+    if (months.length === 0) return [];
     const rows = await db().expense.findMany({
-      where: { ...LIVE, status: EntryStatus.CONFIRMED, month: monthKeyToDbDate(month) },
+      where: {
+        ...LIVE,
+        status: EntryStatus.CONFIRMED,
+        month: { in: months.map(monthKeyToDbDate) },
+        OR: [
+          { salesChannel: { not: null } },
+          { category: { pnlLine: { in: [PnlLine.SALES_SALARIES, PnlLine.SALES_OVERHEAD] } } },
+        ],
+      },
+      select: { month: true, amount: true, currency: true, salesChannel: true },
+    });
+    return rows.map((row) => ({
+      month: dateToMonthKey(row.month),
+      amount: row.amount.toString(),
+      currency: row.currency,
+      salesChannel: row.salesChannel,
+    }));
+  },
+
+  /** Confirmed expenses for the P&L of several months, in one query. */
+  async pnlExpensesForMonths(months: readonly MonthKey[]) {
+    if (months.length === 0) return [];
+    const rows = await db().expense.findMany({
+      where: {
+        ...LIVE,
+        status: EntryStatus.CONFIRMED,
+        month: { in: months.map(monthKeyToDbDate) },
+      },
       select: {
+        month: true,
         amount: true,
         currency: true,
         fundingSource: true,
@@ -178,6 +241,10 @@ export const expenseRepository = {
         fundingPartnerId: true,
       },
     });
-    return rows.map((row) => ({ ...row, amount: row.amount.toString() }));
+    return rows.map((row) => ({
+      ...row,
+      month: dateToMonthKey(row.month),
+      amount: row.amount.toString(),
+    }));
   },
 };
