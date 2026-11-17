@@ -1,8 +1,5 @@
 'use client';
 
-import { useOptimistic, useTransition } from 'react';
-import { toast } from 'sonner';
-
 import { RevenueCard } from '@/components/revenue/revenue-card';
 import type { RevenueOptions } from '@/components/revenue/revenue-details-form';
 import type { RevenueEdit } from '@/components/revenue/revenue-entry-parts';
@@ -19,6 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { EntryStatus } from '@/generated/prisma/enums';
+import { useOptimisticList } from '@/hooks/use-optimistic-list';
 import { sumDecimals } from '@/lib/decimal';
 import { MESSAGES } from '@/lib/messages';
 import { computeRevenueLine } from '@/server/domain/revenue-math';
@@ -27,14 +25,7 @@ import {
   deleteRevenueEntry,
   updateRevenueEntry,
 } from '@/server/actions/books.actions';
-import type { ActionResponse } from '@/types/action-response';
 import type { RevenueEntryRecord } from '@/types/revenue';
-
-type OptimisticEdit = { id: string; changes: RevenueEdit };
-
-function applyEdit(entries: RevenueEntryRecord[], edit: OptimisticEdit): RevenueEntryRecord[] {
-  return entries.map((entry) => (entry.id === edit.id ? { ...entry, ...edit.changes } : entry));
-}
 
 type RevenueTableProps = {
   entries: RevenueEntryRecord[];
@@ -43,25 +34,11 @@ type RevenueTableProps = {
 };
 
 /**
- * PRD §5.1 inline editing: an edit is applied to the rows (and so the totals) at once and
- * saved in the background; the server's response then replaces the optimistic rows.
+ * PRD §5.1 inline editing: edits, confirms and deletes show on the rows (and so the totals)
+ * at once and save in the background; the server's response then replaces the optimistic rows.
  */
 export function RevenueTable({ entries, canDeleteConfirmed, options }: RevenueTableProps) {
-  const [optimisticEntries, addOptimisticEdit] = useOptimistic(entries, applyEdit);
-  const [isPending, startTransition] = useTransition();
-
-  function persist(
-    action: () => Promise<ActionResponse<unknown>>,
-    successMessage: string,
-    edit?: OptimisticEdit,
-  ) {
-    startTransition(async () => {
-      if (edit) addOptimisticEdit(edit);
-      const result = await action();
-      if (result.error !== undefined) toast.error(result.error);
-      else toast.success(successMessage);
-    });
-  }
+  const { rows: optimisticEntries, mutate } = useOptimisticList(entries);
 
   if (entries.length === 0) {
     return (
@@ -82,16 +59,25 @@ export function RevenueTable({ entries, canDeleteConfirmed, options }: RevenueTa
     entry,
     figures,
     options,
-    disabled: isPending,
     canDelete: entry.status === EntryStatus.DRAFT || canDeleteConfirmed,
     onEdit: (changes: RevenueEdit) =>
-      persist(() => updateRevenueEntry({ id: entry.id, ...changes }), MESSAGES.REVENUE.UPDATED, {
-        id: entry.id,
-        changes,
-      }),
+      mutate(
+        { type: 'update', id: entry.id, patch: changes },
+        () => updateRevenueEntry({ id: entry.id, ...changes }),
+        MESSAGES.REVENUE.UPDATED,
+      ),
     onConfirm: () =>
-      persist(() => confirmRevenueEntry({ id: entry.id }), MESSAGES.REVENUE.CONFIRMED),
-    onDelete: () => persist(() => deleteRevenueEntry({ id: entry.id }), MESSAGES.COMMON.DELETED),
+      mutate(
+        { type: 'update', id: entry.id, patch: { status: EntryStatus.CONFIRMED } },
+        () => confirmRevenueEntry({ id: entry.id }),
+        MESSAGES.REVENUE.CONFIRMED,
+      ),
+    onDelete: () =>
+      mutate(
+        { type: 'remove', id: entry.id },
+        () => deleteRevenueEntry({ id: entry.id }),
+        MESSAGES.COMMON.DELETED,
+      ),
   });
 
   return (

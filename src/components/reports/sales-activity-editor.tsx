@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useActionRunner } from '@/hooks/use-action-runner';
+import { useOptimisticList } from '@/hooks/use-optimistic-list';
 import { SALES_CHANNEL_LABEL } from '@/lib/labels';
 import { MESSAGES } from '@/lib/messages';
 import { type MonthKey, formatLongMonthLabel } from '@/lib/month';
@@ -29,7 +29,10 @@ type SalesActivityEditorProps = { month: MonthKey; rows: SalesActivityRecord[]; 
 
 /** PRD §5.8: the month's interested responses, leads closed and calls made per channel. */
 export function SalesActivityEditor({ month, rows, canEdit }: SalesActivityEditorProps) {
-  const { run, isPending } = useActionRunner();
+  // Each save sends the whole row, so a count typed while another saves keeps the earlier edit.
+  const { rows: optimisticRows, mutate } = useOptimisticList(
+    rows.map((row) => ({ ...row, id: row.channel })),
+  );
   return (
     <SectionCard
       title={`Sales activity — ${formatLongMonthLabel(month)}`}
@@ -49,7 +52,7 @@ export function SalesActivityEditor({ month, rows, canEdit }: SalesActivityEdito
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((row) => (
+            {optimisticRows.map((row) => (
               <TableRow key={row.channel}>
                 <TableCell className="font-medium">{SALES_CHANNEL_LABEL[row.channel]}</TableCell>
                 {COUNT_FIELDS.map(({ field, label }) => (
@@ -59,10 +62,11 @@ export function SalesActivityEditor({ month, rows, canEdit }: SalesActivityEdito
                       label={`${label}, ${SALES_CHANNEL_LABEL[row.channel]}`}
                       value={String(row[field])}
                       pattern={WHOLE_NUMBER_PATTERN}
-                      disabled={!canEdit || isPending}
+                      disabled={!canEdit}
                       className="ml-auto w-14 min-w-0 sm:w-20"
                       onCommit={(value) =>
-                        run(
+                        mutate(
+                          { type: 'update', id: row.channel, patch: { [field]: Number(value) } },
                           () => saveSalesActivity({ ...row, month, [field]: Number(value) }),
                           MESSAGES.COMMON.SAVED,
                         )

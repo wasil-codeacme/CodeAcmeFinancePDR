@@ -28,7 +28,6 @@ export type RevenueEntryViewProps = {
   entry: RevenueEntryRecord;
   figures: RevenueLineFigures;
   options: RevenueOptions;
-  disabled: boolean;
   canDelete: boolean;
   onEdit: (changes: RevenueEdit) => void;
   onConfirm: () => void;
@@ -51,18 +50,13 @@ export function ClientSummary({ entry }: Pick<RevenueEntryViewProps, 'entry'>) {
   );
 }
 
-export function GrossInput({
-  entry,
-  disabled,
-  onEdit,
-}: Pick<RevenueEntryViewProps, 'entry' | 'disabled' | 'onEdit'>) {
+export function GrossInput({ entry, onEdit }: Pick<RevenueEntryViewProps, 'entry' | 'onEdit'>) {
   return (
     <InlineTextCell
       numeric
       label="Gross"
       value={entry.gross ?? ''}
       pattern={MONEY_INPUT_PATTERN}
-      disabled={disabled}
       className="w-24 min-w-0"
       onCommit={(gross) => onEdit({ gross })}
     />
@@ -73,9 +67,8 @@ export function GrossInput({
 export function FeeInput({
   entry,
   figures,
-  disabled,
   onEdit,
-}: Pick<RevenueEntryViewProps, 'entry' | 'figures' | 'disabled' | 'onEdit'>) {
+}: Pick<RevenueEntryViewProps, 'entry' | 'figures' | 'onEdit'>) {
   return (
     <div className="flex items-center justify-end gap-2">
       <div className="relative">
@@ -84,7 +77,6 @@ export function FeeInput({
           label="Fee %"
           value={entry.feePercent}
           pattern={PERCENT_INPUT_PATTERN}
-          disabled={disabled}
           className="w-16 min-w-0 pr-6"
           onCommit={(feePercent) => onEdit({ feePercent })}
         />
@@ -97,25 +89,19 @@ export function FeeInput({
   );
 }
 
-export function StatusControls({
-  entry,
-  disabled,
-  onEdit,
-}: Pick<RevenueEntryViewProps, 'entry' | 'disabled' | 'onEdit'>) {
+export function StatusControls({ entry, onEdit }: Pick<RevenueEntryViewProps, 'entry' | 'onEdit'>) {
   return (
     <div className="grid gap-1">
       <InlineSelectCell
         label="Project status"
         value={entry.projectStatus}
         options={PROJECT_STATUS_OPTIONS}
-        disabled={disabled}
         onCommit={(projectStatus) => onEdit({ projectStatus })}
       />
       <InlineSelectCell
         label="Invoice status"
         value={entry.invoiceStatus}
         options={INVOICE_STATUS_OPTIONS}
-        disabled={disabled}
         onCommit={(invoiceStatus) => onEdit({ invoiceStatus })}
       />
     </div>
@@ -123,17 +109,11 @@ export function StatusControls({
 }
 
 export function EntryActions(props: RevenueEntryViewProps) {
-  const { entry, options, disabled, canDelete, onConfirm, onDelete } = props;
+  const { entry, options, canDelete, onConfirm, onDelete } = props;
   return (
     <div className="flex justify-end gap-0.5">
       {entry.status === EntryStatus.DRAFT ? (
-        <IconButton
-          size="icon-sm"
-          variant="outline"
-          label="Confirm entry"
-          disabled={disabled}
-          onClick={onConfirm}
-        >
+        <IconButton size="icon-sm" variant="outline" label="Confirm entry" onClick={onConfirm}>
           <Check />
         </IconButton>
       ) : null}
@@ -154,7 +134,7 @@ export function EntryActions(props: RevenueEntryViewProps) {
           confirmLabel={MESSAGES.COMMON.DELETE}
           onConfirm={onDelete}
           trigger={
-            <IconButton size="icon-sm" variant="ghost" label="Delete entry" disabled={disabled}>
+            <IconButton size="icon-sm" variant="ghost" label="Delete entry">
               <Trash2 />
             </IconButton>
           }

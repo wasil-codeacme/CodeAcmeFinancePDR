@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useActionRunner } from '@/hooks/use-action-runner';
+import { useOptimisticList } from '@/hooks/use-optimistic-list';
 import { Decimal } from '@/lib/decimal';
 import { MESSAGES } from '@/lib/messages';
 import { ROUTES } from '@/lib/routes';
@@ -72,7 +72,9 @@ type AccountsMonthTableProps = {
  * opening + money in − money out, and the difference flags anything unexplained.
  */
 export function AccountsMonthTable({ rows, readOnly, editableAccounts }: AccountsMonthTableProps) {
-  const { run, isPending } = useActionRunner();
+  const { rows: optimisticRows, mutate } = useOptimisticList(
+    rows.map((row) => ({ ...row, id: row.accountId })),
+  );
   if (rows.length === 0) {
     return (
       <EmptyState
@@ -81,8 +83,18 @@ export function AccountsMonthTable({ rows, readOnly, editableAccounts }: Account
       />
     );
   }
+  // The typed closing shows at once with its difference (entered − expected, as on the server).
   const save = (row: AccountMonthRow, closingBalance: string) =>
-    run(
+    mutate(
+      {
+        type: 'update',
+        id: row.accountId,
+        patch: {
+          enteredClosing: closingBalance,
+          closing: closingBalance,
+          difference: new Decimal(closingBalance).minus(row.expectedClosing).toString(),
+        },
+      },
       () => saveClosingBalance({ accountId: row.accountId, month: row.month, closingBalance }),
       MESSAGES.ACCOUNT.CLOSING_SAVED,
     );
@@ -102,7 +114,7 @@ export function AccountsMonthTable({ rows, readOnly, editableAccounts }: Account
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((row) => (
+          {optimisticRows.map((row) => (
             <TableRow key={row.accountId}>
               <TableCell className="w-full max-w-0">
                 <Link
@@ -134,7 +146,7 @@ export function AccountsMonthTable({ rows, readOnly, editableAccounts }: Account
                   label={`${row.name} closing balance`}
                   value={row.enteredClosing ?? ''}
                   pattern={SIGNED_MONEY_PATTERN}
-                  disabled={readOnly || isPending}
+                  disabled={readOnly}
                   className="ml-auto w-24 min-w-0 sm:w-28"
                   onCommit={(value) => save(row, value)}
                 />
