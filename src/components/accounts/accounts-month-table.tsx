@@ -29,14 +29,6 @@ import type { AccountMonthRow } from '@/types/account';
 // A closing balance can be negative (an overdrawn account).
 const SIGNED_MONEY_PATTERN = /^-?\d+(\.\d{1,2})?$/;
 
-function moneyIn(row: AccountMonthRow): string {
-  return new Decimal(row.receiptsIn).plus(row.fundingIn).plus(row.transfersIn).toString();
-}
-
-function moneyOut(row: AccountMonthRow): string {
-  return new Decimal(row.expensesOut).plus(row.transfersOut).plus(row.withdrawalsOut).toString();
-}
-
 function Difference({ row }: { row: AccountMonthRow }) {
   if (row.difference === null) {
     return <span className="text-muted-foreground text-xs">not entered</span>;
@@ -128,10 +120,10 @@ export function AccountsMonthTable({ rows, readOnly, editableAccounts }: Account
                 <Money value={row.opening} currency={row.currency} />
               </TableCell>
               <TableCell className="hidden text-right lg:table-cell">
-                <Money value={moneyIn(row)} currency={row.currency} />
+                <Money value={row.moneyIn} currency={row.currency} />
               </TableCell>
               <TableCell className="hidden text-right lg:table-cell">
-                <Money value={moneyOut(row)} currency={row.currency} />
+                <Money value={row.moneyOut} currency={row.currency} />
               </TableCell>
               <TableCell className="hidden text-right sm:table-cell">
                 <Money value={row.expectedClosing} currency={row.currency} />

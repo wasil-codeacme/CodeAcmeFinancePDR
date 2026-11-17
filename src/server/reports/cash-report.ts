@@ -51,7 +51,15 @@ export function buildCashSections(input: CashInput): ReportSection[] {
     columns.map((column) => (column ? sumDecimals(column.months.map(read)) : null));
   const atEnd = (read: (month: CashMonth) => Decimal | null) =>
     columns.map((column) => (column?.last ? read(column.last) : null));
-  const partnerRows = input.showPartnerMovements
+  const transfers = moneyRow(
+    'transfers',
+    'Transfer fees and currency differences',
+    flow((month) => month.transfersNet),
+    { tone: ROW_TONE.MUTED },
+  );
+  // Founders see partner funding and withdrawals; anyone else gets them folded, with
+  // transfer fees, into one unlabelled line so no partner figure is shown or sent (PRD §3).
+  const movementRows = input.showPartnerMovements
     ? [
         moneyRow(
           'funding-in',
@@ -63,20 +71,16 @@ export function buildCashSections(input: CashInput): ReportSection[] {
           'Partner withdrawals',
           flow((month) => month.withdrawals.negated()),
         ),
+        transfers,
       ]
     : [
         moneyRow(
-          'partner-movements',
-          'Partner movements (net)',
-          flow((month) => month.fundingIn.minus(month.withdrawals)),
+          'other-movements',
+          'Other movements',
+          flow((month) => month.fundingIn.minus(month.withdrawals).plus(month.transfersNet)),
+          { tone: ROW_TONE.MUTED },
         ),
       ];
-  const transfers = moneyRow(
-    'transfers',
-    'Transfer fees and currency differences',
-    flow((month) => month.transfersNet),
-    { tone: ROW_TONE.MUTED },
-  );
   return [
     {
       key: 'flow',
@@ -100,8 +104,7 @@ export function buildCashSections(input: CashInput): ReportSection[] {
           'Expenses paid',
           flow((month) => month.paidOut.negated()),
         ),
-        ...partnerRows.filter(hasFigures),
-        ...(hasFigures(transfers) ? [transfers] : []),
+        ...movementRows.filter(hasFigures),
         moneyRow('net-flow', 'Net cash flow', flow(netCashFlow), { tone: ROW_TONE.SUBTOTAL }),
       ],
     },

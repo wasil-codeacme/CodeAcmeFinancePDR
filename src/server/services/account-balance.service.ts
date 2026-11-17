@@ -11,7 +11,6 @@ import {
 } from '@/server/read-models/account-timelines';
 import { PERMISSION, hasPermission } from '@/lib/permissions';
 import type { AccountMonth } from '@/server/domain/account-balances';
-import type { AccountMovementMap } from '@/server/domain/account-movements';
 import { convertCurrency } from '@/server/domain/currency';
 import { pickEffectiveVersion } from '@/server/domain/effective-version';
 import {
@@ -30,12 +29,7 @@ import type { ClosingBalanceInput, TransferInput } from '@/server/validators/acc
 import type { AccountMonthRow, AccountsMonthView } from '@/types/account';
 import type { SessionUser } from '@/types/auth';
 
-function toRow(
-  account: AccountRecord,
-  month: AccountMonth,
-  movements: AccountMovementMap,
-): AccountMonthRow {
-  const moved = movements[account.id]?.[month.month];
+function toRow(account: AccountRecord, month: AccountMonth): AccountMonthRow {
   return {
     accountId: account.id,
     name: account.name,
@@ -43,12 +37,8 @@ function toRow(
     ownerLabel: account.ownerLabel,
     month: month.month,
     opening: month.opening.toString(),
-    receiptsIn: moved?.receiptsIn ?? '0',
-    fundingIn: moved?.fundingIn ?? '0',
-    transfersIn: moved?.transfersIn ?? '0',
-    expensesOut: moved?.expensesOut ?? '0',
-    transfersOut: moved?.transfersOut ?? '0',
-    withdrawalsOut: moved?.withdrawalsOut ?? '0',
+    moneyIn: month.inflow.toString(),
+    moneyOut: month.outflow.toString(),
     expectedClosing: month.expectedClosing.toString(),
     enteredClosing: month.enteredClosing?.toString() ?? null,
     closing: month.closing.toString(),
@@ -74,7 +64,7 @@ export async function getAccountsMonth(month: MonthKey): Promise<AccountsMonthVi
     )
     .flatMap((account) => {
       const last = timelineFor(account, month, movements, entered).at(-1);
-      return last ? [toRow(account, last, movements)] : [];
+      return last ? [toRow(account, last)] : [];
     });
   const rate = pickEffectiveVersion(rateVersions, month)?.rate ?? null;
   let totalReporting: string | null = null;
@@ -115,7 +105,7 @@ export async function getAccountHistory(
   if (!account) throw new NotFoundError();
   const { movements } = await loadMovements([account], currencies);
   return timelineFor(account, throughMonth, movements, entered)
-    .map((month) => toRow(account, month, movements))
+    .map((month) => toRow(account, month))
     .reverse();
 }
 

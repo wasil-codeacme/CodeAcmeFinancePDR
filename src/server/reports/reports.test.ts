@@ -157,15 +157,15 @@ describe('cash report', () => {
     expect(rowValues(sections, 'opening')).toEqual(['400', '500', '650', '400']);
   });
 
-  it('folds partner withdrawals into one line for anyone who may not see them', () => {
+  it('never shows a partner figure to anyone who may not see them (PRD §3)', () => {
     const sections = buildCashSections({
       columns,
       cash,
       accounts: [],
       showPartnerMovements: false,
     });
-    const keys = sections.flatMap((section) => section.rows).map((row) => row.key);
-    expect(keys).not.toContain('withdrawals');
-    expect(keys).toContain('partner-movements');
+    const rows = sections.flatMap((section) => section.rows);
+    expect(rows.map((row) => row.label).join(' ')).not.toMatch(/partner|withdraw/i);
+    expect(rows.find((row) => row.key === 'other-movements')?.values.at(-1)).toBe('-150');
   });
 });

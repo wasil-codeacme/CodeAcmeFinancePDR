@@ -10,12 +10,12 @@ export type AccountMonthRow = {
   ownerLabel: string | null;
   month: MonthKey;
   opening: DecimalString;
-  receiptsIn: DecimalString;
-  fundingIn: DecimalString;
-  transfersIn: DecimalString;
-  expensesOut: DecimalString;
-  transfersOut: DecimalString;
-  withdrawalsOut: DecimalString;
+  /**
+   * Totals only: partner withdrawals and funding are founder-only (PRD §3), so they are
+   * never sent apart, even though the expected balance has to include them.
+   */
+  moneyIn: DecimalString;
+  moneyOut: DecimalString;
   expectedClosing: DecimalString;
   enteredClosing: DecimalString | null;
   closing: DecimalString;
