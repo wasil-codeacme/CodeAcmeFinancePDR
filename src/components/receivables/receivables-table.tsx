@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/table';
 import { RevenueKind } from '@/generated/prisma/enums';
 import { formatDateLabel, formatMonthLabel } from '@/lib/month';
+import { cn } from '@/lib/utils';
 import type { ReceivableItem } from '@/types/receivable';
 
 type ReceivablesTableProps = { items: ReceivableItem[]; accounts: AccountOption[]; today: string };
@@ -32,14 +33,16 @@ function RowActions({
   item,
   accounts,
   today,
+  className,
 }: {
   item: ReceivableItem;
   accounts: AccountOption[];
   today: string;
+  className?: string;
 }) {
   const escrowReceipts = item.receipts.filter((receipt) => receipt.isEscrow);
   return (
-    <div className="flex justify-end gap-0.5">
+    <div className={cn('flex justify-end gap-0.5', className)}>
       <FormDialog
         title={`Payment from ${item.clientName}`}
         description="Record money that landed, in full or in part."
@@ -130,13 +133,15 @@ export function ReceivablesTable({ items, accounts, today }: ReceivablesTablePro
             <TableHead className="hidden text-right lg:table-cell">Net</TableHead>
             <TableHead className="hidden text-right lg:table-cell">Received</TableHead>
             <TableHead className="text-right">Outstanding</TableHead>
-            <TableHead className="sr-only">Actions</TableHead>
+            <TableHead className="hidden sm:table-cell">
+              <span className="sr-only">Actions</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {items.map((item) => (
             <TableRow key={item.id}>
-              <TableCell className="max-w-56">
+              <TableCell className="w-full max-w-0">
                 <div className="truncate font-medium">{item.clientName}</div>
                 <div className="text-muted-foreground flex items-center gap-1 text-xs">
                   <span className="truncate">{item.projectName ?? item.description ?? '—'}</span>
@@ -149,6 +154,12 @@ export function ReceivablesTable({ items, accounts, today }: ReceivablesTablePro
                   {formatMonthLabel(item.bookingMonth)} · {item.ageingBucket}
                   {item.isOverdue ? ' · overdue' : ''}
                 </div>
+                <RowActions
+                  item={item}
+                  accounts={accounts}
+                  today={today}
+                  className="mt-1 justify-start sm:hidden"
+                />
               </TableCell>
               <TableCell className="hidden whitespace-nowrap md:table-cell">
                 {formatMonthLabel(item.bookingMonth)}
@@ -167,11 +178,13 @@ export function ReceivablesTable({ items, accounts, today }: ReceivablesTablePro
               <TableCell className="text-right">
                 <Money value={item.figures.outstanding} className="font-semibold" />
                 <span className="text-muted-foreground block text-xs whitespace-nowrap">
-                  safe <Money value={item.figures.fundedEscrow} /> · at risk{' '}
-                  <Money value={item.figures.unfunded} emphasizeNegative />
+                  safe <Money value={item.figures.fundedEscrow} />
+                </span>
+                <span className="text-muted-foreground block text-xs whitespace-nowrap">
+                  at risk <Money value={item.figures.unfunded} emphasizeNegative />
                 </span>
               </TableCell>
-              <TableCell>
+              <TableCell className="hidden sm:table-cell">
                 <RowActions item={item} accounts={accounts} today={today} />
               </TableCell>
             </TableRow>

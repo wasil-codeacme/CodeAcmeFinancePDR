@@ -70,7 +70,10 @@ export function DrillDownTable({ view }: { view: DrillDownView }) {
                 {view.columns.map((column, index) => (
                   <TableCell
                     key={column.key}
-                    className={cn(columnClass(column), 'max-w-64 truncate')}
+                    className={cn(
+                      columnClass(column),
+                      index === 1 ? 'w-full max-w-0 truncate' : 'whitespace-nowrap',
+                    )}
                   >
                     {index === 1 ? (
                       <Link href={row.href} prefetch={false} className="hover:underline">

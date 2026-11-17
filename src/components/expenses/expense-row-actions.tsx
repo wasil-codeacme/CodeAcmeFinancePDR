@@ -10,6 +10,7 @@ import { IconButton } from '@/components/shared/icon-button';
 import { EntryStatus } from '@/generated/prisma/enums';
 import { useActionRunner } from '@/hooks/use-action-runner';
 import { MESSAGES } from '@/lib/messages';
+import { cn } from '@/lib/utils';
 import { confirmExpense, deleteExpense } from '@/server/actions/expense.actions';
 import type { ExpenseRecord } from '@/types/expense';
 
@@ -17,17 +18,19 @@ type ExpenseRowActionsProps = {
   expense: ExpenseRecord;
   options: ExpenseFormOptions;
   canDeleteConfirmed: boolean;
+  className?: string;
 };
 
 export function ExpenseRowActions({
   expense,
   options,
   canDeleteConfirmed,
+  className,
 }: ExpenseRowActionsProps) {
   const { run, isPending } = useActionRunner();
   const isDraft = expense.status === EntryStatus.DRAFT;
   return (
-    <div className="flex justify-end gap-1">
+    <div className={cn('flex justify-end gap-1', className)}>
       {isDraft ? (
         <IconButton
           size="icon-sm"

@@ -20,9 +20,9 @@ import type { SalesActivityRecord } from '@/server/repositories/sales-activity.r
 const WHOLE_NUMBER_PATTERN = /^\d+$/;
 
 const COUNT_FIELDS = [
-  { field: 'interestedResponses', label: 'Interested responses' },
-  { field: 'leadsClosed', label: 'Leads closed' },
-  { field: 'callsMade', label: 'Calls made' },
+  { field: 'interestedResponses', label: 'Interested responses', short: 'Interested' },
+  { field: 'leadsClosed', label: 'Leads closed', short: 'Leads' },
+  { field: 'callsMade', label: 'Calls made', short: 'Calls' },
 ] as const;
 
 type SalesActivityEditorProps = { month: MonthKey; rows: SalesActivityRecord[]; canEdit: boolean };
@@ -40,9 +40,10 @@ export function SalesActivityEditor({ month, rows, canEdit }: SalesActivityEdito
           <TableHeader>
             <TableRow>
               <TableHead>Channel</TableHead>
-              {COUNT_FIELDS.map(({ field, label }) => (
-                <TableHead key={field} className="text-right">
-                  {label}
+              {COUNT_FIELDS.map(({ field, label, short }) => (
+                <TableHead key={field} className="px-1 text-right sm:px-2">
+                  <span className="sm:hidden">{short}</span>
+                  <span className="hidden sm:inline">{label}</span>
                 </TableHead>
               ))}
             </TableRow>
@@ -52,14 +53,14 @@ export function SalesActivityEditor({ month, rows, canEdit }: SalesActivityEdito
               <TableRow key={row.channel}>
                 <TableCell className="font-medium">{SALES_CHANNEL_LABEL[row.channel]}</TableCell>
                 {COUNT_FIELDS.map(({ field, label }) => (
-                  <TableCell key={field} className="text-right">
+                  <TableCell key={field} className="px-1 text-right sm:px-2">
                     <InlineTextCell
                       numeric
                       label={`${label}, ${SALES_CHANNEL_LABEL[row.channel]}`}
                       value={String(row[field])}
                       pattern={WHOLE_NUMBER_PATTERN}
                       disabled={!canEdit || isPending}
-                      className="ml-auto w-20 min-w-0"
+                      className="ml-auto w-14 min-w-0 sm:w-20"
                       onCommit={(value) =>
                         run(
                           () => saveSalesActivity({ ...row, month, [field]: Number(value) }),

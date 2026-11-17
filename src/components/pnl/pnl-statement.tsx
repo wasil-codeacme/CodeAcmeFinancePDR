@@ -22,15 +22,21 @@ function Line({ label, value, indent, strong, muted, note }: LineProps) {
     <TableRow className={cn(strong && 'bg-muted/40 hover:bg-muted/40')}>
       <TableCell
         className={cn(
+          'w-full whitespace-normal',
           indent && 'pl-8',
           strong && 'font-semibold',
           muted && 'text-muted-foreground',
         )}
       >
         {label}
+        {note ? (
+          <span className="text-muted-foreground block text-xs sm:hidden">{note}</span>
+        ) : null}
       </TableCell>
-      <TableCell className="text-muted-foreground w-24 text-right text-xs">{note}</TableCell>
-      <TableCell className={cn('w-40 text-right', strong && 'font-semibold')}>
+      <TableCell className="text-muted-foreground hidden w-24 text-right text-xs sm:table-cell">
+        {note}
+      </TableCell>
+      <TableCell className={cn('text-right whitespace-nowrap sm:w-40', strong && 'font-semibold')}>
         <Money value={value} emphasizeNegative={strong} />
       </TableCell>
     </TableRow>

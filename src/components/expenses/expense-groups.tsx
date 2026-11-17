@@ -53,7 +53,9 @@ export function ExpenseGroups({ groups, options, canDeleteConfirmed }: ExpenseGr
             <TableHead className="text-right">{reporting}</TableHead>
             <TableHead className="hidden lg:table-cell">Funding</TableHead>
             <TableHead className="hidden lg:table-cell">Paid from</TableHead>
-            <TableHead className="sr-only">Actions</TableHead>
+            <TableHead className="hidden sm:table-cell">
+              <span className="sr-only">Actions</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -85,7 +87,7 @@ function GroupRows({
       </TableRow>
       {group.rows.map((row) => (
         <TableRow key={row.id}>
-          <TableCell className="max-w-64">
+          <TableCell className="w-full max-w-0">
             <div className="truncate font-medium">{row.item}</div>
             {row.payeeName || row.notes ? (
               <div className="text-muted-foreground truncate text-xs">
@@ -98,6 +100,13 @@ function GroupRows({
               {row.fundingPartnerName ? `Funded by ${row.fundingPartnerName}` : 'Company'}
               {row.paidFromAccountName ? ` · ${row.paidFromAccountName}` : ''}
             </div>
+            {/* Phones have no room for an actions column, so the buttons sit under the item. */}
+            <ExpenseRowActions
+              expense={row}
+              options={options}
+              canDeleteConfirmed={canDeleteConfirmed}
+              className="mt-1 justify-start sm:hidden"
+            />
           </TableCell>
           <TableCell className="hidden whitespace-nowrap md:table-cell">
             {formatDateLabel(row.expenseDate)}
@@ -114,7 +123,7 @@ function GroupRows({
           <TableCell className="text-muted-foreground hidden lg:table-cell">
             {row.paidFromAccountName ?? '—'}
           </TableCell>
-          <TableCell>
+          <TableCell className="hidden sm:table-cell">
             <ExpenseRowActions
               expense={row}
               options={options}
@@ -139,7 +148,7 @@ function GroupRows({
         </TableCell>
         <TableCell className="hidden lg:table-cell" />
         <TableCell className="hidden lg:table-cell" />
-        <TableCell />
+        <TableCell className="hidden sm:table-cell" />
       </TableRow>
     </>
   );

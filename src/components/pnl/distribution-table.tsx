@@ -28,7 +28,9 @@ export function DistributionTable({ distribution, currencies }: DistributionTabl
             <TableHead className="hidden text-right lg:table-cell">Baseline share</TableHead>
             <TableHead className="hidden text-right sm:table-cell">(−) Reserve</TableHead>
             <TableHead className="text-right">Take-home ({currencies.reporting})</TableHead>
-            <TableHead className="text-right">Take-home ({currencies.display})</TableHead>
+            <TableHead className="hidden text-right sm:table-cell">
+              Take-home ({currencies.display})
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -46,8 +48,13 @@ export function DistributionTable({ distribution, currencies }: DistributionTabl
               </TableCell>
               <TableCell className="text-right font-semibold">
                 <Money value={partner.takeHome} emphasizeNegative />
+                <Money
+                  value={partner.takeHomeDisplay}
+                  currency={currencies.display}
+                  className="text-muted-foreground block text-xs font-normal sm:hidden"
+                />
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="hidden text-right sm:table-cell">
                 <Money value={partner.takeHomeDisplay} currency={currencies.display} />
               </TableCell>
             </TableRow>
@@ -70,7 +77,13 @@ export function DistributionTable({ distribution, currencies }: DistributionTabl
             <TableCell className="hidden text-right sm:table-cell">
               <Money value={distribution.totalReserves} />
             </TableCell>
-            <TableCell colSpan={2} className="text-muted-foreground text-right text-xs">
+            <TableCell className="text-muted-foreground text-right text-xs sm:hidden">
+              Reserves stay in the company
+            </TableCell>
+            <TableCell
+              colSpan={2}
+              className="text-muted-foreground hidden text-right text-xs sm:table-cell"
+            >
               Reserves stay in the company
             </TableCell>
           </TableRow>

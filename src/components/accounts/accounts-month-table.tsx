@@ -104,11 +104,11 @@ export function AccountsMonthTable({ rows, readOnly, editableAccounts }: Account
         <TableBody>
           {rows.map((row) => (
             <TableRow key={row.accountId}>
-              <TableCell className="max-w-48">
+              <TableCell className="w-full max-w-0">
                 <Link
                   href={ROUTES.ACCOUNT_DETAIL(row.accountId)}
                   prefetch
-                  className="font-medium hover:underline"
+                  className="block truncate font-medium hover:underline"
                 >
                   {row.name}
                 </Link>
@@ -135,7 +135,7 @@ export function AccountsMonthTable({ rows, readOnly, editableAccounts }: Account
                   value={row.enteredClosing ?? ''}
                   pattern={SIGNED_MONEY_PATTERN}
                   disabled={readOnly || isPending}
-                  className="ml-auto w-28 min-w-0"
+                  className="ml-auto w-24 min-w-0 sm:w-28"
                   onCommit={(value) => save(row, value)}
                 />
               </TableCell>
