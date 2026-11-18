@@ -8,7 +8,8 @@ const NEXT_BUILD_PHASE = 'phase-production-build';
 export const env = createEnv({
   server: {
     DATABASE_URL: z.url(),
-    DATABASE_POOL_MAX: z.coerce.number().int().min(1).default(10),
+    // Per function instance; Prisma Postgres advises about 5 behind its pooler on serverless.
+    DATABASE_POOL_MAX: z.coerce.number().int().min(1).default(5),
     APP_URL: z.url(),
     EMAIL_PROVIDER: z.enum([EMAIL_PROVIDER.CONSOLE, EMAIL_PROVIDER.RESEND]),
     EMAIL_FROM: z.string().min(3),
