@@ -76,6 +76,15 @@ export const accountBalanceRepository = {
     }));
   },
 
+  async listBalancesForMonth(month: MonthKey): Promise<AccountBalanceRecord[]> {
+    const rows = await db().accountBalance.findMany({ where: { month: monthKeyToDbDate(month) } });
+    return rows.map((row) => ({
+      accountId: row.accountId,
+      month,
+      closingBalance: row.closingBalance.toString(),
+    }));
+  },
+
   async findBalance(accountId: string, month: MonthKey): Promise<AccountBalanceRecord | null> {
     const row = await db().accountBalance.findUnique({
       where: { accountId_month: { accountId, month: monthKeyToDbDate(month) } },
@@ -103,9 +112,13 @@ export const accountBalanceRepository = {
     };
   },
 
-  async listTransfers(): Promise<TransferRecord[]> {
+  /** Transfers touching any of the accounts; all transfers when no list is given. */
+  async listTransfers(accountIds?: readonly string[]): Promise<TransferRecord[]> {
+    const ids = accountIds ? [...accountIds] : null;
     const rows = await db().transfer.findMany({
-      where: LIVE,
+      where: ids
+        ? { ...LIVE, OR: [{ fromAccountId: { in: ids } }, { toAccountId: { in: ids } }] }
+        : LIVE,
       include: TRANSFER_INCLUDE,
       orderBy: { transferredOn: 'asc' },
     });
@@ -155,9 +168,9 @@ export const accountBalanceRepository = {
   },
 
   /** Money received into accounts (escrow funding is not cash yet). */
-  async receiptsIntoAccounts(): Promise<CashMovementRecord[]> {
+  async receiptsIntoAccounts(accountIds: readonly string[]): Promise<CashMovementRecord[]> {
     const rows = await db().receipt.findMany({
-      where: { ...LIVE, isEscrow: false, accountId: { not: null }, revenueEntry: LIVE },
+      where: { ...LIVE, isEscrow: false, accountId: { in: [...accountIds] }, revenueEntry: LIVE },
       select: { accountId: true, receivedOn: true, amount: true },
     });
     return rows.flatMap((row) =>
@@ -175,9 +188,9 @@ export const accountBalanceRepository = {
   },
 
   /** Confirmed expenses paid from an account, in the month the cash left (advances included). */
-  async expensesPaidFromAccounts(): Promise<CashMovementRecord[]> {
+  async expensesPaidFromAccounts(accountIds: readonly string[]): Promise<CashMovementRecord[]> {
     const rows = await db().expense.findMany({
-      where: { ...LIVE, status: EntryStatus.CONFIRMED, paidFromAccountId: { not: null } },
+      where: { ...LIVE, status: EntryStatus.CONFIRMED, paidFromAccountId: { in: [...accountIds] } },
       select: {
         paidFromAccountId: true,
         paidOn: true,

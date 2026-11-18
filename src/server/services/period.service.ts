@@ -138,13 +138,11 @@ export async function getCloseOverview(month: MonthKey): Promise<CloseOverview> 
     expenseRepository.listByKindForMonth(month, ExpenseKind.BD_COMMISSION),
     nextMonthReserveRepository.listForMonth(month),
     expenseRepository.listAdvancesPaidIn(month),
-    accountBalanceRepository.listBalances(),
+    accountBalanceRepository.listBalancesForMonth(month),
     accountRepository.list(),
   ]);
   const activeAccounts = accounts.filter((account) => account.active);
-  const enteredIds = new Set(
-    balances.filter((balance) => balance.month === month).map((balance) => balance.accountId),
-  );
+  const enteredIds = new Set(balances.map((balance) => balance.accountId));
   return {
     month,
     isClosed: period?.status === PeriodStatus.CLOSED,

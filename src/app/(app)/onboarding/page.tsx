@@ -21,7 +21,14 @@ import { getOnboardingStatus } from '@/server/services/company.service';
 export const metadata: Metadata = { title: 'Set up' };
 
 async function OnboardingContent({ searchParams }: Pick<PageProps<'/onboarding'>, 'searchParams'>) {
-  const [user] = await Promise.all([requireUser(), connection()]);
+  // The checklist status and the search params don't depend on who is asking, so they load
+  // alongside the session check; nothing is shown before the permission check passes.
+  const [user, params, status] = await Promise.all([
+    requireUser(),
+    searchParams,
+    getOnboardingStatus(),
+    connection(),
+  ]);
   if (!hasPermission(user.role, PERMISSION.SETTINGS_MANAGE)) {
     return (
       <p className="text-muted-foreground bg-card rounded-xl border p-6 text-sm">
@@ -29,7 +36,7 @@ async function OnboardingContent({ searchParams }: Pick<PageProps<'/onboarding'>
       </p>
     );
   }
-  const step = (await searchParams)[SEARCH_PARAM.STEP];
+  const step = params[SEARCH_PARAM.STEP];
   const firstStep = SETTINGS_SECTIONS[0];
   const currentIndex = SETTINGS_SECTIONS.findIndex(
     (meta) =>
@@ -39,7 +46,6 @@ async function OnboardingContent({ searchParams }: Pick<PageProps<'/onboarding'>
   const current = SETTINGS_SECTIONS[currentIndex];
   const previous = SETTINGS_SECTIONS[currentIndex - 1];
   const next = SETTINGS_SECTIONS[currentIndex + 1];
-  const status = await getOnboardingStatus();
   if (!current) return null;
   const ready = SETTINGS_SECTIONS.every(
     (meta) => !meta.required || stepIsDone(meta.section, status),

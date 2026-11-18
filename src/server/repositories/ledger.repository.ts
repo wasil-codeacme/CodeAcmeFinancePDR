@@ -65,9 +65,10 @@ function toRecord(row: {
 }
 
 export const ledgerRepository = {
-  async list(): Promise<LedgerEntryRecord[]> {
+  /** Every entry, or only those paid into or out of the given accounts. */
+  async list(accountIds?: readonly string[]): Promise<LedgerEntryRecord[]> {
     const rows = await db().partnerLedgerEntry.findMany({
-      where: LIVE,
+      where: accountIds ? { ...LIVE, accountId: { in: [...accountIds] } } : LIVE,
       include: ENTRY_INCLUDE,
       orderBy: [{ month: 'asc' }, { occurredOn: 'asc' }, { createdAt: 'asc' }],
     });

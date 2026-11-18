@@ -68,7 +68,10 @@ export async function getDrillDown(
   if (query.figure === DRILL_FIGURE.EXPENSES) {
     table = await expenseTable(query, months);
   } else {
-    const entries = await revenueRepository.listConfirmed();
+    const entries =
+      query.figure === DRILL_FIGURE.ADJUSTMENTS
+        ? await revenueRepository.listConfirmed()
+        : await revenueRepository.listConfirmedBookedForMonths(months);
     const build = {
       [DRILL_FIGURE.REVENUE]: revenueDrill,
       [DRILL_FIGURE.ADJUSTMENTS]: adjustmentsDrill,

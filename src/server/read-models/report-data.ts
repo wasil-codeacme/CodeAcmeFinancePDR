@@ -26,22 +26,16 @@ export async function loadBookedFigures(
   /** null = every month (all receivables, e.g. for the dashboard). */
   months: readonly MonthKey[] | null,
 ): Promise<BookedFigures[]> {
-  const entries = await revenueRepository.listConfirmed();
-  return entries
-    .filter(
-      (entry) =>
-        entry.kind === RevenueKind.BOOKED &&
-        (months === null || months.includes(entry.bookingMonth)),
-    )
-    .map((entry) => ({ month: entry.bookingMonth, figures: figuresOf(entry) }));
+  const entries =
+    months === null
+      ? (await revenueRepository.listConfirmed()).filter(
+          (entry) => entry.kind === RevenueKind.BOOKED,
+        )
+      : await revenueRepository.listConfirmedBookedForMonths(months);
+  return entries.map((entry) => ({ month: entry.bookingMonth, figures: figuresOf(entry) }));
 }
 
 /** Booked, confirmed entries in the given months (revenue by client and platform). */
-export async function loadBookedEntries(
-  months: readonly MonthKey[],
-): Promise<RevenueEntryRecord[]> {
-  const entries = await revenueRepository.listConfirmed();
-  return entries.filter(
-    (entry) => entry.kind === RevenueKind.BOOKED && months.includes(entry.bookingMonth),
-  );
+export function loadBookedEntries(months: readonly MonthKey[]): Promise<RevenueEntryRecord[]> {
+  return revenueRepository.listConfirmedBookedForMonths(months);
 }

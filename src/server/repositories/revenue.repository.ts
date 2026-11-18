@@ -151,6 +151,22 @@ export const revenueRepository = {
     return rows.map(toRecord);
   },
 
+  /** Confirmed, booked entries of the given months (reports, charts, drill-down). */
+  async listConfirmedBookedForMonths(months: readonly MonthKey[]): Promise<RevenueEntryRecord[]> {
+    if (months.length === 0) return [];
+    const rows = await db().revenueEntry.findMany({
+      where: {
+        ...LIVE,
+        status: EntryStatus.CONFIRMED,
+        kind: RevenueKind.BOOKED,
+        bookingMonth: { in: months.map(monthKeyToDbDate) },
+      },
+      include: ENTRY_INCLUDE,
+      orderBy: { bookingMonth: 'asc' },
+    });
+    return rows.map(toRecord);
+  },
+
   async listConfirmed(): Promise<RevenueEntryRecord[]> {
     const rows = await db().revenueEntry.findMany({
       where: { ...LIVE, status: EntryStatus.CONFIRMED },

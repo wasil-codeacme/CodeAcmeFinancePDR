@@ -32,11 +32,13 @@ export async function requireCurrencies(): Promise<Currencies> {
 
 /** Everything that moved cash, grouped per account and month in each account's currency. */
 export async function loadMovements(accounts: readonly AccountRecord[], currencies: Currencies) {
+  // Only these accounts' movements are read, so one account's history loads just its own.
+  const accountIds = accounts.map((account) => account.id);
   const [receipts, expenses, transfers, ledger, rates] = await Promise.all([
-    accountBalanceRepository.receiptsIntoAccounts(),
-    accountBalanceRepository.expensesPaidFromAccounts(),
-    accountBalanceRepository.listTransfers(),
-    ledgerRepository.list(),
+    accountBalanceRepository.receiptsIntoAccounts(accountIds),
+    accountBalanceRepository.expensesPaidFromAccounts(accountIds),
+    accountBalanceRepository.listTransfers(accountIds),
+    ledgerRepository.list(accountIds),
     exchangeRateRepository.list(),
   ]);
   const rateVersions = rates.map((rate) => ({ effectiveFrom: rate.month, rate: rate.rate }));
