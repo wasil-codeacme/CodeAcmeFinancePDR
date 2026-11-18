@@ -21,13 +21,13 @@ import { getOnboardingStatus } from '@/server/services/company.service';
 export const metadata: Metadata = { title: 'Set up' };
 
 async function OnboardingContent({ searchParams }: Pick<PageProps<'/onboarding'>, 'searchParams'>) {
-  // The checklist status and the search params don't depend on who is asking, so they load
-  // alongside the session check; nothing is shown before the permission check passes.
+  // Request-time first (Cache Components), then the session check, the step and the
+  // checklist load together; nothing is shown before the permission check passes.
+  await connection();
   const [user, params, status] = await Promise.all([
     requireUser(),
     searchParams,
     getOnboardingStatus(),
-    connection(),
   ]);
   if (!hasPermission(user.role, PERMISSION.SETTINGS_MANAGE)) {
     return (
