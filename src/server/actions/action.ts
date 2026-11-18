@@ -1,13 +1,13 @@
 import 'server-only';
 
-import { refresh, updateTag } from 'next/cache';
+import { updateTag } from 'next/cache';
 import { z } from 'zod';
 
 import { logger } from '@/lib/logger';
 import { MESSAGES } from '@/lib/messages';
 import { type Permission, hasPermission } from '@/lib/permissions';
 import { getCurrentUser } from '@/server/auth/current-user';
-import type { CacheTag } from '@/server/cache-tags';
+import { CACHE_TAG, type CacheTag } from '@/server/cache-tags';
 import { DomainError } from '@/server/errors';
 import type { ActionResponse } from '@/types/action-response';
 import type { SessionUser } from '@/types/auth';
@@ -33,16 +33,16 @@ export function mapError(error: unknown): string {
 type WriteActionConfig<TSchema extends z.ZodType, TResult> = {
   schema: TSchema;
   permission: Permission;
-  /** Cached reference data this write changes; those tags are expired immediately. */
+  /** Cached reference data this write also changes; the books are always expired. */
   invalidates?: readonly CacheTag[];
   handler: (input: z.output<TSchema>, actor: SessionUser) => Promise<TResult>;
 };
 
 /**
  * Every mutating Server Action goes through here so none can skip authentication, the
- * permission check, validation, error mapping or cache invalidation. After a write the
- * current page re-renders with fresh data in the same response, so the user sees their
- * change: through `updateTag` for cached reference data, otherwise through `refresh()`.
+ * permission check, validation, error mapping or cache invalidation. Every write expires
+ * the cached books (and so the data version other open tabs watch); `updateTag` also
+ * re-renders the current page with fresh data in the same response.
  */
 export function writeAction<TSchema extends z.ZodType, TResult>(
   config: WriteActionConfig<TSchema, TResult>,
@@ -60,11 +60,7 @@ export function writeAction<TSchema extends z.ZodType, TResult>(
     }
     try {
       const data = await config.handler(parsed.data, actor);
-      const tags = config.invalidates ?? [];
-      for (const tag of tags) updateTag(tag);
-      // updateTag already re-renders the page with the fresh data (Next 16 docs), so only
-      // writes that touch uncached data need refresh(). Both clear the browser's page cache.
-      if (tags.length === 0) refresh();
+      for (const tag of [CACHE_TAG.BOOKS, ...(config.invalidates ?? [])]) updateTag(tag);
       return { data };
     } catch (error) {
       return { error: mapError(error) };

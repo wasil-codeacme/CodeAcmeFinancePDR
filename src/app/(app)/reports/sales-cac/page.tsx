@@ -9,7 +9,7 @@ import { type MonthKey, compareMonthKeys, currentMonthKey } from '@/lib/month';
 import { PERMISSION, hasPermission } from '@/lib/permissions';
 import { PERIOD_KIND, type ReportPeriod, periodMonths } from '@/lib/report-period';
 import { REPORT_KIND } from '@/lib/reports';
-import { getSalesActivity } from '@/server/services/sales-activity.service';
+import { cachedSalesActivity } from '@/server/cached-reads';
 
 export const metadata: Metadata = { title: 'Sales CAC' };
 
@@ -24,7 +24,7 @@ function activityMonth(period: ReportPeriod, now: Date): MonthKey {
 async function Activity({ searchParams }: Pick<PageProps<'/reports/sales-cac'>, 'searchParams'>) {
   const { user, period, now } = await resolveReportRequest(searchParams);
   const month = activityMonth(period, now);
-  const rows = await getSalesActivity(month);
+  const rows = await cachedSalesActivity(month);
   return (
     <PendingSection fallback={<FormCardSkeleton />}>
       <SalesActivityEditor

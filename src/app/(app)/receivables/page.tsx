@@ -14,8 +14,8 @@ import { currentMonthKey, toIsoDate } from '@/lib/month';
 import { PERMISSION } from '@/lib/permissions';
 import { requireBooksUser } from '@/server/auth/current-user';
 import { listClients } from '@/server/services/client.service';
-import { getReceivables } from '@/server/services/receivable.service';
 import { listAccounts } from '@/server/services/settings.service';
+import { cachedReceivables } from '@/server/cached-reads';
 
 export const metadata: Metadata = { title: 'Receivables' };
 
@@ -23,7 +23,7 @@ async function ReceivablesContent() {
   await Promise.all([requireBooksUser(PERMISSION.ENTRIES_WRITE), connection()]);
   const now = new Date();
   const [view, accounts, clients] = await Promise.all([
-    getReceivables(now),
+    cachedReceivables(toIsoDate(now)),
     listAccounts(),
     listClients(),
   ]);

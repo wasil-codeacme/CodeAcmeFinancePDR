@@ -23,7 +23,7 @@ import { requireBooksUser } from '@/server/auth/current-user';
 import { listClients } from '@/server/services/client.service';
 import { listPlatforms } from '@/server/services/platform.service';
 import { listTeamMembers } from '@/server/services/settings.service';
-import { getRevenueMonth } from '@/server/services/revenue.service';
+import { cachedRevenueMonth } from '@/server/cached-reads';
 
 export const metadata: Metadata = { title: 'Revenue' };
 
@@ -49,7 +49,7 @@ async function RevenueContent({ searchParams }: Pick<PageProps<'/revenue'>, 'sea
     search: stringParam(params[SEARCH_PARAM.QUERY]),
   };
   const [view, clients, platforms, teamMembers] = await Promise.all([
-    getRevenueMonth(month, filters),
+    cachedRevenueMonth(month, filters),
     listClients(),
     listPlatforms(),
     listTeamMembers(),

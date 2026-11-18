@@ -24,13 +24,14 @@ import { formatMonthLabel } from '@/lib/month';
 import { PERMISSION } from '@/lib/permissions';
 import { ROUTES, withSearchParams } from '@/lib/routes';
 import { requireBooksUser } from '@/server/auth/current-user';
-import { getClient, getClientHistory } from '@/server/services/client.service';
+import { getClient } from '@/server/services/client.service';
+import { cachedClientHistory } from '@/server/cached-reads';
 
 export const metadata: Metadata = { title: 'Client' };
 
 async function ClientHistory({ params }: Pick<PageProps<'/clients/[clientId]'>, 'params'>) {
   const [, { clientId }] = await Promise.all([requireBooksUser(PERMISSION.ENTRIES_WRITE), params]);
-  const [client, history] = await Promise.all([getClient(clientId), getClientHistory(clientId)]);
+  const [client, history] = await Promise.all([getClient(clientId), cachedClientHistory(clientId)]);
   if (!client) notFound();
   return (
     <div className="grid gap-4">

@@ -17,8 +17,8 @@ import { SEARCH_PARAM } from '@/lib/constants';
 import { dateInMonth, formatMonthLabel, monthFromSearchParam } from '@/lib/month';
 import { PERMISSION, hasPermission } from '@/lib/permissions';
 import { requireBooksUser } from '@/server/auth/current-user';
-import { getAccountsMonth } from '@/server/services/account-balance.service';
 import { listAccounts, listExpenseCategories } from '@/server/services/settings.service';
+import { cachedAccountsMonth } from '@/server/cached-reads';
 
 export const metadata: Metadata = { title: 'Accounts' };
 
@@ -33,7 +33,7 @@ async function AccountsContent({ searchParams }: Pick<PageProps<'/accounts'>, 's
   const month = monthFromSearchParam(params[SEARCH_PARAM.MONTH], new Date());
   const canManage = hasPermission(user.role, PERMISSION.SETTINGS_MANAGE);
   const [view, categories, accounts] = await Promise.all([
-    getAccountsMonth(month),
+    cachedAccountsMonth(month),
     listExpenseCategories(),
     canManage ? listAccounts() : Promise.resolve([]),
   ]);

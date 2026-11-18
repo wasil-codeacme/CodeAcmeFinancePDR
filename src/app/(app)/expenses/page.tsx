@@ -20,13 +20,13 @@ import { dateInMonth, formatMonthLabel, monthFromSearchParam } from '@/lib/month
 import { PERMISSION, hasPermission } from '@/lib/permissions';
 import { requireBooksUser } from '@/server/auth/current-user';
 import { isSalesLine } from '@/server/domain/sales-cac';
-import { getExpenseMonth } from '@/server/services/expense.service';
 import { getProfitSharingSettings } from '@/server/services/profit-sharing.service';
 import {
   listAccounts,
   listExpenseCategories,
   listTeamMembers,
 } from '@/server/services/settings.service';
+import { cachedExpenseMonth } from '@/server/cached-reads';
 
 export const metadata: Metadata = { title: 'Expenses' };
 
@@ -40,7 +40,7 @@ async function ExpensesContent({ searchParams }: Pick<PageProps<'/expenses'>, 's
   ]);
   const month = monthFromSearchParam(params[SEARCH_PARAM.MONTH], new Date());
   const [view, categories, members, profitSharing, accounts] = await Promise.all([
-    getExpenseMonth(month),
+    cachedExpenseMonth(month),
     listExpenseCategories(),
     listTeamMembers(),
     getProfitSharingSettings(),

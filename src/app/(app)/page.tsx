@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
+import { toIsoDate } from '@/lib/month';
 import Link from 'next/link';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
@@ -23,8 +24,8 @@ import { formatCurrency, formatRatioAsPercent } from '@/lib/format';
 import { PERMISSION } from '@/lib/permissions';
 import { ROUTES, withSearchParams } from '@/lib/routes';
 import { requireBooksUser } from '@/server/auth/current-user';
-import { getDashboard } from '@/server/services/dashboard.service';
 import type { PeriodGlance } from '@/types/dashboard';
+import { cachedDashboard } from '@/server/cached-reads';
 
 export const metadata: Metadata = { title: 'Dashboard' };
 
@@ -119,7 +120,7 @@ function Glance({ title, glance }: { title: string; glance: PeriodGlance }) {
 
 async function DashboardContent() {
   const [user] = await Promise.all([requireBooksUser(PERMISSION.REPORTS_VIEW), connection()]);
-  const view = await getDashboard(user, new Date());
+  const view = await cachedDashboard(user, toIsoDate(new Date()));
   return (
     <div className="grid gap-6">
       <div className="grid gap-4 sm:grid-cols-2">

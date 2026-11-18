@@ -12,8 +12,8 @@ import { type ReportPeriod, parseReportPeriod } from '@/lib/report-period';
 import { REPORTS, type ReportKind, reportMeta } from '@/lib/reports';
 import { ROUTES } from '@/lib/routes';
 import { requireBooksUser } from '@/server/auth/current-user';
-import { getReport } from '@/server/services/report.service';
 import type { SessionUser } from '@/types/auth';
+import { cachedReport } from '@/server/cached-reads';
 
 export type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -62,7 +62,7 @@ async function ReportContent({
     searchParams,
     reportMeta(kind).permission,
   );
-  const report = await getReport(user, kind, period, now);
+  const report = await cachedReport(user, kind, period, toIsoDate(now));
   return (
     <PendingSection fallback={<TableSkeleton rows={REPORT_ROWS} />}>
       <ReportTableView report={report} />

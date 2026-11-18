@@ -11,8 +11,8 @@ import { toIsoDate } from '@/lib/month';
 import { PERMISSION } from '@/lib/permissions';
 import { SETTINGS_SECTION } from '@/lib/settings-sections';
 import { requireBooksUser } from '@/server/auth/current-user';
-import { getPartnerLedgers } from '@/server/services/partner-ledger.service';
 import { listAccounts } from '@/server/services/settings.service';
+import { cachedPartnerLedgers } from '@/server/cached-reads';
 
 export const metadata: Metadata = { title: 'Partners' };
 
@@ -20,7 +20,7 @@ const PARTNER_SECTIONS = [SETTINGS_SECTION.PARTNERS] as const;
 
 async function PartnersContent() {
   await Promise.all([requireBooksUser(PERMISSION.DISTRIBUTION_VIEW), connection()]);
-  const [ledgers, accounts] = await Promise.all([getPartnerLedgers(), listAccounts()]);
+  const [ledgers, accounts] = await Promise.all([cachedPartnerLedgers(), listAccounts()]);
   if (ledgers.length === 0) {
     return <EmptyState title="No partners yet" description="Add the partners below." />;
   }

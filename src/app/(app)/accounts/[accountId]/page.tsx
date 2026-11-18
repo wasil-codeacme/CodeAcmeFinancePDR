@@ -17,7 +17,7 @@ import {
 import { currentMonthKey, formatMonthLabel } from '@/lib/month';
 import { PERMISSION } from '@/lib/permissions';
 import { requireBooksUser } from '@/server/auth/current-user';
-import { getAccountHistory } from '@/server/services/account-balance.service';
+import { cachedAccountHistory } from '@/server/cached-reads';
 
 export const metadata: Metadata = { title: 'Account history' };
 
@@ -28,7 +28,7 @@ async function AccountHistory({ params }: Pick<PageProps<'/accounts/[accountId]'
     params,
     connection(),
   ]);
-  const months = await getAccountHistory(accountId, currentMonthKey(new Date()));
+  const months = await cachedAccountHistory(accountId, currentMonthKey(new Date()));
   const first = months[0];
   return (
     <div className="grid gap-4">
