@@ -161,7 +161,12 @@ function Sidebar({
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
 }) {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const { state, openMobile, setOpenMobile } = useSidebar()
+  // Read here rather than from context: the provider hydrates first and switches to the
+  // phone value before this streamed component hydrates, so the context value would not
+  // match the server's desktop markup (React #418). A local useSyncExternalStore hydrates
+  // with the server snapshot and switches right after.
+  const isMobile = useIsMobile()
 
   if (collapsible === "none") {
     return (
