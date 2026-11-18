@@ -8,6 +8,9 @@ const NEXT_BUILD_PHASE = 'phase-production-build';
 export const env = createEnv({
   server: {
     DATABASE_URL: z.url(),
+    // Set by Vercel's Prisma Postgres integration (pooled.db.prisma.io); the app prefers it
+    // so serverless traffic goes through the pooler. Absent locally.
+    DATABASE_URL_POOLED: z.url().optional(),
     // Per function instance; Prisma Postgres advises about 5 behind its pooler on serverless.
     DATABASE_POOL_MAX: z.coerce.number().int().min(1).default(5),
     APP_URL: z.url(),
@@ -35,3 +38,6 @@ if (env.EMAIL_PROVIDER === EMAIL_PROVIDER.RESEND && !env.RESEND_API_KEY) {
 if (isRunningInProduction && env.EMAIL_PROVIDER === EMAIL_PROVIDER.CONSOLE) {
   throw new Error('EMAIL_PROVIDER "console" is not allowed in production.');
 }
+
+/** The app's connection: the integration's pooled URL when present, otherwise DATABASE_URL. */
+export const databaseUrl = env.DATABASE_URL_POOLED ?? env.DATABASE_URL;

@@ -2,7 +2,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { attachDatabasePool } from '@vercel/functions';
 import { Pool } from 'pg';
 
-import { env } from '@/config/env';
+import { databaseUrl, env } from '@/config/env';
 import { PrismaClient } from '@/generated/prisma/client';
 
 // Close idle connections well before the database or the pooler drops them, so a request
@@ -14,7 +14,7 @@ const globalForPrisma = globalThis as typeof globalThis & { prisma?: PrismaClien
 
 function createPrismaClient(): PrismaClient {
   const pool = new Pool({
-    connectionString: env.DATABASE_URL,
+    connectionString: databaseUrl,
     max: env.DATABASE_POOL_MAX,
     idleTimeoutMillis: IDLE_CONNECTION_TIMEOUT_MS,
   });
