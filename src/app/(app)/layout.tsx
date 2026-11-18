@@ -1,6 +1,7 @@
 import { type ReactNode, Suspense, ViewTransition } from 'react';
 
 import { AppSidebar, AppSidebarSkeleton } from '@/components/layout/app-sidebar';
+import { DataVersionWatcher } from '@/components/layout/data-version-watcher';
 import { MobileTabBar } from '@/components/layout/mobile-tab-bar';
 import { NavigationProgress } from '@/components/layout/navigation-progress';
 import { PendingNavigationProvider } from '@/components/layout/pending-navigation';
@@ -14,6 +15,7 @@ async function SignedInNavigation() {
     <>
       <AppSidebar user={{ name: user.name, email: user.email, role: user.role }} />
       <MobileTabBar role={user.role} />
+      <DataVersionWatcher />
     </>
   );
 }

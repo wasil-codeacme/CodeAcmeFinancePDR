@@ -44,6 +44,7 @@ export const ROUTES = {
   },
   API: {
     HEALTH: '/api/health',
+    VERSION: '/api/version',
   },
   /** Generated icons and link-preview images (Next metadata routes). */
   BRAND_IMAGES: ['/icon', '/apple-icon', '/opengraph-image', '/twitter-image'],
