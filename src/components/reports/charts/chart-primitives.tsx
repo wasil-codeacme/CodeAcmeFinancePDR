@@ -30,6 +30,11 @@ const MARKER_RADIUS = 4;
 const SURFACE_GAP = 2;
 const ROW_HEIGHT = 34;
 const AXIS_PADDING = 48;
+// Axis labels thin out instead of overlapping when a phone leaves little room.
+const TICK_GAP = 8;
+// Client and platform names: narrow enough to leave the bars room on a phone.
+const NAME_AXIS_WIDTH = 92;
+const NAME_MAX_CHARS = 13;
 
 /** Colours follow the series' fixed slot, never their rank (dataviz: assign in order). */
 export function chartConfig(series: readonly ChartSeries[]): ChartConfig {
@@ -100,17 +105,26 @@ export function PeriodBars({ data, series, currency, stacked = false }: BarsProp
   if (!hasData(data, keys)) return <NothingToChart />;
   const axis = compactMoney(currency);
   return (
-    <ChartContainer config={config} className="aspect-auto h-64 w-full">
+    <ChartContainer config={config} className="aspect-auto h-64 w-full min-w-0">
       <BarChart data={data} margin={{ left: 4, right: 4 }}>
         <CartesianGrid vertical={false} strokeOpacity={0.5} />
-        <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} />
+        <XAxis
+          dataKey="label"
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          interval="preserveStartEnd"
+          minTickGap={TICK_GAP}
+        />
         <YAxis tickLine={false} axisLine={false} width={56} tickFormatter={axis} />
         <ReferenceLine y={0} stroke="var(--border)" />
         <ChartTooltip
           cursor={{ fillOpacity: 0.3 }}
           content={tooltipFor(config, (value) => formatCurrency(value, currency))}
         />
-        {series.length > 1 ? <ChartLegend content={<ChartLegendContent />} /> : null}
+        {series.length > 1 ? (
+          <ChartLegend content={<ChartLegendContent className="flex-wrap gap-x-3 gap-y-1" />} />
+        ) : null}
         {series.map((entry, index) => (
           <Bar
             key={entry.key}
@@ -136,7 +150,7 @@ export function RankedBars({ data, currency }: { data: ChartDatum[]; currency: s
   return (
     <ChartContainer
       config={config}
-      className="aspect-auto w-full"
+      className="aspect-auto w-full min-w-0"
       style={{ height: data.length * ROW_HEIGHT + AXIS_PADDING }}
     >
       <BarChart data={data} layout="vertical" margin={{ left: 4, right: 56 }}>
@@ -146,8 +160,10 @@ export function RankedBars({ data, currency }: { data: ChartDatum[]; currency: s
           dataKey="label"
           tickLine={false}
           axisLine={false}
-          width={112}
-          tickFormatter={(value: string) => (value.length > 16 ? `${value.slice(0, 15)}…` : value)}
+          width={NAME_AXIS_WIDTH}
+          tickFormatter={(value: string) =>
+            value.length > NAME_MAX_CHARS ? `${value.slice(0, NAME_MAX_CHARS - 1)}…` : value
+          }
         />
         <ChartTooltip
           cursor={{ fillOpacity: 0.3 }}
@@ -178,10 +194,17 @@ export function MarginLine({ data }: { data: ChartDatum[] }) {
   if (!data.some((datum) => typeof datum.margin === 'number')) return <NothingToChart />;
   const percent = (value: number) => formatRatioAsPercent(value);
   return (
-    <ChartContainer config={config} className="aspect-auto h-64 w-full">
+    <ChartContainer config={config} className="aspect-auto h-64 w-full min-w-0">
       <LineChart data={data} margin={{ left: 4, right: 12, top: 8 }}>
         <CartesianGrid vertical={false} strokeOpacity={0.5} />
-        <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} />
+        <XAxis
+          dataKey="label"
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          interval="preserveStartEnd"
+          minTickGap={TICK_GAP}
+        />
         <YAxis tickLine={false} axisLine={false} width={48} tickFormatter={percent} />
         <ReferenceLine y={0} stroke="var(--border)" />
         <ChartTooltip content={tooltipFor(config, percent)} />

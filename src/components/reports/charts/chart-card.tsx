@@ -20,7 +20,8 @@ type ChartCardProps = {
 /** Each chart has its table one click away (the accessible view of the same figures). */
 export function ChartCard({ title, description, tableHref, children }: ChartCardProps) {
   return (
-    <Card>
+    // min-w-0 lets the card shrink inside a grid column, so the chart measures its real width.
+    <Card className="min-w-0">
       <CardHeader>
         <CardTitle className="text-base">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -30,7 +31,7 @@ export function ChartCard({ title, description, tableHref, children }: ChartCard
           </Link>
         </CardAction>
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent className="min-w-0">{children}</CardContent>
     </Card>
   );
 }
