@@ -1,15 +1,21 @@
 'use client';
 
 import { CalendarIcon } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { formatDateLabel, isIsoDate } from '@/lib/month';
 import { cn } from '@/lib/utils';
 
 const PAD_WIDTH = 2;
+
+// react-day-picker is only needed once a date picker opens, so it is not in every form's bundle.
+const Calendar = dynamic(
+  () => import('@/components/ui/calendar').then((module) => module.Calendar),
+  { ssr: false, loading: () => <div className="h-72 w-64" aria-busy="true" /> },
+);
 
 /** The calendar works in local dates; the app stores plain `YYYY-MM-DD` strings. */
 function toLocalDate(isoDate: string): Date | undefined {

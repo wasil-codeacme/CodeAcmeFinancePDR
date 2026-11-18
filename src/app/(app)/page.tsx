@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
 
-import { ChartCard, PeriodBars } from '@/components/reports/charts/chart-primitives';
+import { ChartCard } from '@/components/reports/charts/chart-card';
+import { PeriodBars } from '@/components/reports/charts/lazy-charts';
 import { Money } from '@/components/shared/money';
 import { PageHeader } from '@/components/shared/page-header';
 import { CardListSkeleton, StatCardsSkeleton } from '@/components/shared/skeletons';

@@ -1,11 +1,7 @@
 'use client';
 
-import {
-  ChartCard,
-  MarginLine,
-  PeriodBars,
-  RankedBars,
-} from '@/components/reports/charts/chart-primitives';
+import { ChartCard } from '@/components/reports/charts/chart-card';
+import { MarginLine, PeriodBars, RankedBars } from '@/components/reports/charts/lazy-charts';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { SEARCH_PARAM } from '@/lib/constants';
 import { formatRatioAsPercent } from '@/lib/format';
